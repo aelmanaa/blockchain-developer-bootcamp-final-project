@@ -1,6 +1,11 @@
 {
   "devDependencies": {
-    "eth-gas-reporter": "^0.2.22"
+    "@openzeppelin/test-helpers": "^0.5.13",
+    "bn.js": "^5.2.0",
+    "chai": "^4.3.4",
+    "chai-as-promised": "^7.1.1",
+    "eth-gas-reporter": "^0.2.22",
+    "web3": "^1.6.0"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.3.2"

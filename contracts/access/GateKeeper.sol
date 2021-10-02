@@ -43,11 +43,10 @@ contract GateKeeper is IGateKeeper, AccessControlEnumerable {
      */
     function addAdmin(bytes32 roleId, address account)
         external
-        onlyAdmin(roleId)
     {
         bytes32 adminRoleId = getRoleAdmin(roleId);
         grantRole(adminRoleId, account);
-        emit newAdmin(roleId, account, msg.sender);
+        emit NewAdmin(roleId, account, msg.sender);
     }
 
     /**

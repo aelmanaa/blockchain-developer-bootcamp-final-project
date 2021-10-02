@@ -9,7 +9,7 @@ interface IGateKeeper {
     /**
      * @dev Emitted when `roleId`'s admin rol is assigned to `newAdmin` by `admin`.
      */
-    event newAdmin(
+    event NewAdmin(
         bytes32 indexed roleId,
         address indexed newAdmin,
         address indexed admin
