@@ -16,6 +16,8 @@ import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
  * from callers to hash their roles using keccak256 before calling functions of the contract.
  */
 contract GateKeeper is IGateKeeper, AccessControlEnumerable {
+    bool private stopped = false;
+
     /**
      * @dev Grants `DEFAULT_ADMIN_ROLE` to `msg.sender`.
      *
@@ -25,6 +27,12 @@ contract GateKeeper is IGateKeeper, AccessControlEnumerable {
      */
     constructor() {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
+    /// @dev circuit breaker. call some functionalities only if stopped is equal to false
+    modifier onlyActive() {
+        require(!stopped, "Contract is currently suspended.");
+        _;
     }
 
     /// @dev Restricted to members of the admin role.
@@ -38,15 +46,13 @@ contract GateKeeper is IGateKeeper, AccessControlEnumerable {
         _;
     }
 
-    /**
-     * @inheritdoc IGateKeeper
-     */
-    function addAdmin(bytes32 roleId, address account)
-        external
-    {
-        bytes32 adminRoleId = getRoleAdmin(roleId);
-        grantRole(adminRoleId, account);
-        emit NewAdmin(roleId, account, msg.sender);
+    /// @dev Restricted to members of DEFAULT_ADMIN_ROLE
+    modifier onlyRootAdmin() {
+        require(
+            isAssigned(DEFAULT_ADMIN_ROLE, msg.sender),
+            "Restricted to root admins."
+        );
+        _;
     }
 
     /**
@@ -54,6 +60,7 @@ contract GateKeeper is IGateKeeper, AccessControlEnumerable {
      */
     function addAssignment(bytes32 roleId, address account)
         external
+        onlyActive
         onlyAdmin(roleId)
     {
         grantRole(roleId, account);
@@ -65,6 +72,7 @@ contract GateKeeper is IGateKeeper, AccessControlEnumerable {
      */
     function addRole(bytes32 roleId, bytes32 adminRoleId)
         external
+        onlyActive
         onlyMember(adminRoleId)
     {
         _setRoleAdmin(roleId, adminRoleId);
@@ -117,8 +125,16 @@ contract GateKeeper is IGateKeeper, AccessControlEnumerable {
     /**
      * @inheritdoc IGateKeeper
      */
+    function isContractActive() public view returns (bool) {
+        return !stopped;
+    }
+
+    /**
+     * @inheritdoc IGateKeeper
+     */
     function removeAssignment(bytes32 roleId, address account)
         external
+        onlyActive
         onlyAdmin(roleId)
     {
         revokeRole(roleId, account);
@@ -128,7 +144,11 @@ contract GateKeeper is IGateKeeper, AccessControlEnumerable {
     /**
      * @inheritdoc IGateKeeper
      */
-    function renounceAdmin(bytes32 roleId) external onlyAdmin(roleId) {
+    function renounceAdmin(bytes32 roleId)
+        external
+        onlyActive
+        onlyAdmin(roleId)
+    {
         bytes32 adminRoleId = getRoleAdmin(roleId);
         renounceRole(adminRoleId, msg.sender);
         emit RenounceAdministration(roleId, msg.sender);
@@ -144,5 +164,25 @@ contract GateKeeper is IGateKeeper, AccessControlEnumerable {
         returns (bool)
     {
         return interfaceId == type(IGateKeeper).interfaceId;
+    }
+
+    /**
+     * @inheritdoc IGateKeeper
+     */
+    function switchContractOn() public onlyRootAdmin {
+        if (stopped) {
+            stopped = false;
+            emit ContractOn(msg.sender);
+        }
+    }
+
+    /**
+     * @inheritdoc IGateKeeper
+     */
+    function switchContractOff() public onlyRootAdmin {
+        if (!stopped) {
+            stopped = true;
+            emit ContractOff(msg.sender);
+        }
     }
 }

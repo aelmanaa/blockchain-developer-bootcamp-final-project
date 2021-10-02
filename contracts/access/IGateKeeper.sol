@@ -7,13 +7,14 @@ pragma solidity ^0.8.9;
  */
 interface IGateKeeper {
     /**
-     * @dev Emitted when `roleId`'s admin rol is assigned to `newAdmin` by `admin`.
+     * @dev Emitted when contract activated by `rootAdmin`.
      */
-    event NewAdmin(
-        bytes32 indexed roleId,
-        address indexed newAdmin,
-        address indexed admin
-    );
+    event ContractOn(address indexed rootAdmin);
+
+    /**
+     * @dev Emitted when contract stopped by `rootAdmin`.
+     */
+    event ContractOff(address indexed rootAdmin);
 
     /**
      * @dev Emitted when `roleId` is assigned to `account` by `admin`.
@@ -46,20 +47,6 @@ interface IGateKeeper {
      * @dev Emitted when `admin` renounces being admin of  `roleId`.
      */
     event RenounceAdministration(bytes32 indexed roleId, address indexed admin);
-
-    /**
-     * @dev Assign `roleId`'s admin role to `account`.
-     *
-     * Emits a {NewAdmin} event.
-     *
-     * Requirements:
-     *
-     * - the caller must have `roleId`'s admin role.
-     *
-     * @param roleId unique 32-byte word representation of a role
-     * @param account additional administrator of roleId
-     */
-    function addAdmin(bytes32 roleId, address account) external;
 
     /**
      * @dev Assign `roleId` to `account`.
@@ -134,6 +121,14 @@ interface IGateKeeper {
         returns (bool);
 
     /**
+     *
+     * @dev Returns `true` if contract is active (circuit-breaker).
+     *
+     * @return bool `true` if contract is active.
+     */
+    function isContractActive() external view returns (bool);
+
+    /**
      * @dev Revokes `roleId` from `account`.
      *
      * If `account` had been granted `roleId`, emits a {RemoveAssignment} event.
@@ -159,4 +154,24 @@ interface IGateKeeper {
      * @param roleId unique 32-byte word representation of a role.
      */
     function renounceAdmin(bytes32 roleId) external;
+
+    /**
+     *
+     * If the contract is stopped then active it and emit a {ContractOn} event.
+     *
+     * Requirements:
+     *
+     * - the caller must be root admin.
+     */
+    function switchContractOn() external;
+
+    /**
+     *
+     * If the contract is active then stop it and emit a {ContractOff} event.
+     *
+     * Requirements:
+     *
+     * - the caller must be root admin.
+     */
+    function switchContractOff() external;
 }
