@@ -51,10 +51,19 @@ const isEventFound = (eventArray, eventName, argObject) => {
 
     return filteredArray.length > 0;
 
+};
+
+const ROLES_CONST = {
+    ADMIN_ROLE: keccak256("INSURANCE_DAPP_ADMIN_ROLE"),
+    INSURER_ROLE: keccak256("INSURER_ROLE"),
+    FARMER_ROLE: keccak256("FARMER_ROLE"),
+    ORACLE_ROLE: keccak256("ORACLE_ROLE"),
+    KEEPER_ROLE: keccak256("KEEPER_ROLE")
 }
 
 module.exports = {
     keccak256,
     interfaceId,
-    isEventFound
+    isEventFound,
+    ROLES_CONST
 }

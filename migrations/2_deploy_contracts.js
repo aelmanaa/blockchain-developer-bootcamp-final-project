@@ -1,7 +1,7 @@
-const SimpleStorage = artifacts.require("./SimpleStorage.sol");
 const GateKeeper = artifacts.require("./access/GateKeeper.sol");
+const OracleCore = artifacts.require("./oracle/OracleCore.sol");
 
-module.exports = async function(deployer) {
-  await deployer.deploy(SimpleStorage);
+module.exports = async deployer => {
   await deployer.deploy(GateKeeper);
+  await deployer.deploy(OracleCore, GateKeeper.address);
 };
