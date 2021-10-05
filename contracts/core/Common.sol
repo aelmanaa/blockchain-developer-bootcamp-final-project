@@ -150,6 +150,10 @@ abstract contract Common is Ownable, ReentrancyGuard {
         return address(this).balance;
     }
 
+    function getEscrow() public view returns (address) {
+        return address(escrow);
+    }
+
     function getGateKeeper() public view returns (address) {
         return address(gatekeeper);
     }

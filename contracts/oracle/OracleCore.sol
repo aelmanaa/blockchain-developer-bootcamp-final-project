@@ -9,6 +9,14 @@ contract OracleCore is Common {
     /// @dev Emitted when a `season` is opened by a `keeper`.
     event SeasonOpen(uint16 indexed season, address indexed keeper);
 
+    /// @dev Emitted when a `severity` is submmited by a `oracle` for a given `season` + `region`
+    event SeveritySubmitted(
+        uint16 indexed season,
+        bytes indexed region,
+        Severity severity,
+        address indexed oracle
+    );
+
     /**
      * @dev used to check if a season is in the right state
      *
@@ -42,6 +50,7 @@ contract OracleCore is Common {
     struct Submission {
         mapping(address => bool) oracles;
         mapping(Severity => uint256) numberAnswers;
+        uint256 totalAnswers;
     }
 
     /// @dev keep track of every region
@@ -99,7 +108,12 @@ contract OracleCore is Common {
      *
      * @param season year (e.g. 2021).
      */
-    function closeSeason(uint16 season) public onlyKeeper seasonOpen(season) checkContractBalance(KEEPER_FEE) {
+    function closeSeason(uint16 season)
+        public
+        onlyKeeper
+        seasonOpen(season)
+        checkContractBalance(KEEPER_FEE)
+    {
         seasons[season] = SeasonState.CLOSED;
         _deposit(msg.sender, KEEPER_FEE);
         emit SeasonClosed(season, msg.sender);
@@ -129,7 +143,12 @@ contract OracleCore is Common {
      *
      * @param season year (e.g. 2021).
      */
-    function openSeason(uint16 season) public onlyKeeper seasonDefault(season) checkContractBalance(KEEPER_FEE) {
+    function openSeason(uint16 season)
+        public
+        onlyKeeper
+        seasonDefault(season)
+        checkContractBalance(KEEPER_FEE)
+    {
         seasons[season] = SeasonState.OPEN;
         _deposit(msg.sender, KEEPER_FEE);
         emit SeasonOpen(season, msg.sender);
@@ -146,5 +165,48 @@ contract OracleCore is Common {
      */
     receive() external payable onlyInsurer {
         emit ReceivedETH(msg.value, address(this).balance, msg.sender);
+    }
+
+    /**
+     * @dev Submit a `severity` for a given `season` + `region`.
+     *
+     * Emits a {SeveritySubmitted} event.
+     * Pays out the oracle for its job
+     *
+     * Requirements:
+     *
+     * - the caller must be oracle.
+     * - the season must be in open state
+     * - contract must have enough balance to pay oracle
+     * - the oracle cannot submit twice for this `season` + `region`
+     * - severity code must be valid
+     *
+     * @param season year (e.g. 2021).
+     * @param region region in bytes 
+     * @param severity must be valid (between 1 and 5)
+     */
+    function submit(
+        uint16 season,
+        bytes calldata region,
+        Severity severity
+    ) external onlyOracle seasonOpen(season) checkContractBalance(ORACLE_FEE) {
+        require(
+            !submissions[region][season].oracles[msg.sender],
+            "Oracle has already submitted for this season and region"
+        );
+        require(
+            (severity == Severity.D0 ||
+                severity == Severity.D1 ||
+                severity == Severity.D2 ||
+                severity == Severity.D3 ||
+                severity == Severity.D4),
+            "Severity not valid"
+        );
+
+        submissions[region][season].oracles[msg.sender] = true;
+        submissions[region][season].numberAnswers[severity] += 1;
+        submissions[region][season].totalAnswers += 1;
+        _deposit(msg.sender, ORACLE_FEE);
+        emit SeveritySubmitted(season, region, severity, msg.sender);
     }
 }

@@ -2,6 +2,16 @@ const BN = require("bn.js");
 const Web3 = require("web3");
 
 const web3 = new Web3();
+const bn = web3.utils.BN;
+
+
+/**
+ * 
+ * @param {BN} a 
+ * @param {BN} b 
+ * @returns {BN} Big number
+ */
+const addBigNumbers = (a, b) => new bn(a).add(new bn(b));
 
 /**
  * 
@@ -53,6 +63,7 @@ const isEventFound = (eventArray, eventName, argObject) => {
 
 };
 
+
 const ROLES_CONST = {
     ADMIN_ROLE: keccak256("INSURANCE_DAPP_ADMIN_ROLE"),
     INSURER_ROLE: keccak256("INSURER_ROLE"),
@@ -62,6 +73,7 @@ const ROLES_CONST = {
 }
 
 module.exports = {
+    addBigNumbers,
     keccak256,
     interfaceId,
     isEventFound,
