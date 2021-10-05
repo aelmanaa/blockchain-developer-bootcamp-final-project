@@ -12,7 +12,7 @@ contract OracleCore is Common {
     /// @dev Emitted when a `severity` is submmited by a `oracle` for a given `season` + `region`
     event SeveritySubmitted(
         uint16 indexed season,
-        bytes indexed region,
+        bytes region,
         Severity severity,
         address indexed oracle
     );
@@ -48,7 +48,7 @@ contract OracleCore is Common {
      *`numberAnswers` keeps track of number of answers by severity
      */
     struct Submission {
-        mapping(address => bool) oracles;
+        mapping(address => Severity) oracles;
         mapping(Severity => uint256) numberAnswers;
         uint256 totalAnswers;
     }
@@ -120,6 +120,23 @@ contract OracleCore is Common {
     }
 
     /**
+     * @dev Rertieve  `severity` of a `region` + `season`.
+     *
+     * @param season year (e.g. 2021).
+     * @param region region code in bytes
+     * @return Severity
+     *
+     * @notice caller must check Severity. In fact, final severity is calculated after aggregation. if aggregation not triggered yet then Severity will have the default value
+     */
+    function getRegionSeverity(uint16 season, bytes calldata region)
+        public
+        view
+        returns (Severity)
+    {
+        return regions[region].history[season];
+    }
+
+    /**
      * @dev Rertieve a `season` state.
      *
      * @param season year (e.g. 2021).
@@ -127,6 +144,60 @@ contract OracleCore is Common {
      */
     function getSeasonState(uint16 season) public view returns (SeasonState) {
         return seasons[season];
+    }
+
+    /**
+     * @dev Rertieve a `severity` for a given `region` and `season` , provided by `oracle`.
+     *
+     * @param season year (e.g. 2021).
+     * @param region region code in bytes
+     * @param oracle oracle address
+     *
+     * @return Severity .
+     *
+     * @notice If Severity is the default value then it means that the oracle didn't provide any submission for `region` and `season`
+     */
+    function getSubmission(
+        uint16 season,
+        bytes calldata region,
+        address oracle
+    ) public view returns (Severity) {
+        return submissions[region][season].oracles[oracle];
+    }
+
+    /**
+     * @dev Retrieve number of submissions for a given `region` and `season` and `severity`.
+     *
+     * @param season year (e.g. 2021).
+     * @param region region code in bytes
+     * @param severity Severity code
+     *
+     * @return number of submissions.
+     *
+     */
+    function getSubmissionNumberForSeverity(
+        uint16 season,
+        bytes calldata region,
+        Severity severity
+    ) public view returns (uint256) {
+        return submissions[region][season].numberAnswers[severity];
+    }
+
+    /**
+     * @dev Retrieve total submissions for a given `region` and `season`.
+     *
+     * @param season year (e.g. 2021).
+     * @param region region code in bytes
+     *
+     * @return number of submissions
+     *
+     */
+    function getSubmissionTotal(uint16 season, bytes calldata region)
+        public
+        view
+        returns (uint256)
+    {
+        return submissions[region][season].totalAnswers;
     }
 
     /**
@@ -182,7 +253,7 @@ contract OracleCore is Common {
      * - severity code must be valid
      *
      * @param season year (e.g. 2021).
-     * @param region region in bytes 
+     * @param region region in bytes
      * @param severity must be valid (between 1 and 5)
      */
     function submit(
@@ -191,7 +262,7 @@ contract OracleCore is Common {
         Severity severity
     ) external onlyOracle seasonOpen(season) checkContractBalance(ORACLE_FEE) {
         require(
-            !submissions[region][season].oracles[msg.sender],
+            submissions[region][season].oracles[msg.sender] == Severity.D,
             "Oracle has already submitted for this season and region"
         );
         require(
@@ -203,7 +274,7 @@ contract OracleCore is Common {
             "Severity not valid"
         );
 
-        submissions[region][season].oracles[msg.sender] = true;
+        submissions[region][season].oracles[msg.sender] = severity;
         submissions[region][season].numberAnswers[severity] += 1;
         submissions[region][season].totalAnswers += 1;
         _deposit(msg.sender, ORACLE_FEE);

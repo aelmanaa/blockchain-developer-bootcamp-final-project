@@ -70,12 +70,29 @@ const ROLES_CONST = {
     FARMER_ROLE: keccak256("FARMER_ROLE"),
     ORACLE_ROLE: keccak256("ORACLE_ROLE"),
     KEEPER_ROLE: keccak256("KEEPER_ROLE")
-}
+};
+
+const REGIONS_CONST = {
+    A: web3.utils.asciiToHex("RegA"),
+    B: web3.utils.asciiToHex("RegB"),
+    C: web3.utils.asciiToHex("RegC")
+};
+
+const SEVERITY_CONST = {
+    D: "0",
+    D0: "1",
+    D1: "2",
+    D2: "3",
+    D3: "4",
+    D4: "5"
+};
 
 module.exports = {
     addBigNumbers,
     keccak256,
     interfaceId,
     isEventFound,
-    ROLES_CONST
+    ROLES_CONST,
+    REGIONS_CONST,
+    SEVERITY_CONST
 }
