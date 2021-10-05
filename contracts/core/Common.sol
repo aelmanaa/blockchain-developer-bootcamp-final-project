@@ -12,6 +12,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
  * @dev Import this contract in different smart contracts which will share the same data model.
  */
 abstract contract Common is Ownable, ReentrancyGuard {
+
     /**
      * @dev Emitted when new gateKeepr setup by `owner`.
      */

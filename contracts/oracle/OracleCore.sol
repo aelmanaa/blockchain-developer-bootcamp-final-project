@@ -1,13 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 import "../core/Common.sol";
+import "@openzeppelin/contracts/utils/math/Math.sol";
 
 contract OracleCore is Common {
+    using Math for uint256;
+
     /// @dev Emitted when a `season` is closed by a `keeper`.
     event SeasonClosed(uint16 indexed season, address indexed keeper);
 
     /// @dev Emitted when a `season` is opened by a `keeper`.
     event SeasonOpen(uint16 indexed season, address indexed keeper);
+
+    /// @dev Emitted when a `severity` is aggregated for a given `season` + `region`
+    event SeverityAggregated(
+        uint16 indexed season,
+        bytes region,
+        Severity severity,
+        address indexed keeper
+    );
 
     /// @dev Emitted when a `severity` is submmited by a `oracle` for a given `season` + `region`
     event SeveritySubmitted(
@@ -30,18 +41,6 @@ contract OracleCore is Common {
     }
 
     /**
-     * @dev struct to define a region. For flexibility, a region is defined by a `code` which is bytes
-     *
-     *`history` keeps track of severity for every season. A year is a season (that's why we choe uint16)
-     *`seasons` keeps track of reported years
-     */
-    struct Region {
-        bytes code;
-        mapping(uint16 => Severity) history;
-        uint16[] seasons;
-    }
-
-    /**
      * @dev struct to define a submission.
      *
      *`oracles` keeps track of oracles which have already submitted
@@ -53,9 +52,9 @@ contract OracleCore is Common {
         uint256 totalAnswers;
     }
 
-    /// @dev keep track of every region
-    /// `region` in bytes => Region (struct defined above)
-    mapping(bytes => Region) regions;
+    /// @dev keep track of every region and its history
+    /// `region` in bytes => season => severity
+    mapping(bytes => mapping(uint16 => Severity)) regions;
 
     /// @dev keep track of submissions
     /// `region` in bytes => year(season) => Submission (struct defined above)
@@ -92,6 +91,83 @@ contract OracleCore is Common {
             "Season must be closed."
         );
         _;
+    }
+
+    /**
+     * @dev Aggregate a `severity` from all submissions.
+     *
+     * Rule benefit insurees:
+     * if 60% (roundup) of total submissions is >= totD2 + totD3 + totD4 then severity is severity which got the most number of submissions between D2,D3 & D4
+     * Else severity which got most number of submissions between D0 & D1
+     *
+     * Emits a {SeverityAggregated} event.
+     * Pays out the keeper for its job
+     *
+     * Requirements:
+     *
+     * - the caller must be keeper.
+     * - the season must be in closed state
+     * - contract must have enough balance to pay oracle
+     * - the keeper cannot trigger aggregation twice for this `season` + `region`
+     *
+     * @param season year (e.g. 2021).
+     * @param region region in bytes
+     */
+    function aggregate(uint16 season, bytes calldata region)
+        external
+        onlyKeeper
+        seasonClosed(season)
+        checkContractBalance(KEEPER_FEE)
+    {
+        require(
+            regions[region][season] == Severity.D,
+            "Severity already aggregated"
+        );
+        uint256 totalAnswers = submissions[region][season].totalAnswers;
+        if (totalAnswers > 0) {
+            uint256 totalD0 = submissions[region][season].numberAnswers[
+                Severity.D0
+            ];
+            uint256 totalD1 = submissions[region][season].numberAnswers[
+                Severity.D1
+            ];
+            uint256 totalD2 = submissions[region][season].numberAnswers[
+                Severity.D2
+            ];
+            uint256 totalD3 = submissions[region][season].numberAnswers[
+                Severity.D3
+            ];
+            uint256 totalD4 = submissions[region][season].numberAnswers[
+                Severity.D4
+            ];
+            require(
+                (totalD0 + totalD1 + totalD2 + totalD3 + totalD4) ==
+                    totalAnswers,
+                "Data corrupted"
+            );
+            Severity severity;
+            if (
+                (totalD2 + totalD3 + totalD4) >=
+                (60 * totalAnswers).ceilDiv(100)
+            ) {
+                if (totalD4.max(totalD3) == totalD4) {
+                    severity = Severity.D4;
+                } else if (totalD3.max(totalD2) == totalD3) {
+                    severity = Severity.D3;
+                } else {
+                    severity = Severity.D2;
+                }
+            } else {
+                if (totalD2.max(totalD1) == totalD2) {
+                    severity = Severity.D2;
+                } else {
+                    severity = Severity.D1;
+                }
+            }
+
+            regions[region][season] = severity;
+            emit SeverityAggregated(season, region, severity, msg.sender);
+        }
     }
 
     /**
@@ -133,7 +209,7 @@ contract OracleCore is Common {
         view
         returns (Severity)
     {
-        return regions[region].history[season];
+        return regions[region][season];
     }
 
     /**
