@@ -97,7 +97,7 @@ contract OracleCore is Common {
      * @dev Aggregate a `severity` from all submissions.
      *
      * Rule benefit insurees:
-     * if 60% (roundup) of total submissions is >= totD2 + totD3 + totD4 then severity is severity which got the most number of submissions between D2,D3 & D4
+     * if 50% (roundup) of total submissions is >= totD2 + totD3 + totD4 then severity is severity which got the most number of submissions between D2,D3 & D4
      * Else severity which got most number of submissions between D0 & D1
      *
      * Emits a {SeverityAggregated} event.
@@ -148,7 +148,7 @@ contract OracleCore is Common {
             Severity severity;
             if (
                 (totalD2 + totalD3 + totalD4) >=
-                (60 * totalAnswers).ceilDiv(100)
+                (50 * totalAnswers).ceilDiv(100)
             ) {
                 if (totalD4.max(totalD3) == totalD4) {
                     severity = Severity.D4;
@@ -166,6 +166,7 @@ contract OracleCore is Common {
             }
 
             regions[region][season] = severity;
+            _deposit(msg.sender, KEEPER_FEE);
             emit SeverityAggregated(season, region, severity, msg.sender);
         }
     }

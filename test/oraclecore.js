@@ -288,4 +288,131 @@ contract("OracleCore", async (accounts) => {
 
     });
 
+
+    describe("Check aggegation", () => {
+
+        it("Only keeper can trigger aggregation", async () => {
+            await expectRevert(oracleCore.aggregate(season, REGIONS_CONST.A, { from: oracles[0] }), "Restricted to keepers.");
+        });
+
+        it("Season must be closed", async () => {
+            trans = await (web3.eth.sendTransaction({
+                from: insurer,
+                to: oracleCore.address,
+                value: keeperFee
+            }));
+
+            await oracleCore.openSeason(season, { from: keepers[0] });
+            await expectRevert(oracleCore.aggregate(season, REGIONS_CONST.A, { from: keepers[0] }), "Season must be closed.");
+        });
+
+        it("Enough balance in the contract", async () => {
+            trans = await (web3.eth.sendTransaction({
+                from: insurer,
+                to: oracleCore.address,
+                value: addBigNumbers(keeperFee, keeperFee)
+            }));
+
+            await oracleCore.openSeason(season, { from: keepers[0] });
+            await oracleCore.closeSeason(season, { from: keepers[0] });
+            await expectRevert(oracleCore.aggregate(season, REGIONS_CONST.A, { from: keepers[0] }), "Not enough balance in the contract");
+
+        });
+
+        it("Cannot trigger aggregation twice", async () => {
+            await (web3.eth.sendTransaction({
+                from: insurer,
+                to: oracleCore.address,
+                value: web3.utils.toWei('10', 'ether')
+            }));
+            await oracleCore.openSeason(season, { from: keepers[0] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D3, { from: oracles[0] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D2, { from: oracles[1] });
+            await oracleCore.closeSeason(season, { from: keepers[1] });
+            await oracleCore.aggregate(season, REGIONS_CONST.A, { from: keepers[0] });
+            await expectRevert(oracleCore.aggregate(season, REGIONS_CONST.A, { from: keepers[0] }), "Severity already aggregated");
+
+        })
+
+
+        it("Check aggregation - 1 ", async () => {
+            await (web3.eth.sendTransaction({
+                from: insurer,
+                to: oracleCore.address,
+                value: web3.utils.toWei('10', 'ether')
+            }));
+            await oracleCore.openSeason(season, { from: keepers[0] });
+            // receive [D3,D4,D2,D2,D3,D4,D1,D1,D1,D1] ==> 6/10 have D2+D3+D4 ==> max between 3 is D4 so answer aggregate should be D4
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D3, { from: oracles[0] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D4, { from: oracles[1] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D2, { from: oracles[2] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D2, { from: oracles[3] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D3, { from: oracles[4] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D4, { from: oracles[5] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[6] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[7] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[8] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[9] });
+            await oracleCore.closeSeason(season, { from: keepers[1] });
+            trans = await oracleCore.aggregate(season, REGIONS_CONST.A, { from: keepers[0] });
+            expectEvent(trans, 'SeverityAggregated', { season: season, region: REGIONS_CONST.A, severity: SEVERITY_CONST.D4, keeper: keepers[0] });
+            expect((await oracleCore.getRegionSeverity(season, REGIONS_CONST.A)).toString(), `Severity not correct`).to.equal(SEVERITY_CONST.D4);
+        });
+
+        it("Check aggregation - 2 ", async () => {
+            await (web3.eth.sendTransaction({
+                from: insurer,
+                to: oracleCore.address,
+                value: web3.utils.toWei('10', 'ether')
+            }));
+            await oracleCore.openSeason(season, { from: keepers[0] });
+            // receive [D0,D1,D1,D0,D1,D3,D2,D2,D3,D4] ==> 5/10 have D2+D3+D4 ==> max between D2+D3+D4 is D3 so answer is D3
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[0] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[1] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[2] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[3] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[4] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D3, { from: oracles[5] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D2, { from: oracles[6] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D2, { from: oracles[7] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D3, { from: oracles[8] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D4, { from: oracles[9] });
+            await oracleCore.closeSeason(season, { from: keepers[1] });
+            trans = await oracleCore.aggregate(season, REGIONS_CONST.A, { from: keepers[0] });
+            expectEvent(trans, 'SeverityAggregated', { season: season, region: REGIONS_CONST.A, severity: SEVERITY_CONST.D3, keeper: keepers[0] });
+            expect((await oracleCore.getRegionSeverity(season, REGIONS_CONST.A)).toString(), `Severity not correct`).to.equal(SEVERITY_CONST.D3);
+
+
+        });
+
+        it("Check aggregation - 3 ", async () => {
+            await (web3.eth.sendTransaction({
+                from: insurer,
+                to: oracleCore.address,
+                value: web3.utils.toWei('10', 'ether')
+            }));
+            await oracleCore.openSeason(season, { from: keepers[0] });
+            // receive [D0,D0,D1,D0,D1,D1,D2,D2,D3,D4] ==> 6/10 have D0 ,D1  ==> max between D0,D1 is D1 so answer is D1
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[0] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[1] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[2] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[3] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[4] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[5] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D2, { from: oracles[6] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D2, { from: oracles[7] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D3, { from: oracles[8] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D4, { from: oracles[9] });
+            await oracleCore.closeSeason(season, { from: keepers[1] });
+            trans = await oracleCore.aggregate(season, REGIONS_CONST.A, { from: keepers[0] });
+            expectEvent(trans, 'SeverityAggregated', { season: season, region: REGIONS_CONST.A, severity: SEVERITY_CONST.D1, keeper: keepers[0] });
+            expect((await oracleCore.getRegionSeverity(season, REGIONS_CONST.A)).toString(), `Severity not correct`).to.equal(SEVERITY_CONST.D1);
+
+
+        });
+
+
+
+    });
+
 });
