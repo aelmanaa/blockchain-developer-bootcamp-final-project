@@ -1,5 +1,7 @@
 const OracleCore = artifacts.require("OracleCore");
 const Gatekeeper = artifacts.require("GateKeeper");
+const OracleInterface = artifacts.require("IOracle");
+const OracleFacade = artifacts.require("OracleFacade");
 const Dummy = artifacts.require("Dummy");
 const Escrow = require("@openzeppelin/contracts/build/contracts/Escrow.json");
 
@@ -8,7 +10,7 @@ const chai = require("chai");
 const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 const expect = chai.expect;
-const { ROLES_CONST, REGIONS_CONST, SEVERITY_CONST, addBigNumbers, isEventFound } = require("./helper");
+const { ROLES_CONST, REGIONS_CONST, SEVERITY_CONST, SEASON_CONST, addBigNumbers, isEventFound, interfaceId } = require("./helper");
 const {
     expectEvent,  // Assertions for emitted events
     expectRevert, // Assertions for transactions that should fail
@@ -20,7 +22,7 @@ contract("OracleCore", async (accounts) => {
     const insurer = accounts[2];
     const keepers = accounts.slice(3, 5);
     const oracles = accounts.slice(5, 15);
-    let oracleCore, gateKeeper, escrow;
+    let oracleCore, gateKeeper, escrow, oracleFacade;
     let defaultAdminRoleId;
     let season = '2021';
     let oracleFee, keeperFee;
@@ -29,6 +31,7 @@ contract("OracleCore", async (accounts) => {
     beforeEach(async () => {
         gateKeeper = await Gatekeeper.new({ from: owner });
         oracleCore = await OracleCore.new(gateKeeper.address, { from: owner });
+        oracleFacade = await OracleFacade.new(oracleCore.address, { from: owner });
         //oracleCore = await OracleCore.deployed();
         //gateKeeper = await Gatekeeper.at(await oracleCore.getGateKeeper());
         escrow = await new web3.eth.Contract(
@@ -53,6 +56,29 @@ contract("OracleCore", async (accounts) => {
 
 
     describe("Check initial state", () => {
+
+        it("Must support oracle interface", async () => {
+            let intID = interfaceId(OracleInterface.abi);
+            expect(await oracleCore.supportsInterface(intID), `OracleCore doesn't implement IOracle which interfaceID is ${intID}`).to.equal(true);
+        });
+
+        it("OracleFacade can change oracleCore", async () => {
+            let oldOracleCore = await oracleFacade.getOracleCore();
+            let newOracleCore = await OracleCore.new(gateKeeper.address, { from: owner });
+            let trans = await oracleFacade.setOracle(newOracleCore.address, { from: owner });
+            expectEvent(trans, 'NewOracleCore', { oldOracleCore: oldOracleCore, newOracleCore: newOracleCore.address });
+        });
+
+        it("Cannot change oracleCore if not implement right interface", async () => {
+            let newOracleCore = await Dummy.new();
+            await expectRevert(oracleFacade.setOracle(newOracleCore.address, { from: owner }), `Provided oraclecore address ${newOracleCore.address.toLowerCase()} does not implement IOracle interface which interfaceID is ${await oracleFacade.getOracleCoreSupportedInterface()}`);
+        });
+
+        it("Cannot change oracleCore if not owner", async () => {
+            let newOracleCore = await OracleCore.new(gateKeeper.address);
+            await expectRevert(oracleFacade.setOracle(newOracleCore.address, { from: accounts[1] }), "Ownable: caller is not the owner");
+        });
+
         it("Can change gateKeeper", async () => {
             let oldGateKeeper = await oracleCore.getGateKeeper();
             gateKeeper = await Gatekeeper.new();
@@ -73,6 +99,13 @@ contract("OracleCore", async (accounts) => {
         it("Initial balance is 0", async () => {
             let balance = await oracleCore.getBalance();
             expect(balance.toString(), `Initial balance ${balance} is not 0`).to.equal('0');
+        });
+
+        it("Initial season state is Default", async () => {
+            let seasonState = await oracleCore.getSeasonState(season);
+            let seasonStateFacade = await oracleFacade.getSeasonState(season);
+            expect(seasonState.toString(), `Initial season state not correct`).to.equal(SEASON_CONST.DEFAULT);
+            expect(seasonStateFacade.toString(), `Initial season state from facade not correct`).to.equal(SEASON_CONST.DEFAULT);
         });
 
         it("Default severity when the severity is not aggregated yet", async () => {
@@ -138,6 +171,12 @@ contract("OracleCore", async (accounts) => {
             trans = await oracleCore.openSeason(season, { from: keepers[0] });
             expectEvent(trans, 'SeasonOpen', { season: season, keeper: keepers[0] });
 
+            // check season state
+            let seasonState = await oracleCore.getSeasonState(season);
+            let seasonStateFacade = await oracleFacade.getSeasonState(season);
+            expect(seasonState.toString(), `Season state not correct`).to.equal(SEASON_CONST.OPEN);
+            expect(seasonStateFacade.toString(), `Season state from facade not correct`).to.equal(SEASON_CONST.OPEN);
+
             // keeper balance correct
             expectedBalance = addBigNumbers(balance, keeperFee);
             balance = await oracleCore.depositsOf(keepers[0]);
@@ -154,6 +193,12 @@ contract("OracleCore", async (accounts) => {
             expect(isEventFound(events, 'Deposited', { payee: keepers[0], weiAmount: keeperFee.toString() }), `Deposited with expected args not found in ${JSON.stringify(events)}`).to.equal(true);
             balance = await oracleCore.depositsOf(keepers[0]);
             expect(balance.toString(), `Balance ${balance} is not ${expectedBalance}`).to.equal(expectedBalance.toString());
+
+            // check season state
+            seasonState = await oracleCore.getSeasonState(season);
+            seasonStateFacade = await oracleFacade.getSeasonState(season);
+            expect(seasonState.toString(), `Season state not correct`).to.equal(SEASON_CONST.CLOSED);
+            expect(seasonStateFacade.toString(), `Season state from facade not correct`).to.equal(SEASON_CONST.CLOSED);
         });
 
     });
@@ -357,6 +402,8 @@ contract("OracleCore", async (accounts) => {
             trans = await oracleCore.aggregate(season, REGIONS_CONST.A, { from: keepers[0] });
             expectEvent(trans, 'SeverityAggregated', { season: season, region: REGIONS_CONST.A, severity: SEVERITY_CONST.D4, keeper: keepers[0] });
             expect((await oracleCore.getRegionSeverity(season, REGIONS_CONST.A)).toString(), `Severity not correct`).to.equal(SEVERITY_CONST.D4);
+            // from facade
+            expect((await oracleFacade.getRegionSeverity(season, REGIONS_CONST.A)).toString(), `Severity not correct`).to.equal(SEVERITY_CONST.D4);
         });
 
         it("Check aggregation - 2 ", async () => {
@@ -381,6 +428,8 @@ contract("OracleCore", async (accounts) => {
             trans = await oracleCore.aggregate(season, REGIONS_CONST.A, { from: keepers[0] });
             expectEvent(trans, 'SeverityAggregated', { season: season, region: REGIONS_CONST.A, severity: SEVERITY_CONST.D3, keeper: keepers[0] });
             expect((await oracleCore.getRegionSeverity(season, REGIONS_CONST.A)).toString(), `Severity not correct`).to.equal(SEVERITY_CONST.D3);
+            // from facade
+            expect((await oracleFacade.getRegionSeverity(season, REGIONS_CONST.A)).toString(), `Severity not correct`).to.equal(SEVERITY_CONST.D3);
 
 
         });
@@ -407,6 +456,8 @@ contract("OracleCore", async (accounts) => {
             trans = await oracleCore.aggregate(season, REGIONS_CONST.A, { from: keepers[0] });
             expectEvent(trans, 'SeverityAggregated', { season: season, region: REGIONS_CONST.A, severity: SEVERITY_CONST.D1, keeper: keepers[0] });
             expect((await oracleCore.getRegionSeverity(season, REGIONS_CONST.A)).toString(), `Severity not correct`).to.equal(SEVERITY_CONST.D1);
+             // from facade
+             expect((await oracleFacade.getRegionSeverity(season, REGIONS_CONST.A)).toString(), `Severity not correct`).to.equal(SEVERITY_CONST.D1);
 
 
         });

@@ -3,7 +3,7 @@ pragma solidity ^0.8.9;
 
 /**
  * @title Access Control Interface.
- * @dev Make surt to support ERC165 detection when implementing this interface.
+ * @dev Make sure to support ERC165 detection when implementing this interface.
  */
 interface IGateKeeper {
     /**

@@ -87,6 +87,13 @@ const SEVERITY_CONST = {
     D4: "5"
 };
 
+const SEASON_CONST = {
+    DEFAULT: "0",
+    OPEN: "1",
+    CLOSED: "2"
+};
+
+
 module.exports = {
     addBigNumbers,
     keccak256,
@@ -94,5 +101,6 @@ module.exports = {
     isEventFound,
     ROLES_CONST,
     REGIONS_CONST,
-    SEVERITY_CONST
+    SEVERITY_CONST,
+    SEASON_CONST
 }

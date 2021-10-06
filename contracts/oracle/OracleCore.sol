@@ -1,56 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 import "../core/Common.sol";
+import "./IOracle.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import "@openzeppelin/contracts/interfaces/IERC165.sol";
 
-contract OracleCore is Common {
+/**
+ * @title Oracle contract
+ * @dev Implement functionalities of Oracle. Other functionalities (e.g.: open/close seaosn) are implemented by keepers
+ *
+ * @notice implement  {Common} contract, {IOracle} interface & {IERC165} interface. the latter is important to make sure that an OracleCore implements the right interface
+ */
+contract OracleCore is Common, IOracle, IERC165 {
     using Math for uint256;
-
-    /// @dev Emitted when a `season` is closed by a `keeper`.
-    event SeasonClosed(uint16 indexed season, address indexed keeper);
-
-    /// @dev Emitted when a `season` is opened by a `keeper`.
-    event SeasonOpen(uint16 indexed season, address indexed keeper);
-
-    /// @dev Emitted when a `severity` is aggregated for a given `season` + `region`
-    event SeverityAggregated(
-        uint16 indexed season,
-        bytes region,
-        Severity severity,
-        address indexed keeper
-    );
-
-    /// @dev Emitted when a `severity` is submmited by a `oracle` for a given `season` + `region`
-    event SeveritySubmitted(
-        uint16 indexed season,
-        bytes region,
-        Severity severity,
-        address indexed oracle
-    );
-
-    /**
-     * @dev used to check if a season is in the right state
-     *
-     * a season must be in init state (DEFAULT) before being opened
-     * a season lust be opened (OPEN) in order to get closed
-     */
-    enum SeasonState {
-        DEFAULT,
-        OPEN,
-        CLOSED
-    }
-
-    /**
-     * @dev struct to define a submission.
-     *
-     *`oracles` keeps track of oracles which have already submitted
-     *`numberAnswers` keeps track of number of answers by severity
-     */
-    struct Submission {
-        mapping(address => Severity) oracles;
-        mapping(Severity => uint256) numberAnswers;
-        uint256 totalAnswers;
-    }
 
     /// @dev keep track of every region and its history
     /// `region` in bytes => season => severity
@@ -94,27 +56,11 @@ contract OracleCore is Common {
     }
 
     /**
-     * @dev Aggregate a `severity` from all submissions.
-     *
-     * Rule benefit insurees:
-     * if 50% (roundup) of total submissions is >= totD2 + totD3 + totD4 then severity is severity which got the most number of submissions between D2,D3 & D4
-     * Else severity which got most number of submissions between D0 & D1
-     *
-     * Emits a {SeverityAggregated} event.
-     * Pays out the keeper for its job
-     *
-     * Requirements:
-     *
-     * - the caller must be keeper.
-     * - the season must be in closed state
-     * - contract must have enough balance to pay oracle
-     * - the keeper cannot trigger aggregation twice for this `season` + `region`
-     *
-     * @param season year (e.g. 2021).
-     * @param region region in bytes
+     * @inheritdoc IOracle
      */
     function aggregate(uint16 season, bytes calldata region)
         external
+        override
         onlyKeeper
         seasonClosed(season)
         checkContractBalance(KEEPER_FEE)
@@ -172,21 +118,11 @@ contract OracleCore is Common {
     }
 
     /**
-     * @dev Close a `season`.
-     *
-     * Emits a {SeasonClosed} event.
-     * Pays out the keeper for its job
-     *
-     * Requirements:
-     *
-     * - the caller must be keeper
-     * - the season must be opened
-     * - contract must have enough balance to pay keepers
-     *
-     * @param season year (e.g. 2021).
+     * @inheritdoc IOracle
      */
     function closeSeason(uint16 season)
         public
+        override
         onlyKeeper
         seasonOpen(season)
         checkContractBalance(KEEPER_FEE)
@@ -197,102 +133,69 @@ contract OracleCore is Common {
     }
 
     /**
-     * @dev Rertieve  `severity` of a `region` + `season`.
-     *
-     * @param season year (e.g. 2021).
-     * @param region region code in bytes
-     * @return Severity
-     *
-     * @notice caller must check Severity. In fact, final severity is calculated after aggregation. if aggregation not triggered yet then Severity will have the default value
+     * @inheritdoc IOracle
      */
     function getRegionSeverity(uint16 season, bytes calldata region)
         public
         view
+        override
         returns (Severity)
     {
         return regions[region][season];
     }
 
     /**
-     * @dev Rertieve a `season` state.
-     *
-     * @param season year (e.g. 2021).
-     * @return SeasonState .
+     * @inheritdoc IOracle
      */
-    function getSeasonState(uint16 season) public view returns (SeasonState) {
+    function getSeasonState(uint16 season)
+        public
+        view
+        override
+        returns (SeasonState)
+    {
         return seasons[season];
     }
 
     /**
-     * @dev Rertieve a `severity` for a given `region` and `season` , provided by `oracle`.
-     *
-     * @param season year (e.g. 2021).
-     * @param region region code in bytes
-     * @param oracle oracle address
-     *
-     * @return Severity .
-     *
-     * @notice If Severity is the default value then it means that the oracle didn't provide any submission for `region` and `season`
+     * @inheritdoc IOracle
      */
     function getSubmission(
         uint16 season,
         bytes calldata region,
         address oracle
-    ) public view returns (Severity) {
+    ) public view override returns (Severity) {
         return submissions[region][season].oracles[oracle];
     }
 
     /**
-     * @dev Retrieve number of submissions for a given `region` and `season` and `severity`.
-     *
-     * @param season year (e.g. 2021).
-     * @param region region code in bytes
-     * @param severity Severity code
-     *
-     * @return number of submissions.
-     *
+     * @inheritdoc IOracle
      */
     function getSubmissionNumberForSeverity(
         uint16 season,
         bytes calldata region,
         Severity severity
-    ) public view returns (uint256) {
+    ) public view override returns (uint256) {
         return submissions[region][season].numberAnswers[severity];
     }
 
     /**
-     * @dev Retrieve total submissions for a given `region` and `season`.
-     *
-     * @param season year (e.g. 2021).
-     * @param region region code in bytes
-     *
-     * @return number of submissions
-     *
+     * @inheritdoc IOracle
      */
     function getSubmissionTotal(uint16 season, bytes calldata region)
         public
         view
+        override
         returns (uint256)
     {
         return submissions[region][season].totalAnswers;
     }
 
     /**
-     * @dev Open a `season`.
-     *
-     * Emits a {SeasonOpen} event.
-     * Pays out the keeper for its job
-     *
-     * Requirements:
-     *
-     * - the caller must be keeper.
-     * - the season must be in default state
-     * - contract must have enough balance to pay keepers
-     *
-     * @param season year (e.g. 2021).
+     * @inheritdoc IOracle
      */
     function openSeason(uint16 season)
         public
+        override
         onlyKeeper
         seasonDefault(season)
         checkContractBalance(KEEPER_FEE)
@@ -316,28 +219,19 @@ contract OracleCore is Common {
     }
 
     /**
-     * @dev Submit a `severity` for a given `season` + `region`.
-     *
-     * Emits a {SeveritySubmitted} event.
-     * Pays out the oracle for its job
-     *
-     * Requirements:
-     *
-     * - the caller must be oracle.
-     * - the season must be in open state
-     * - contract must have enough balance to pay oracle
-     * - the oracle cannot submit twice for this `season` + `region`
-     * - severity code must be valid
-     *
-     * @param season year (e.g. 2021).
-     * @param region region in bytes
-     * @param severity must be valid (between 1 and 5)
+     * @inheritdoc IOracle
      */
     function submit(
         uint16 season,
         bytes calldata region,
         Severity severity
-    ) external onlyOracle seasonOpen(season) checkContractBalance(ORACLE_FEE) {
+    )
+        external
+        override
+        onlyOracle
+        seasonOpen(season)
+        checkContractBalance(ORACLE_FEE)
+    {
         require(
             submissions[region][season].oracles[msg.sender] == Severity.D,
             "Oracle has already submitted for this season and region"
@@ -356,5 +250,17 @@ contract OracleCore is Common {
         submissions[region][season].totalAnswers += 1;
         _deposit(msg.sender, ORACLE_FEE);
         emit SeveritySubmitted(season, region, severity, msg.sender);
+    }
+
+    /**
+     * @dev See {IERC165-supportsInterface}.
+     */
+    function supportsInterface(bytes4 interfaceId)
+        public
+        pure
+        override
+        returns (bool)
+    {
+        return interfaceId == type(IOracle).interfaceId;
     }
 }

@@ -8,11 +8,10 @@ import "@openzeppelin/contracts/utils/escrow/Escrow.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /**
- * @title common data model to be shared.
+ * @title common data model and functionalities to be shared.
  * @dev Import this contract in different smart contracts which will share the same data model.
  */
 abstract contract Common is Ownable, ReentrancyGuard {
-
     /**
      * @dev Emitted when new gateKeepr setup by `owner`.
      */
@@ -36,6 +35,18 @@ abstract contract Common is Ownable, ReentrancyGuard {
         D4
     }
 
+    /**
+     * @dev used to check if a season is in the right state
+     *
+     * a season must be in init state (DEFAULT) before being opened
+     * a season lust be opened (OPEN) in order to get closed
+     */
+    enum SeasonState {
+        DEFAULT,
+        OPEN,
+        CLOSED
+    }
+
     bytes32 public constant DEFAULT_ADMIN_ROLE = 0x00;
     bytes32 public constant ADMIN_ROLE = keccak256("INSURANCE_DAPP_ADMIN_ROLE");
     bytes32 public constant INSURER_ROLE = keccak256("INSURER_ROLE");
@@ -54,16 +65,19 @@ abstract contract Common is Ownable, ReentrancyGuard {
         escrow = new Escrow();
     }
 
+    /// @dev Called to check enough balance of an account
     modifier checkBalance() {
         require(depositsOf(msg.sender) > 0, "Not enough balance");
         _;
     }
 
+    /// @dev Called to check enough balance in the contract in order to pay for a fee
     modifier checkContractBalance(uint256 amount) {
         require(getBalance() >= amount, "Not enough balance in the contract");
         _;
     }
 
+    /// @dev check interface compliancy. (IERC165)
     modifier checkGateKeeperInterface(address _gatekeeper) {
         require(
             IERC165(_gatekeeper).supportsInterface(
@@ -84,6 +98,7 @@ abstract contract Common is Ownable, ReentrancyGuard {
         _;
     }
 
+    /// @dev check only administrators
     modifier onlyAdmin() {
         require(
             gatekeeper.isAssigned(ADMIN_ROLE, msg.sender),
@@ -92,6 +107,7 @@ abstract contract Common is Ownable, ReentrancyGuard {
         _;
     }
 
+    /// @dev check only insurers
     modifier onlyInsurer() {
         require(
             gatekeeper.isAssigned(INSURER_ROLE, msg.sender),
@@ -100,6 +116,7 @@ abstract contract Common is Ownable, ReentrancyGuard {
         _;
     }
 
+    /// @dev check only farmers
     modifier onlyFarmer() {
         require(
             gatekeeper.isAssigned(FARMER_ROLE, msg.sender),
@@ -108,6 +125,7 @@ abstract contract Common is Ownable, ReentrancyGuard {
         _;
     }
 
+    /// @dev check only oracles
     modifier onlyOracle() {
         require(
             gatekeeper.isAssigned(ORACLE_ROLE, msg.sender),
@@ -116,6 +134,7 @@ abstract contract Common is Ownable, ReentrancyGuard {
         _;
     }
 
+    /// @dev check only keepers
     modifier onlyKeeper() {
         require(
             gatekeeper.isAssigned(KEEPER_ROLE, msg.sender),
@@ -151,14 +170,29 @@ abstract contract Common is Ownable, ReentrancyGuard {
         return address(this).balance;
     }
 
+    /**
+     * @dev retrieve the address of the escrow contract
+     *
+     * @return address
+     */
     function getEscrow() public view returns (address) {
         return address(escrow);
     }
 
+    /**
+     * @dev retrieve the address of the gateKeeper contract
+     *
+     * @return address
+     */
     function getGateKeeper() public view returns (address) {
         return address(gatekeeper);
     }
 
+    /**
+     * @dev retrieve the supported interfaceID
+     *
+     * @return interfaceId bytes4
+     */
     function getGateKeeperSupportedInterface() public pure returns (bytes4) {
         return type(IGateKeeper).interfaceId;
     }
