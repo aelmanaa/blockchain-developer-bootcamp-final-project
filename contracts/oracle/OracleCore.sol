@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/interfaces/IERC165.sol";
  * @title Oracle contract
  * @dev Implement functionalities of Oracle. Other functionalities (e.g.: open/close seaosn) are implemented by keepers
  *
- * @notice implement  {Common} contract, {IOracle} interface & {IERC165} interface. the latter is important to make sure that an OracleCore implements the right interface
+ * @notice inhertit  {Common} contract, implement {IOracle} interface & {IERC165} interface. the latter is important to make sure that an OracleCore implements the right interface
  */
 contract OracleCore is Common, IOracle, IERC165 {
     using Math for uint256;

@@ -53,6 +53,7 @@ abstract contract Common is Ownable, ReentrancyGuard {
     bytes32 public constant FARMER_ROLE = keccak256("FARMER_ROLE");
     bytes32 public constant ORACLE_ROLE = keccak256("ORACLE_ROLE");
     bytes32 public constant KEEPER_ROLE = keccak256("KEEPER_ROLE");
+    bytes32 public constant GOVERNMENT_ROLE = keccak256("GOVERNMENT_ROLE");
 
     /// @dev used for access control
     IGateKeeper private gatekeeper;
@@ -107,15 +108,6 @@ abstract contract Common is Ownable, ReentrancyGuard {
         _;
     }
 
-    /// @dev check only insurers
-    modifier onlyInsurer() {
-        require(
-            gatekeeper.isAssigned(INSURER_ROLE, msg.sender),
-            "Restricted to insurers."
-        );
-        _;
-    }
-
     /// @dev check only farmers
     modifier onlyFarmer() {
         require(
@@ -125,11 +117,20 @@ abstract contract Common is Ownable, ReentrancyGuard {
         _;
     }
 
-    /// @dev check only oracles
-    modifier onlyOracle() {
+    /// @dev check only government officials
+    modifier onlyGovernment() {
         require(
-            gatekeeper.isAssigned(ORACLE_ROLE, msg.sender),
-            "Restricted to oracles."
+            gatekeeper.isAssigned(GOVERNMENT_ROLE, msg.sender),
+            "Restricted to government."
+        );
+        _;
+    }
+
+    /// @dev check only insurers
+    modifier onlyInsurer() {
+        require(
+            gatekeeper.isAssigned(INSURER_ROLE, msg.sender),
+            "Restricted to insurers."
         );
         _;
     }
@@ -139,6 +140,15 @@ abstract contract Common is Ownable, ReentrancyGuard {
         require(
             gatekeeper.isAssigned(KEEPER_ROLE, msg.sender),
             "Restricted to keepers."
+        );
+        _;
+    }
+
+    /// @dev check only oracles
+    modifier onlyOracle() {
+        require(
+            gatekeeper.isAssigned(ORACLE_ROLE, msg.sender),
+            "Restricted to oracles."
         );
         _;
     }
