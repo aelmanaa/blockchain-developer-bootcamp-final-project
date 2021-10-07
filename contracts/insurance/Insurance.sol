@@ -5,19 +5,28 @@ import "../oracle/OracleFacade.sol";
 
 /**
  * @title Main insurance contract
- * @dev Implement main contract for Insurance. contract between insurance and insurees is materialized in here
+ * @dev Implement main contract for Insurance. contract between insurance and farmers is materialized in here
  *
  * @notice inhertit  {Common} contract
  */
 contract Insurance is Common {
-    /// @dev Emitted when a `contract` is submmyted by an `insuree` for a given `season` + `region` + `farmID`
+    /// @dev Emitted when a `contract` is activated by an `insurer` for a given `season` + `region` + `farmID`
+    event InsuranceActivated(
+        uint16 indexed season,
+        bytes32 region,
+        bytes32 farmID,
+        address indexed insurer,
+        bytes32 key
+    );
+
+    /// @dev Emitted when a `contract` is submitted by an `farmer` for a given `season` + `region` + `farmID`
     event InsuranceRequested(
         uint16 indexed season,
         bytes32 region,
         bytes32 farmID,
         uint256 size,
         uint256 fee,
-        address indexed insuree,
+        address indexed farmer,
         bytes32 key
     );
 
@@ -57,9 +66,10 @@ contract Insurance is Common {
     }
 
     struct Contract {
+        bytes32 key;
         bytes32 farmID;
         ContractState state;
-        address insuree;
+        address farmer;
         address government;
         address insurer;
         uint256 size;
@@ -140,9 +150,10 @@ contract Insurance is Common {
      * @dev retrieve contract data
      * @param key keecak combination of season, region & farmID
      *
+     * @return key unique id of the contract
      * @return farmID unique ID of a farm
      * @return state of the contract
-     * @return insuree address
+     * @return farmer address
      * @return government address
      * @return insurer address
      * @return size number of HA of a farmer (minimum: 1 HA)
@@ -151,13 +162,14 @@ contract Insurance is Common {
      * @return totalStaked eth that were taked in this contract
      * @return compensation for this contract
      */
-    function getContract(bytes32 key)
+    function getContract(bytes32 _key)
         public
         view
         returns (
+            bytes32 key,
             bytes32 farmID,
             ContractState state,
-            address insuree,
+            address farmer,
             address government,
             address insurer,
             uint256 size,
@@ -167,10 +179,11 @@ contract Insurance is Common {
             uint256 compensation
         )
     {
-        Contract memory _contract = contracts[key];
+        Contract memory _contract = contracts[_key];
+        key = _contract.key;
         farmID = _contract.farmID;
         state = _contract.state;
-        insuree = _contract.insuree;
+        farmer = _contract.farmer;
         government = _contract.government;
         insurer = _contract.insurer;
         size = _contract.size;
@@ -186,9 +199,10 @@ contract Insurance is Common {
      * @param region region ID
      * @param farmID unique ID of a farm
      *
+     * @return key unique ID of the contract
      * @return farmID unique ID of a farm
      * @return state of the contract
-     * @return insuree address
+     * @return farmer address
      * @return government address
      * @return insurer address
      * @return size number of HA of a farmer (minimum: 1 HA)
@@ -206,6 +220,7 @@ contract Insurance is Common {
         view
         returns (
             bytes32,
+            bytes32,
             ContractState,
             address,
             address,
@@ -217,7 +232,7 @@ contract Insurance is Common {
             uint256
         )
     {
-        return getContract(keccak256(abi.encodePacked(season, region, farmID)));
+        return getContract(getContractKey(season, region, farmID));
     }
 
     /**
@@ -292,6 +307,23 @@ contract Insurance is Common {
     }
 
     /**
+     * @dev calculate contract key
+     *
+     * @param season season (year)
+     * @param region region id
+     * @param farmID farm id
+     * @return key (hash value of the 3 parameters)
+     *
+     */
+    function getContractKey(
+        uint16 season,
+        bytes32 region,
+        bytes32 farmID
+    ) public pure returns (bytes32) {
+        return keccak256(abi.encodePacked(season, region, farmID));
+    }
+
+    /**
      * @dev get number of open contracts for a given key
      *
      * @param key keccak256 of season + region
@@ -357,6 +389,51 @@ contract Insurance is Common {
     }
 
     /**
+     * @dev insure a request
+     * @param season farming season(year)
+     * @param region region ID
+     * @param farmID unique ID of a farm
+     *
+     *  Emits a {InsuranceActivated} event.
+     *
+     * Requirements:
+     * - Contract is active (circuit-breaker)
+     * - Can only be called by insurer
+     * - Check must exist
+     * - Season must be open
+     * - contract must be in VALIDATED state
+     * - Must be enough eth staked within the contract after the operation
+     * @notice call nonReentrant to check against Reentrancy
+     */
+    function activate(
+        uint16 season,
+        bytes32 region,
+        bytes32 farmID
+    )
+        external
+        onlyActive
+        onlyInsurer
+        seasonOpen(season)
+        nonReentrant
+        minimumCovered
+    {
+        // Generate a unique key for storing the request
+        bytes32 key = getContractKey(season, region, farmID);
+        Contract memory _contract = contracts[key];
+        require(_contract.farmID == farmID, "Contract do not exist");
+        require(
+            _contract.state == ContractState.VALIDATED,
+            "Contract must be in validated state"
+        );
+
+        _contract.state = ContractState.INSURED;
+        _contract.insurer = msg.sender;
+        contracts[key] = _contract;
+
+        emit InsuranceActivated(season, region, farmID, msg.sender, key);
+    }
+
+    /**
      * @dev calculate at anytime the minimum liquidity that must be locked within the contract
      *
      * @return ammount
@@ -377,9 +454,11 @@ contract Insurance is Common {
      * @param farmID unique ID of a farm
      * @param size number of HA of a farmer (minimum: 1 HA)
      *
+     * @return key key of the contract
      *  Emits a {InsuranceRequested} event.
      *
      * Requirements:
+     * - contract is Active (circuit-breaker)
      * - Can only be called by farmer
      * - Check non duplicate
      * - Seasonmust be open
@@ -395,20 +474,23 @@ contract Insurance is Common {
     )
         external
         payable
+        onlyActive
         onlyFarmer
         seasonOpen(season)
         nonReentrant
         minimumCovered
+        returns (bytes32)
     {
         // Generate a unique key for storing the request
-        bytes32 key = keccak256(abi.encodePacked(season, region, farmID));
-        require(contracts[key].farmID == 0x0, "Duplicate");
+        bytes32 key = getContractKey(season, region, farmID);
+        require(contracts[key].key == 0x0 , "Duplicate");
         uint256 fee = HALF_PERMIUM_PER_HA * size;
         require(msg.value >= fee, "Not enough money to pay for premium");
         Contract memory _contract;
+        _contract.key = key;
         _contract.farmID = farmID;
         _contract.state = ContractState.REGISTERED;
-        _contract.insuree = msg.sender;
+        _contract.farmer = msg.sender;
         _contract.size = size;
         _contract.region = region;
         _contract.season = season;
@@ -434,6 +516,8 @@ contract Insurance is Common {
             msg.sender,
             key
         );
+
+        return key;
     }
 
     /**
@@ -445,8 +529,9 @@ contract Insurance is Common {
      *  Emits a {InsuranceValidated} event.
      *
      * Requirements:
+     * - Contract is active (circuit-breaker)
      * - Can only be called by government
-     * - Check non duplicate
+     * - Check contract must exist
      * - Season must be open
      * - Sender must pay for premium
      * - Must be enough eth staked within the contract
@@ -459,13 +544,14 @@ contract Insurance is Common {
     )
         external
         payable
+        onlyActive
         onlyGovernment
         seasonOpen(season)
         nonReentrant
         minimumCovered
     {
         // Generate a unique key for storing the request
-        bytes32 key = keccak256(abi.encodePacked(season, region, farmID));
+        bytes32 key = getContractKey(season, region, farmID);
         Contract memory _contract = contracts[key];
         require(_contract.farmID == farmID, "Contract do not exist");
         require(
@@ -544,10 +630,10 @@ contract Insurance is Common {
      * Emits a {ReceivedETH} event.
      *
      * Requirements:
-     *
+     * - Contract mus be active (circuit-breaker)
      * - the caller must be insurer
      */
-    receive() external payable onlyInsurer {
+    receive() external payable onlyActive onlyInsurer {
         emit ReceivedETH(msg.value, address(this).balance, msg.sender);
     }
 }

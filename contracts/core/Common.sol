@@ -25,6 +25,16 @@ abstract contract Common is Ownable, ReentrancyGuard {
      */
     event ReceivedETH(uint256 value, uint256 balance, address indexed sender);
 
+    /**
+     * @dev Emitted when contract activated by `rootAdmin`.
+     */
+    event ContractOn(address indexed rootAdmin);
+
+    /**
+     * @dev Emitted when contract stopped by `rootAdmin`.
+     */
+    event ContractOff(address indexed rootAdmin);
+
     /// @dev 4 Drought severity. the 1st one 'D' is invalid and is used to check for null value
     enum Severity {
         D,
@@ -60,6 +70,8 @@ abstract contract Common is Ownable, ReentrancyGuard {
 
     /// @dev used for escrow to deposit/withdraw ETH
     Escrow private escrow;
+
+    bool private stopped = false;
 
     constructor(address _gatekeeper) {
         setGateKeeper(_gatekeeper);
@@ -153,6 +165,12 @@ abstract contract Common is Ownable, ReentrancyGuard {
         _;
     }
 
+    /// @dev circuit breaker. call some functionalities only if stopped is equal to false
+    modifier onlyActive() {
+        require(!stopped, "Contract is currently suspended.");
+        _;
+    }
+
     /**
      * @dev Stores the sent amount as credit to be withdrawn.
      * @param payee The destination address of the funds.
@@ -208,6 +226,16 @@ abstract contract Common is Ownable, ReentrancyGuard {
     }
 
     /**
+     *
+     * @dev Returns `true` if contract is active (circuit-breaker).
+     *
+     * @return bool `true` if contract is active.
+     */
+    function isContractActive() public view returns (bool) {
+        return !stopped;
+    }
+
+    /**
      * @dev Allow to change dynamically access control contract (GateKeeper)
      *
      * @param _gateKeeper gateKeeper address
@@ -225,6 +253,36 @@ abstract contract Common is Ownable, ReentrancyGuard {
     {
         emit NewGateKeeper(address(gatekeeper), _gateKeeper);
         gatekeeper = IGateKeeper(_gateKeeper);
+    }
+
+    /**
+     *
+     * @dev If the contract is stopped then active it and emit a {ContractOn} event.
+     *
+     * Requirements:
+     *
+     * - the caller must be root admin.
+     */
+    function switchContractOn() public onlyOwner {
+        if (stopped) {
+            stopped = false;
+            emit ContractOn(msg.sender);
+        }
+    }
+
+    /**
+     *
+     * @dev If the contract is active then stop it and emit a {ContractOff} event.
+     *
+     * Requirements:
+     *
+     * - the caller must be root admin.
+     */
+    function switchContractOff() public onlyOwner {
+        if (!stopped) {
+            stopped = true;
+            emit ContractOff(msg.sender);
+        }
     }
 
     /**

@@ -6,12 +6,36 @@ const bn = web3.utils.BN;
 
 
 /**
- * 
+ * a + b
  * @param {BN} a 
  * @param {BN} b 
  * @returns {BN} Big number
  */
-const addBigNumbers = (a, b) => new bn(a).add(new bn(b));
+const addBigNumbers = (a, b) => (new bn(a)).add(new bn(b));
+
+/**
+ * a - b
+ * @param {BN} a 
+ * @param {BN} b 
+ * @returns {BN} Big number
+ */
+ const subBigNumbers = (a, b) => (new bn(a)).sub(new bn(b));
+
+/**
+ * a * b
+ * @param {BN} a 
+ * @param {BN} b 
+ * @returns {BN} Big number
+ */
+ const multiplyBigNumbers = (a, b) => (new bn(a)).mul(new bn(b));
+
+ /**
+ * a / b
+ * @param {BN} a 
+ * @param {BN} b 
+ * @returns {BN} Big number
+ */
+  const divideBigNumbers = (a, b) => (new bn(a)).div(new bn(b));
 
 /**
  * 
@@ -63,19 +87,30 @@ const isEventFound = (eventArray, eventName, argObject) => {
 
 };
 
+const CONST = {
+    EMPTY_BYTES32: "0x0000000000000000000000000000000000000000000000000000000000000000",
+    EMPTY_ADDRESS: "0x0000000000000000000000000000000000000000"
+}
 
 const ROLES_CONST = {
     ADMIN_ROLE: keccak256("INSURANCE_DAPP_ADMIN_ROLE"),
     INSURER_ROLE: keccak256("INSURER_ROLE"),
+    GOVERNMENT_ROLE: keccak256("GOVERNMENT_ROLE"),
     FARMER_ROLE: keccak256("FARMER_ROLE"),
     ORACLE_ROLE: keccak256("ORACLE_ROLE"),
     KEEPER_ROLE: keccak256("KEEPER_ROLE")
 };
 
 const REGIONS_CONST = {
-    A: web3.utils.asciiToHex("RegA"),
-    B: web3.utils.asciiToHex("RegB"),
-    C: web3.utils.asciiToHex("RegC")
+    A: keccak256("RegA"),
+    B: keccak256("RegB"),
+    C: keccak256("RegC")
+};
+
+const FARMS_CONST = {
+    1: keccak256("FARM1"),
+    2: keccak256("FARM2"),
+    3: keccak256("FARM3")
 };
 
 const SEVERITY_CONST = {
@@ -93,14 +128,29 @@ const SEASON_CONST = {
     CLOSED: "2"
 };
 
+const CONTRACT_CONST = {
+    DEFAULT: "0",
+    REGISTERED: "1",
+    VALIDATED: "2",
+    INSURED: "3",
+    CLOSED: "4",
+    COMPENSATED: "5"
+};
+
 
 module.exports = {
     addBigNumbers,
+    subBigNumbers,
+    multiplyBigNumbers,
+    divideBigNumbers,
     keccak256,
     interfaceId,
     isEventFound,
     ROLES_CONST,
     REGIONS_CONST,
     SEVERITY_CONST,
-    SEASON_CONST
+    SEASON_CONST,
+    FARMS_CONST,
+    CONST,
+    CONTRACT_CONST
 }
