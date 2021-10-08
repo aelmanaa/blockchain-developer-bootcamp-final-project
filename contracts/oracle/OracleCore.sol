@@ -105,10 +105,10 @@ contract OracleCore is Common, IOracle, IERC165 {
                     severity = Severity.D2;
                 }
             } else {
-                if (totalD2.max(totalD1) == totalD2) {
-                    severity = Severity.D2;
-                } else {
+                if (totalD1.max(totalD0) == totalD1) {
                     severity = Severity.D1;
+                } else {
+                    severity = Severity.D0;
                 }
             }
 

@@ -496,7 +496,8 @@ contract("Insurance", async (accounts) => {
             await oracleCore.openSeason(season, { from: keeper });
             amount = multiplyBigNumbers(halfPremiumPerHa, ha);
             contractKey = await insurance.getContractKey(season, REGIONS_CONST.A, FARMS_CONST[1]);
-            await insurance.register(season, REGIONS_CONST.A, FARMS_CONST[1], size, { from: farmers[0], value: addBigNumbers('10', amount) });
+            await insurance.register(season, REGIONS_CONST.A, FARMS_CONST[1], size, { from: farmers[0], value: amount });
+
 
         });
         /*
@@ -517,18 +518,255 @@ contract("Insurance", async (accounts) => {
         });
         */
 
-        it("Refund if contract not backend by government", async () => {
+        it("Refund farmer if contract not backed by government", async () => {
             await oracleCore.closeSeason(season, { from: keeper });
             let trans = await insurance.process(season, REGIONS_CONST.A, { from: keeper });
-            console.log(trans);
+            expectEvent(trans, 'InsuranceClosed', { season: season, region: REGIONS_CONST.A, farmID: FARMS_CONST[1], size: size, farmer: farmers[0], insurer: CONST.EMPTY_ADDRESS, government: CONST.EMPTY_ADDRESS, totalStaked: amount, compensation: amount, changeGovernment: '0', severity: SEVERITY_CONST.D, key: contractKey });
+
+            // farmer credited back
+            let events = await escrowInsurance.getPastEvents('Deposited', { fromBlock: 'latest' });
+            expect(isEventFound(events, 'Deposited', { payee: farmers[0], weiAmount: amount.toString() }), `Deposited with expected args ${JSON.stringify({ payee: farmers[0], weiAmount: amount.toString() })} not found in ${JSON.stringify(events)}`).to.equal(true);
+
+            // check data
+            let res1 = await insurance.getContractData1(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            let res2 = await insurance.getContractData2(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            expect(res1[0], `key not correct`).to.equal(contractKey);
+            expect(res1[1], `farmID not correct`).to.equal(FARMS_CONST[1]);
+            expect(res1[2].toString(), `Contract state not correct`).to.equal(CONTRACT_CONST.CLOSED);
+            expect(res1[3], `insuree not correct`).to.equal(farmers[0]);
+            expect(res1[4], `government not correct`).to.equal(CONST.EMPTY_ADDRESS);
+            expect(res1[5], `insurer not correct`).to.equal(CONST.EMPTY_ADDRESS);
+            expect(res1[6].toString(), `size not correct`).to.equal(size);
+            expect(res2[0], `region not correct`).to.equal(REGIONS_CONST.A);
+            expect(res2[1].toString(), `season not correct`).to.equal(season);
+            expect(res2[2].toString(), `totalStaked not correct`).to.equal(amount.toString());
+            expect(res2[3].toString(), `compensation not correct`).to.equal(amount.toString());
+            expect(res2[4].toString(), `changeGovernment not correct`).to.equal('0');
+            expect(res2[5].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
+
+            // check number open contracts
+            let numContracts = await insurance.getNumberOpenContracts(season, REGIONS_CONST.A);
+            expect(numContracts.toString(), `Number open contracts not correct`).to.equal('0');
+
+
+            numContracts = await insurance.getNumberClosedContracts(season, REGIONS_CONST.A);
+            expect(numContracts.toString(), `Number closed contracts not correct`).to.equal('1');
+
+            let elemAt = await insurance.getClosedContractsAt(season, REGIONS_CONST.A, '0');
+            expect(elemAt, `Wrong element in closed contracts array`).to.equal(contractKey);
+
+            // check total open sze and total surface
+            let totalOpenSize = await insurance.totalOpenSize();
+            let totalOpenContracts = await insurance.totalOpenContracts();
+            expect(totalOpenSize.toString(), `open size not correct`).to.equal('0');
+            expect(totalOpenContracts.toString(), `total open contracts not correct`).to.equal('0');
+
+            expect((await insurance.minimumAmount()).toString(), `Minimum liquidity not correct`).to.equal('0');
 
         });
 
-        // refund if contract not activated by insurance
-        // refund if no submission by oracles
 
-        //          await insurance.validate(season, REGIONS_CONST.A, FARMS_CONST[1], { from: government, value: amount });
-        // await insurance.activate(season, REGIONS_CONST.A, FARMS_CONST[1], { from: insurer });
+        it("Refund farmer and government if contract not activated by insurance", async () => {
+            await insurance.validate(season, REGIONS_CONST.A, FARMS_CONST[1], { from: government, value: amount });
+            await oracleCore.closeSeason(season, { from: keeper });
+            let totalStaked = addBigNumbers(amount, amount);
+            let trans = await insurance.process(season, REGIONS_CONST.A, { from: keeper });
+            expectEvent(trans, 'InsuranceClosed', { season: season, region: REGIONS_CONST.A, farmID: FARMS_CONST[1], size: size, farmer: farmers[0], insurer: CONST.EMPTY_ADDRESS, government: government, totalStaked: totalStaked, compensation: amount, changeGovernment: amount, severity: SEVERITY_CONST.D, key: contractKey });
+
+            // farmer + government credited back
+            let events = await escrowInsurance.getPastEvents('Deposited', { fromBlock: 'latest' });
+            expect(isEventFound(events, 'Deposited', { payee: farmers[0], weiAmount: amount.toString() }), `Deposited with expected args ${JSON.stringify({ payee: farmers[0], weiAmount: amount.toString() })} not found in ${JSON.stringify(events)}`).to.equal(true);
+            expect(isEventFound(events, 'Deposited', { payee: government, weiAmount: amount.toString() }), `Deposited with expected args ${JSON.stringify({ payee: government, weiAmount: amount.toString() })} not found in ${JSON.stringify(events)}`).to.equal(true);
+            // check data
+            let res1 = await insurance.getContractData1(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            let res2 = await insurance.getContractData2(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            expect(res1[0], `key not correct`).to.equal(contractKey);
+            expect(res1[1], `farmID not correct`).to.equal(FARMS_CONST[1]);
+            expect(res1[2].toString(), `Contract state not correct`).to.equal(CONTRACT_CONST.CLOSED);
+            expect(res1[3], `insuree not correct`).to.equal(farmers[0]);
+            expect(res1[4], `government not correct`).to.equal(government);
+            expect(res1[5], `insurer not correct`).to.equal(CONST.EMPTY_ADDRESS);
+            expect(res1[6].toString(), `size not correct`).to.equal(size);
+            expect(res2[0], `region not correct`).to.equal(REGIONS_CONST.A);
+            expect(res2[1].toString(), `season not correct`).to.equal(season);
+            expect(res2[2].toString(), `totalStaked not correct`).to.equal(totalStaked.toString());
+            expect(res2[3].toString(), `compensation not correct`).to.equal(amount.toString());
+            expect(res2[4].toString(), `changeGovernment not correct`).to.equal(amount.toString());
+            expect(res2[5].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
+        });
+
+        it("Refund if no submission by oracles", async () => {
+            await insurance.validate(season, REGIONS_CONST.A, FARMS_CONST[1], { from: government, value: amount });
+            await insurance.activate(season, REGIONS_CONST.A, FARMS_CONST[1], { from: insurer });
+            await oracleCore.closeSeason(season, { from: keeper });
+            let totalStaked = addBigNumbers(amount, amount);
+            let trans = await insurance.process(season, REGIONS_CONST.A, { from: keeper });
+            expectEvent(trans, 'InsuranceClosed', { season: season, region: REGIONS_CONST.A, farmID: FARMS_CONST[1], size: size, farmer: farmers[0], insurer: insurer, government: government, totalStaked: totalStaked, compensation: amount, changeGovernment: amount, severity: SEVERITY_CONST.D, key: contractKey });
+
+            // farmer + government credited back
+            let events = await escrowInsurance.getPastEvents('Deposited', { fromBlock: 'latest' });
+            expect(isEventFound(events, 'Deposited', { payee: farmers[0], weiAmount: amount.toString() }), `Deposited with expected args ${JSON.stringify({ payee: farmers[0], weiAmount: amount.toString() })} not found in ${JSON.stringify(events)}`).to.equal(true);
+            expect(isEventFound(events, 'Deposited', { payee: government, weiAmount: amount.toString() }), `Deposited with expected args ${JSON.stringify({ payee: government, weiAmount: amount.toString() })} not found in ${JSON.stringify(events)}`).to.equal(true);
+            // check data
+            let res1 = await insurance.getContractData1(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            let res2 = await insurance.getContractData2(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            expect(res1[0], `key not correct`).to.equal(contractKey);
+            expect(res1[1], `farmID not correct`).to.equal(FARMS_CONST[1]);
+            expect(res1[2].toString(), `Contract state not correct`).to.equal(CONTRACT_CONST.CLOSED);
+            expect(res1[3], `insuree not correct`).to.equal(farmers[0]);
+            expect(res1[4], `government not correct`).to.equal(government);
+            expect(res1[5], `insurer not correct`).to.equal(insurer);
+            expect(res1[6].toString(), `size not correct`).to.equal(size);
+            expect(res2[0], `region not correct`).to.equal(REGIONS_CONST.A);
+            expect(res2[1].toString(), `season not correct`).to.equal(season);
+            expect(res2[2].toString(), `totalStaked not correct`).to.equal(totalStaked.toString());
+            expect(res2[3].toString(), `compensation not correct`).to.equal(amount.toString());
+            expect(res2[4].toString(), `changeGovernment not correct`).to.equal(amount.toString());
+            expect(res2[5].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
+        });
+
+        it("Pay farmer correct amount if severity = D4", async () => {
+            await insurance.validate(season, REGIONS_CONST.A, FARMS_CONST[1], { from: government, value: amount });
+            await insurance.activate(season, REGIONS_CONST.A, FARMS_CONST[1], { from: insurer });
+            // submissions by oracles
+            // receive [D3,D4,D2,D2,D3,D4,D1,D1,D1,D1] ==> 6/10 have D2+D3+D4 ==> max between 3 is D4 so answer aggregate should be D4
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D3, { from: oracles[0] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D4, { from: oracles[1] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D2, { from: oracles[2] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D2, { from: oracles[3] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D3, { from: oracles[4] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D4, { from: oracles[5] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[6] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[7] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[8] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[9] });
+            // close season
+            await oracleCore.closeSeason(season, { from: keeper });
+            // aggregate answers
+            await oracleCore.aggregate(season, REGIONS_CONST.A, { from: keeper });
+
+            let totalStaked = addBigNumbers(amount, amount);
+            let compensation = divideBigNumbers(multiplyBigNumbers(totalStaked, '25'), '10');
+            let trans = await insurance.process(season, REGIONS_CONST.A, { from: keeper });
+            expectEvent(trans, 'InsuranceCompensated', { season: season, region: REGIONS_CONST.A, farmID: FARMS_CONST[1], size: size, farmer: farmers[0], insurer: insurer, government: government, totalStaked: totalStaked, compensation: compensation, severity: SEVERITY_CONST.D4, key: contractKey });
+
+            // farmer + government credited back
+            let events = await escrowInsurance.getPastEvents('Deposited', { fromBlock: 'latest' });
+            expect(isEventFound(events, 'Deposited', { payee: farmers[0], weiAmount: compensation.toString() }), `Deposited with expected args ${JSON.stringify({ payee: farmers[0], weiAmount: compensation.toString() })} not found in ${JSON.stringify(events)}`).to.equal(true);
+
+            // check data
+            let res1 = await insurance.getContractData1(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            let res2 = await insurance.getContractData2(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            expect(res1[0], `key not correct`).to.equal(contractKey);
+            expect(res1[1], `farmID not correct`).to.equal(FARMS_CONST[1]);
+            expect(res1[2].toString(), `Contract state not correct`).to.equal(CONTRACT_CONST.COMPENSATED);
+            expect(res1[3], `insuree not correct`).to.equal(farmers[0]);
+            expect(res1[4], `government not correct`).to.equal(government);
+            expect(res1[5], `insurer not correct`).to.equal(insurer);
+            expect(res1[6].toString(), `size not correct`).to.equal(size);
+            expect(res2[0], `region not correct`).to.equal(REGIONS_CONST.A);
+            expect(res2[1].toString(), `season not correct`).to.equal(season);
+            expect(res2[2].toString(), `totalStaked not correct`).to.equal(totalStaked.toString());
+            expect(res2[3].toString(), `compensation not correct`).to.equal(compensation.toString());
+            expect(res2[4].toString(), `changeGovernment not correct`).to.equal('0');
+            expect(res2[5].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D4);
+        });
+
+
+        it("Pay farmer correct amount if severity = D1", async () => {
+            await insurance.validate(season, REGIONS_CONST.A, FARMS_CONST[1], { from: government, value: amount });
+            await insurance.activate(season, REGIONS_CONST.A, FARMS_CONST[1], { from: insurer });
+            // submissions by oracles
+            // receive [D0,D0,D1,D0,D1,D1,D2,D2,D3,D4] ==> 6/10 have D0 ,D1  ==> max between D0,D1 is D1 so answer is D1
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[0] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[1] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[2] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[3] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[4] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[5] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D2, { from: oracles[6] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D2, { from: oracles[7] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D3, { from: oracles[8] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D4, { from: oracles[9] });
+            // close season
+            await oracleCore.closeSeason(season, { from: keeper });
+            // aggregate answers
+            await oracleCore.aggregate(season, REGIONS_CONST.A, { from: keeper });
+
+            let totalStaked = addBigNumbers(amount, amount);
+            let compensation = divideBigNumbers(multiplyBigNumbers(totalStaked, '5'), '10');
+            let trans = await insurance.process(season, REGIONS_CONST.A, { from: keeper });
+            expectEvent(trans, 'InsuranceCompensated', { season: season, region: REGIONS_CONST.A, farmID: FARMS_CONST[1], size: size, farmer: farmers[0], insurer: insurer, government: government, totalStaked: totalStaked, compensation: compensation, severity: SEVERITY_CONST.D1, key: contractKey });
+
+            // farmer compensated
+            let events = await escrowInsurance.getPastEvents('Deposited', { fromBlock: 'latest' });
+            expect(isEventFound(events, 'Deposited', { payee: farmers[0], weiAmount: compensation.toString() }), `Deposited with expected args ${JSON.stringify({ payee: farmers[0], weiAmount: compensation.toString() })} not found in ${JSON.stringify(events)}`).to.equal(true);
+
+            // check data
+            let res1 = await insurance.getContractData1(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            let res2 = await insurance.getContractData2(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            expect(res1[0], `key not correct`).to.equal(contractKey);
+            expect(res1[1], `farmID not correct`).to.equal(FARMS_CONST[1]);
+            expect(res1[2].toString(), `Contract state not correct`).to.equal(CONTRACT_CONST.COMPENSATED);
+            expect(res1[3], `insuree not correct`).to.equal(farmers[0]);
+            expect(res1[4], `government not correct`).to.equal(government);
+            expect(res1[5], `insurer not correct`).to.equal(insurer);
+            expect(res1[6].toString(), `size not correct`).to.equal(size);
+            expect(res2[0], `region not correct`).to.equal(REGIONS_CONST.A);
+            expect(res2[1].toString(), `season not correct`).to.equal(season);
+            expect(res2[2].toString(), `totalStaked not correct`).to.equal(totalStaked.toString());
+            expect(res2[3].toString(), `compensation not correct`).to.equal(compensation.toString());
+            expect(res2[4].toString(), `changeGovernment not correct`).to.equal('0');
+            expect(res2[5].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D1);
+        });
+
+        it("No compensation if severity = D0", async () => {
+            await insurance.validate(season, REGIONS_CONST.A, FARMS_CONST[1], { from: government, value: amount });
+            await insurance.activate(season, REGIONS_CONST.A, FARMS_CONST[1], { from: insurer });
+            // submissions by oracles
+            // receive [D0,D0,D0,D0,D0,D1,D2,D2,D3,D4] ==> 6/10 have D0 ,D1  ==> max between D0,D1 is D0 so answer is D0
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[0] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[1] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[2] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[3] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D0, { from: oracles[4] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D1, { from: oracles[5] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D2, { from: oracles[6] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D2, { from: oracles[7] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D3, { from: oracles[8] });
+            await oracleCore.submit(season, REGIONS_CONST.A, SEVERITY_CONST.D4, { from: oracles[9] });
+            // close season
+            await oracleCore.closeSeason(season, { from: keeper });
+            // aggregate answers
+            await oracleCore.aggregate(season, REGIONS_CONST.A, { from: keeper });
+
+            let totalStaked = addBigNumbers(amount, amount);
+            let compensation = '0'
+            let trans = await insurance.process(season, REGIONS_CONST.A, { from: keeper });
+            expectEvent(trans, 'InsuranceClosed', { season: season, region: REGIONS_CONST.A, farmID: FARMS_CONST[1], size: size, farmer: farmers[0], insurer: insurer, government: government, totalStaked: totalStaked, compensation: compensation, changeGovernment: '0', severity: SEVERITY_CONST.D0, key: contractKey });
+
+            // check farmer is not credited back
+            let events = await escrowInsurance.getPastEvents('Deposited', { fromBlock: 'latest' });
+            expect(isEventFound(events, 'Deposited', { payee: farmers[0] }), `Doesnt expect this event in ${JSON.stringify(events)}`).to.equal(false);
+
+            // check data
+            let res1 = await insurance.getContractData1(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            let res2 = await insurance.getContractData2(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            expect(res1[0], `key not correct`).to.equal(contractKey);
+            expect(res1[1], `farmID not correct`).to.equal(FARMS_CONST[1]);
+            expect(res1[2].toString(), `Contract state not correct`).to.equal(CONTRACT_CONST.CLOSED);
+            expect(res1[3], `insuree not correct`).to.equal(farmers[0]);
+            expect(res1[4], `government not correct`).to.equal(government);
+            expect(res1[5], `insurer not correct`).to.equal(insurer);
+            expect(res1[6].toString(), `size not correct`).to.equal(size);
+            expect(res2[0], `region not correct`).to.equal(REGIONS_CONST.A);
+            expect(res2[1].toString(), `season not correct`).to.equal(season);
+            expect(res2[2].toString(), `totalStaked not correct`).to.equal(totalStaked.toString());
+            expect(res2[3].toString(), `compensation not correct`).to.equal(compensation);
+            expect(res2[4].toString(), `changeGovernment not correct`).to.equal('0');
+            expect(res2[5].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D0);
+        });
+
 
     });
 
