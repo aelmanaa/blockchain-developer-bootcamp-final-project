@@ -70,6 +70,23 @@ contract OracleFacade is Ownable, ReentrancyGuard {
         return oracleCore.getRegionSeverity(season, region);
     }
 
+/**
+     * @dev Retrieve total submissions for a given `region` and `season`.
+     *
+     * @param season year (e.g. 2021).
+     * @param region region code in bytes32
+     *
+     * @return number of submissions
+     *
+     */
+    function getSubmissionTotal(uint16 season, bytes32 region)
+        public
+        view
+        returns (uint256)
+    {
+        return oracleCore.getSubmissionTotal(season, region);
+    }
+
     /**
      * @dev Retrieve a `season` state.
      *

@@ -716,6 +716,8 @@ contract Insurance is Common {
         
         
         Severity severity = oracleFacade.getRegionSeverity(season, region);
+        uint256 numberSubmissions = oracleFacade.getSubmissionTotal(season, region);
+        require(!((numberSubmissions>0)&&(severity == Severity.D)),"Severity has not been aggregated yet");
         // get last element
         bytes32 key = _openContracts[_openContracts.length - 1];
         Contract memory _contract = contracts[key];
