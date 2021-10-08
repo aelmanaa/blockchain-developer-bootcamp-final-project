@@ -175,9 +175,8 @@ abstract contract Common is Ownable, ReentrancyGuard {
      * @dev Stores the sent amount as credit to be withdrawn.
      * @param payee The destination address of the funds.
      *
-     * @notice call nonReentrant to check against Reentrancy
      */
-    function _deposit(address payee, uint256 amount) internal nonReentrant {
+    function _deposit(address payee, uint256 amount) internal {
         escrow.deposit{value: amount}(payee);
     }
 

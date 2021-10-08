@@ -61,6 +61,8 @@ interface IOracle {
      *
      * @param season year (e.g. 2021).
      * @param region region in bytes32
+     *
+     * @notice call nonReentrant to check against Reentrancy
      */
     function aggregate(uint16 season, bytes32 region) external;
 
@@ -77,6 +79,8 @@ interface IOracle {
      * - contract must have enough balance to pay keepers
      *
      * @param season year (e.g. 2021).
+     *
+     * @notice call nonReentrant to check against Reentrancy
      */
     function closeSeason(uint16 season) external;
 
@@ -165,6 +169,8 @@ interface IOracle {
      * - contract must have enough balance to pay keepers
      *
      * @param season year (e.g. 2021).
+     *
+     * @notice call nonReentrant to check against Reentrancy
      */
     function openSeason(uint16 season) external;
 
@@ -185,6 +191,8 @@ interface IOracle {
      * @param season year (e.g. 2021).
      * @param region region in bytes32
      * @param severity must be valid (between 1 and 5)
+     *
+     * @notice call nonReentrant to check against Reentrancy
      */
     function submit(
         uint16 season,

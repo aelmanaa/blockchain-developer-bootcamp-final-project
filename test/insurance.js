@@ -21,8 +21,8 @@ contract("Insurance", async (accounts) => {
     const insurer = accounts[2];
     const keeper = accounts[3];
     const government = accounts[4];
-    const oracle = accounts[5];
-    const farmers = accounts.slice(6, 11);
+    const oracles = accounts.slice(5, 15);
+    const farmers = accounts.slice(15, 20);
     let oracleCore, gateKeeper, escrowOracle, escrowInsurance, oracleFacade, insurance;
     let defaultAdminRoleId;
     let season = '2021';
@@ -56,7 +56,9 @@ contract("Insurance", async (accounts) => {
         await gateKeeper.addAssignment(ROLES_CONST.INSURER_ROLE, insurer, { from: admin });
         await gateKeeper.addAssignment(ROLES_CONST.GOVERNMENT_ROLE, government, { from: admin });
         await gateKeeper.addAssignment(ROLES_CONST.KEEPER_ROLE, keeper, { from: admin });
-        await gateKeeper.addAssignment(ROLES_CONST.ORACLE_ROLE, oracle, { from: admin });
+        for (let oracle of oracles) {
+            await gateKeeper.addAssignment(ROLES_CONST.ORACLE_ROLE, oracle, { from: admin });
+        }
         for (let farmer of farmers) {
             await gateKeeper.addAssignment(ROLES_CONST.FARMER_ROLE, farmer, { from: admin });
         }
@@ -67,6 +69,7 @@ contract("Insurance", async (accounts) => {
         halfPremiumPerHa = await insurance.HALF_PERMIUM_PER_HA();
     });
 
+    /*
     describe("Check initial state", () => {
 
         it("Premium, totalOpenSize, totalOpenContracts , intial balance, minimal reuqired liquidity", async () => {
@@ -97,8 +100,7 @@ contract("Insurance", async (accounts) => {
             expect(res2[2].toString(), `totalStaked not correct`).to.equal('0');
             expect(res2[3].toString(), `compensation not correct`).to.equal('0');
             expect(res2[4].toString(), `changeGovernment not correct`).to.equal('0');
-            expect(res2[5].toString(), `changeFarmer not correct`).to.equal('0');
-            expect(res2[6].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
+            expect(res2[5].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
         });
 
         it("0 number of closed contracts", async () => {
@@ -234,8 +236,7 @@ contract("Insurance", async (accounts) => {
             expect(res2[2].toString(), `totalStaked not correct`).to.equal(amount.toString());
             expect(res2[3].toString(), `compensation not correct`).to.equal('0');
             expect(res2[4].toString(), `changeGovernment not correct`).to.equal('0');
-            expect(res2[5].toString(), `changeFarmer not correct`).to.equal('0');
-            expect(res2[6].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
+            expect(res2[5].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
 
             // check number open contracts
             let numContracts = await insurance.getNumberOpenContracts(season, REGIONS_CONST.A);
@@ -348,8 +349,7 @@ contract("Insurance", async (accounts) => {
             expect(res2[2].toString(), `totalStaked not correct`).to.equal(multiplyBigNumbers(amount, '2').toString());
             expect(res2[3].toString(), `compensation not correct`).to.equal('0');
             expect(res2[4].toString(), `changeGovernment not correct`).to.equal('0');
-            expect(res2[5].toString(), `changeFarmer not correct`).to.equal('0');
-            expect(res2[6].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
+            expect(res2[5].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
 
             // check number open contracts
             let numContracts = await insurance.getNumberOpenContracts(season, REGIONS_CONST.A);
@@ -452,8 +452,7 @@ contract("Insurance", async (accounts) => {
             expect(res2[2].toString(), `totalStaked not correct`).to.equal(multiplyBigNumbers(amount, '2').toString());
             expect(res2[3].toString(), `compensation not correct`).to.equal('0');
             expect(res2[4].toString(), `changeGovernment not correct`).to.equal('0');
-            expect(res2[5].toString(), `changeFarmer not correct`).to.equal('0');
-            expect(res2[6].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
+            expect(res2[5].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
 
             // check number open contracts
             let numContracts = await insurance.getNumberOpenContracts(season, REGIONS_CONST.A);
@@ -475,6 +474,61 @@ contract("Insurance", async (accounts) => {
             let expected = addBigNumbers(multiplyBigNumbers(insuranceKeeperFee, totalOpenContracts), divideBigNumbers(multiplyBigNumbers(size, multiplyBigNumbers(premiumPerHA, '25')), '10'));
             expect((await insurance.minimumAmount()).toString(), `Minimum liquidity not correct`).to.equal(expected.toString());
         });
+
+    });
+*/
+    describe("Process insurance contract contract", () => {
+        const ha = '10', size = '10';
+        let contractKey;
+        let amount;
+        beforeEach(async () => {
+            await (web3.eth.sendTransaction({
+                from: insurer,
+                to: oracleCore.address,
+                value: web3.utils.toWei('10', 'ether')
+            }));
+
+            await (web3.eth.sendTransaction({
+                from: insurer,
+                to: insurance.address,
+                value: web3.utils.toWei('10', 'ether')
+            }));
+            await oracleCore.openSeason(season, { from: keeper });
+            amount = multiplyBigNumbers(halfPremiumPerHa, ha);
+            contractKey = await insurance.getContractKey(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            await insurance.register(season, REGIONS_CONST.A, FARMS_CONST[1], size, { from: farmers[0], value: addBigNumbers('10', amount) });
+
+        });
+        /*
+        it("Contract must be active", async () => {
+            await insurance.switchContractOff({ from: owner });
+            await expectRevert(insurance.process(season, REGIONS_CONST.A, { from: keeper }), "Contract is currently suspended.");
+        });
+
+
+        it("Only keeper", async () => {
+            await expectRevert(insurance.process(season, REGIONS_CONST.A, { from: government }), "Restricted to keepers.");
+
+        });
+
+        it("Season must be closed", async () => {
+            await expectRevert(insurance.process(season, REGIONS_CONST.A, { from: keeper }), "Season must be closed.");
+
+        });
+        */
+
+        it("Refund if contract not backend by government", async () => {
+            await oracleCore.closeSeason(season, { from: keeper });
+            let trans = await insurance.process(season, REGIONS_CONST.A, { from: keeper });
+            console.log(trans);
+
+        });
+
+        // refund if contract not activated by insurance
+        // refund if no submission by oracles
+
+        //          await insurance.validate(season, REGIONS_CONST.A, FARMS_CONST[1], { from: government, value: amount });
+        // await insurance.activate(season, REGIONS_CONST.A, FARMS_CONST[1], { from: insurer });
 
     });
 

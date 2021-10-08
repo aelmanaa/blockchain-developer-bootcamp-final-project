@@ -64,6 +64,7 @@ contract OracleCore is Common, IOracle, IERC165 {
         onlyKeeper
         seasonClosed(season)
         checkContractBalance(KEEPER_FEE)
+        nonReentrant
     {
         require(
             regions[region][season] == Severity.D,
@@ -126,6 +127,7 @@ contract OracleCore is Common, IOracle, IERC165 {
         onlyKeeper
         seasonOpen(season)
         checkContractBalance(KEEPER_FEE)
+        nonReentrant
     {
         seasons[season] = SeasonState.CLOSED;
         _deposit(msg.sender, KEEPER_FEE);
@@ -199,6 +201,7 @@ contract OracleCore is Common, IOracle, IERC165 {
         onlyKeeper
         seasonDefault(season)
         checkContractBalance(KEEPER_FEE)
+        nonReentrant
     {
         seasons[season] = SeasonState.OPEN;
         _deposit(msg.sender, KEEPER_FEE);
@@ -231,6 +234,7 @@ contract OracleCore is Common, IOracle, IERC165 {
         onlyOracle
         seasonOpen(season)
         checkContractBalance(ORACLE_FEE)
+        nonReentrant
     {
         require(
             submissions[region][season].oracles[msg.sender] == Severity.D,

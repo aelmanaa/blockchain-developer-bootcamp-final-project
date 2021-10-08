@@ -77,6 +77,7 @@ contract Insurance is Common {
         uint256 amount,
         uint256 balance
     );
+
     /**
      * @dev transition state of a contract
      *
@@ -700,21 +701,20 @@ contract Insurance is Common {
      */
     function process(uint16 season, bytes32 region)
         external
-        payable
         onlyActive
         onlyKeeper
         seasonClosed(season)
         nonReentrant
         minimumCovered
     {
-        bytes32[] memory _openContracts = openContracts[
-            getSeasonRegionKey(season, region)
-        ];
+        bytes32 seasonRegionKey = getSeasonRegionKey(season, region);
+        bytes32[] memory _openContracts = openContracts[seasonRegionKey];
         require(
             _openContracts.length > 0,
             "No open insurance contracts to process for this season,region"
         );
-
+        
+        
         Severity severity = oracleFacade.getRegionSeverity(season, region);
         // get last element
         bytes32 key = _openContracts[_openContracts.length - 1];
@@ -723,12 +723,12 @@ contract Insurance is Common {
         Contract memory newContract = _process(_contract);
 
         // Update internal state
-        openContracts[getSeasonRegionKey(season, region)].pop();
-        closedContracts[getSeasonRegionKey(season, region)].push(key);
+        openContracts[seasonRegionKey].pop();
+        closedContracts[seasonRegionKey].push(key);
         contracts[key] = newContract;
         totalOpenSize -= newContract.size;
         totalOpenContracts--;
-
+       
         // pay back
         if (newContract.compensation > 0) {
             _deposit(newContract.farmer, newContract.compensation);
@@ -736,6 +736,7 @@ contract Insurance is Common {
         if (newContract.changeGovernment > 0) {
             _deposit(newContract.government, newContract.changeGovernment);
         }
+        
 
         // pay keeper for its work
         _deposit(msg.sender, KEEPER_FEE);
@@ -771,6 +772,7 @@ contract Insurance is Common {
                 newContract.key
             );
         }
+        
     }
 
     /**
