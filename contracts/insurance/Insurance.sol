@@ -52,7 +52,6 @@ contract Insurance is Common {
         uint256 totalStaked,
         uint256 compensation,
         uint256 changeGovernment,
-        uint256 changeFarmer,
         Severity severity,
         bytes32 key
     );
@@ -110,7 +109,6 @@ contract Insurance is Common {
         uint256 totalStaked;
         uint256 compensation;
         uint256 changeGovernment;
-        uint256 changeFarmer;
         Severity severity;
     }
 
@@ -232,7 +230,6 @@ contract Insurance is Common {
      * @return totalStaked eth that were taked in this contract
      * @return compensation for this contract
      * @return changeGovernment money returned to government
-     * @return changeFarmer  money returned to farmer
      * @return severity Drought severity fetched from oracleFacade when the contract is closed
      */
     function getContract2(bytes32 _key)
@@ -244,7 +241,6 @@ contract Insurance is Common {
             uint256 totalStaked,
             uint256 compensation,
             uint256 changeGovernment,
-            uint256 changeFarmer,
             Severity severity
         )
     {
@@ -254,7 +250,6 @@ contract Insurance is Common {
         totalStaked = _contract.totalStaked;
         compensation = _contract.compensation;
         changeGovernment = _contract.changeGovernment;
-        changeFarmer = _contract.changeFarmer;
         severity = _contract.severity;
     }
 
@@ -289,15 +284,9 @@ contract Insurance is Common {
             uint256 size
         )
     {
-        (
-            key,
-            farmID,
-            state,
-            farmer,
-            government,
-            insurer,
-            size
-        ) = getContract1(getContractKey(_season, _region, _farmID));
+        (key, farmID, state, farmer, government, insurer, size) = getContract1(
+            getContractKey(_season, _region, _farmID)
+        );
     }
 
     /**
@@ -311,7 +300,6 @@ contract Insurance is Common {
      * @return totalStaked eth that were taked in this contract
      * @return compensation for this contract
      * @return changeGovernment money returned to government
-     * @return changeFarmer  money returned to farmer
      * @return severity Drought severity when the contract is closed
      */
     function getContractData2(
@@ -327,7 +315,6 @@ contract Insurance is Common {
             uint256 totalStaked,
             uint256 compensation,
             uint256 changeGovernment,
-            uint256 changeFarmer,
             Severity severity
         )
     {
@@ -338,7 +325,6 @@ contract Insurance is Common {
             totalStaked,
             compensation,
             changeGovernment,
-            changeFarmer,
             severity
         ) = getContract2(_key);
     }
@@ -709,7 +695,6 @@ contract Insurance is Common {
      * - Check contract must exist
      * - Season must be closed
      * - Must be open contracts to process
-     * - Severity for `season`,`region` must be valid
      * - Must be enough eth staked within the contract
      * @notice call nonReentrant to check against Reentrancy
      */
@@ -722,9 +707,6 @@ contract Insurance is Common {
         nonReentrant
         minimumCovered
     {
-        Severity severity = oracleFacade.getRegionSeverity(season, region);
-        require(severity != Severity.D, "Severity not correct");
-
         bytes32[] memory _openContracts = openContracts[
             getSeasonRegionKey(season, region)
         ];
@@ -733,6 +715,7 @@ contract Insurance is Common {
             "No open insurance contracts to process for this season,region"
         );
 
+        Severity severity = oracleFacade.getRegionSeverity(season, region);
         // get last element
         bytes32 key = _openContracts[_openContracts.length - 1];
         Contract memory _contract = contracts[key];
@@ -747,12 +730,15 @@ contract Insurance is Common {
         totalOpenContracts--;
 
         // pay back
-        if (newContract.changeFarmer > 0) {
-            _deposit(newContract.farmer, newContract.changeFarmer);
+        if (newContract.compensation > 0) {
+            _deposit(newContract.farmer, newContract.compensation);
         }
         if (newContract.changeGovernment > 0) {
             _deposit(newContract.government, newContract.changeGovernment);
         }
+
+        // pay keeper for its work
+        _deposit(msg.sender, KEEPER_FEE);
 
         // emit events
         if (newContract.state == ContractState.COMPENSATED) {
@@ -781,7 +767,6 @@ contract Insurance is Common {
                 newContract.totalStaked,
                 newContract.compensation,
                 newContract.changeGovernment,
-                newContract.changeFarmer,
                 newContract.severity,
                 newContract.key
             );
@@ -805,19 +790,25 @@ contract Insurance is Common {
         if (newContract.state == ContractState.INSURED) {
             if (newContract.severity == Severity.D0) {
                 // no compensation if D0
+                newContract.compensation = 0;
+                newContract.changeGovernment = 0;
+            } else if (newContract.severity == Severity.D) {
+                // if season closed but oracles didn't do their job by providing data then return the change
+                newContract.compensation = newContract.totalStaked / 2;
+                newContract.changeGovernment = newContract.totalStaked / 2;
             } else {
                 isCompensated = true;
                 // calculate compensation
                 newContract.compensation =
                     (rules[newContract.severity] * newContract.totalStaked) /
                     10;
-                newContract.changeFarmer = newContract.compensation;
+                newContract.changeGovernment = 0;
             }
         } else if (newContract.state == ContractState.REGISTERED) {
             // return money back if season closed validation before approval of government
-            newContract.changeFarmer = newContract.totalStaked;
+            newContract.compensation = newContract.totalStaked;
         } else if (newContract.state == ContractState.VALIDATED) {
-            newContract.changeFarmer = newContract.totalStaked / 2;
+            newContract.compensation = newContract.totalStaked / 2;
             newContract.changeGovernment = newContract.totalStaked / 2;
         }
 
