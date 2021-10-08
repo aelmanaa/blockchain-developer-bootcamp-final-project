@@ -69,7 +69,7 @@ contract("Insurance", async (accounts) => {
         halfPremiumPerHa = await insurance.HALF_PERMIUM_PER_HA();
     });
 
-    /*
+
     describe("Check initial state", () => {
 
         it("Premium, totalOpenSize, totalOpenContracts , intial balance, minimal reuqired liquidity", async () => {
@@ -476,7 +476,7 @@ contract("Insurance", async (accounts) => {
         });
 
     });
-*/
+
     describe("Process insurance contract contract", () => {
         const ha = '10', size = '10';
         let contractKey;
@@ -500,7 +500,7 @@ contract("Insurance", async (accounts) => {
 
 
         });
-        /*
+
         it("Contract must be active", async () => {
             await insurance.switchContractOff({ from: owner });
             await expectRevert(insurance.process(season, REGIONS_CONST.A, { from: keeper }), "Contract is currently suspended.");
@@ -516,7 +516,7 @@ contract("Insurance", async (accounts) => {
             await expectRevert(insurance.process(season, REGIONS_CONST.A, { from: keeper }), "Season must be closed.");
 
         });
-        */
+
 
         it("Refund farmer if contract not backed by government", async () => {
             await oracleCore.closeSeason(season, { from: keeper });
