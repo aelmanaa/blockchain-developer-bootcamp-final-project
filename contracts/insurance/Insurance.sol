@@ -200,7 +200,7 @@ contract Insurance is Common {
      * @return insurer address
      * @return size number of HA of a farmer (minimum: 1 HA)
      */
-    function getContractData1(bytes32 _key)
+    function getContract1(bytes32 _key)
         public
         view
         returns (
@@ -235,7 +235,7 @@ contract Insurance is Common {
      * @return changeFarmer  money returned to farmer
      * @return severity Drought severity fetched from oracleFacade when the contract is closed
      */
-    function getContractData2(bytes32 _key)
+    function getContract2(bytes32 _key)
         public
         view
         returns (
@@ -289,7 +289,6 @@ contract Insurance is Common {
             uint256 size
         )
     {
-        bytes32 _key = getContractKey(_season, _region, _farmID);
         (
             key,
             farmID,
@@ -298,7 +297,7 @@ contract Insurance is Common {
             government,
             insurer,
             size
-        ) = getContractData1(_key);
+        ) = getContract1(getContractKey(_season, _region, _farmID));
     }
 
     /**
@@ -341,7 +340,7 @@ contract Insurance is Common {
             changeGovernment,
             changeFarmer,
             severity
-        ) = getContractData2(_key);
+        ) = getContract2(_key);
     }
 
     /**

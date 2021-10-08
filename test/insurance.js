@@ -82,19 +82,23 @@ contract("Insurance", async (accounts) => {
 
 
         it("Empty data for non existing contract", async () => {
-            let res = await insurance.getContract(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            let res1 = await insurance.getContractData1(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            let res2 = await insurance.getContractData2(season, REGIONS_CONST.A, FARMS_CONST[1]);
             // farmID = 0x0
-            expect(res[0], `key not correct`).to.equal(CONST.EMPTY_BYTES32);
-            expect(res[1], `farmID not correct`).to.equal(CONST.EMPTY_BYTES32);
-            expect(res[2].toString(), `Contract state not correct`).to.equal(CONTRACT_CONST.DEFAULT);
-            expect(res[3], `insuree not correct`).to.equal(CONST.EMPTY_ADDRESS);
-            expect(res[4], `government not correct`).to.equal(CONST.EMPTY_ADDRESS);
-            expect(res[5], `insurer not correct`).to.equal(CONST.EMPTY_ADDRESS);
-            expect(res[6].toString(), `size not correct`).to.equal('0');
-            expect(res[7], `region not correct`).to.equal(CONST.EMPTY_BYTES32);
-            expect(res[8].toString(), `season not correct`).to.equal('0');
-            expect(res[9].toString(), `totalStaked not correct`).to.equal('0');
-            expect(res[10].toString(), `compensation not correct`).to.equal('0');
+            expect(res1[0], `key not correct`).to.equal(CONST.EMPTY_BYTES32);
+            expect(res1[1], `farmID not correct`).to.equal(CONST.EMPTY_BYTES32);
+            expect(res1[2].toString(), `Contract state not correct`).to.equal(CONTRACT_CONST.DEFAULT);
+            expect(res1[3], `insuree not correct`).to.equal(CONST.EMPTY_ADDRESS);
+            expect(res1[4], `government not correct`).to.equal(CONST.EMPTY_ADDRESS);
+            expect(res1[5], `insurer not correct`).to.equal(CONST.EMPTY_ADDRESS);
+            expect(res1[6].toString(), `size not correct`).to.equal('0');
+            expect(res2[0], `region not correct`).to.equal(CONST.EMPTY_BYTES32);
+            expect(res2[1].toString(), `season not correct`).to.equal('0');
+            expect(res2[2].toString(), `totalStaked not correct`).to.equal('0');
+            expect(res2[3].toString(), `compensation not correct`).to.equal('0');
+            expect(res2[4].toString(), `changeGovernment not correct`).to.equal('0');
+            expect(res2[5].toString(), `changeFarmer not correct`).to.equal('0');
+            expect(res2[6].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
         });
 
         it("0 number of closed contracts", async () => {
@@ -215,18 +219,23 @@ contract("Insurance", async (accounts) => {
             expectEvent(trans, 'InsuranceRequested', { season: season, region: REGIONS_CONST.A, farmID: FARMS_CONST[1], size: size, fee: amount, farmer: farmers[0], key: contractKey });
 
             // check data
-            let res = await insurance.getContract(season, REGIONS_CONST.A, FARMS_CONST[1]);
-            expect(res[0], `key not correct`).to.equal(contractKey);
-            expect(res[1], `farmID not correct`).to.equal(FARMS_CONST[1]);
-            expect(res[2].toString(), `Contract state not correct`).to.equal(CONTRACT_CONST.REGISTERED);
-            expect(res[3], `insuree not correct`).to.equal(farmers[0]);
-            expect(res[4], `government not correct`).to.equal(CONST.EMPTY_ADDRESS);
-            expect(res[5], `insurer not correct`).to.equal(CONST.EMPTY_ADDRESS);
-            expect(res[6].toString(), `size not correct`).to.equal(size);
-            expect(res[7], `region not correct`).to.equal(REGIONS_CONST.A);
-            expect(res[8].toString(), `season not correct`).to.equal(season);
-            expect(res[9].toString(), `totalStaked not correct`).to.equal(amount.toString());
-            expect(res[10].toString(), `compensation not correct`).to.equal('0');
+
+            let res1 = await insurance.getContractData1(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            let res2 = await insurance.getContractData2(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            expect(res1[0], `key not correct`).to.equal(contractKey);
+            expect(res1[1], `farmID not correct`).to.equal(FARMS_CONST[1]);
+            expect(res1[2].toString(), `Contract state not correct`).to.equal(CONTRACT_CONST.REGISTERED);
+            expect(res1[3], `insuree not correct`).to.equal(farmers[0]);
+            expect(res1[4], `government not correct`).to.equal(CONST.EMPTY_ADDRESS);
+            expect(res1[5], `insurer not correct`).to.equal(CONST.EMPTY_ADDRESS);
+            expect(res1[6].toString(), `size not correct`).to.equal(size);
+            expect(res2[0], `region not correct`).to.equal(REGIONS_CONST.A);
+            expect(res2[1].toString(), `season not correct`).to.equal(season);
+            expect(res2[2].toString(), `totalStaked not correct`).to.equal(amount.toString());
+            expect(res2[3].toString(), `compensation not correct`).to.equal('0');
+            expect(res2[4].toString(), `changeGovernment not correct`).to.equal('0');
+            expect(res2[5].toString(), `changeFarmer not correct`).to.equal('0');
+            expect(res2[6].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
 
             // check number open contracts
             let numContracts = await insurance.getNumberOpenContracts(season, REGIONS_CONST.A);
@@ -325,18 +334,22 @@ contract("Insurance", async (accounts) => {
             expectEvent(trans, 'InsuranceValidated', { season: season, region: REGIONS_CONST.A, farmID: FARMS_CONST[1], totalStaked: multiplyBigNumbers(amount, '2').toString(), government: government, key: contractKey });
 
             // check data
-            let res = await insurance.getContract(season, REGIONS_CONST.A, FARMS_CONST[1]);
-            expect(res[0], `key not correct`).to.equal(contractKey);
-            expect(res[1], `farmID not correct`).to.equal(FARMS_CONST[1]);
-            expect(res[2].toString(), `Contract state not correct`).to.equal(CONTRACT_CONST.VALIDATED);
-            expect(res[3], `insuree not correct`).to.equal(farmers[0]);
-            expect(res[4], `government not correct`).to.equal(government);
-            expect(res[5], `insurer not correct`).to.equal(CONST.EMPTY_ADDRESS);
-            expect(res[6].toString(), `size not correct`).to.equal(size);
-            expect(res[7], `region not correct`).to.equal(REGIONS_CONST.A);
-            expect(res[8].toString(), `season not correct`).to.equal(season);
-            expect(res[9].toString(), `totalStaked not correct`).to.equal(multiplyBigNumbers(amount, '2').toString());
-            expect(res[10].toString(), `compensation not correct`).to.equal('0');
+            let res1 = await insurance.getContractData1(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            let res2 = await insurance.getContractData2(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            expect(res1[0], `key not correct`).to.equal(contractKey);
+            expect(res1[1], `farmID not correct`).to.equal(FARMS_CONST[1]);
+            expect(res1[2].toString(), `Contract state not correct`).to.equal(CONTRACT_CONST.VALIDATED);
+            expect(res1[3], `insuree not correct`).to.equal(farmers[0]);
+            expect(res1[4], `government not correct`).to.equal(government);
+            expect(res1[5], `insurer not correct`).to.equal(CONST.EMPTY_ADDRESS);
+            expect(res1[6].toString(), `size not correct`).to.equal(size);
+            expect(res2[0], `region not correct`).to.equal(REGIONS_CONST.A);
+            expect(res2[1].toString(), `season not correct`).to.equal(season);
+            expect(res2[2].toString(), `totalStaked not correct`).to.equal(multiplyBigNumbers(amount, '2').toString());
+            expect(res2[3].toString(), `compensation not correct`).to.equal('0');
+            expect(res2[4].toString(), `changeGovernment not correct`).to.equal('0');
+            expect(res2[5].toString(), `changeFarmer not correct`).to.equal('0');
+            expect(res2[6].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
 
             // check number open contracts
             let numContracts = await insurance.getNumberOpenContracts(season, REGIONS_CONST.A);
@@ -425,18 +438,22 @@ contract("Insurance", async (accounts) => {
             // check events
             expectEvent(trans, 'InsuranceActivated', { season: season, region: REGIONS_CONST.A, farmID: FARMS_CONST[1], insurer: insurer, key: contractKey });
             // check data
-            let res = await insurance.getContract(season, REGIONS_CONST.A, FARMS_CONST[1]);
-            expect(res[0], `key not correct`).to.equal(contractKey);
-            expect(res[1], `farmID not correct`).to.equal(FARMS_CONST[1]);
-            expect(res[2].toString(), `Contract state not correct`).to.equal(CONTRACT_CONST.INSURED);
-            expect(res[3], `insuree not correct`).to.equal(farmers[0]);
-            expect(res[4], `government not correct`).to.equal(government);
-            expect(res[5], `insurer not correct`).to.equal(insurer);
-            expect(res[6].toString(), `size not correct`).to.equal(size);
-            expect(res[7], `region not correct`).to.equal(REGIONS_CONST.A);
-            expect(res[8].toString(), `season not correct`).to.equal(season);
-            expect(res[9].toString(), `totalStaked not correct`).to.equal(multiplyBigNumbers(amount, '2').toString());
-            expect(res[10].toString(), `compensation not correct`).to.equal('0');
+            let res1 = await insurance.getContractData1(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            let res2 = await insurance.getContractData2(season, REGIONS_CONST.A, FARMS_CONST[1]);
+            expect(res1[0], `key not correct`).to.equal(contractKey);
+            expect(res1[1], `farmID not correct`).to.equal(FARMS_CONST[1]);
+            expect(res1[2].toString(), `Contract state not correct`).to.equal(CONTRACT_CONST.INSURED);
+            expect(res1[3], `insuree not correct`).to.equal(farmers[0]);
+            expect(res1[4], `government not correct`).to.equal(government);
+            expect(res1[5], `insurer not correct`).to.equal(insurer);
+            expect(res1[6].toString(), `size not correct`).to.equal(size);
+            expect(res2[0], `region not correct`).to.equal(REGIONS_CONST.A);
+            expect(res2[1].toString(), `season not correct`).to.equal(season);
+            expect(res2[2].toString(), `totalStaked not correct`).to.equal(multiplyBigNumbers(amount, '2').toString());
+            expect(res2[3].toString(), `compensation not correct`).to.equal('0');
+            expect(res2[4].toString(), `changeGovernment not correct`).to.equal('0');
+            expect(res2[5].toString(), `changeFarmer not correct`).to.equal('0');
+            expect(res2[6].toString(), `severity not correct`).to.equal(SEVERITY_CONST.D);
 
             // check number open contracts
             let numContracts = await insurance.getNumberOpenContracts(season, REGIONS_CONST.A);
