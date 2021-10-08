@@ -32,8 +32,6 @@ contract("OracleCore", async (accounts) => {
         gateKeeper = await Gatekeeper.new({ from: owner });
         oracleCore = await OracleCore.new(gateKeeper.address, { from: owner });
         oracleFacade = await OracleFacade.new(oracleCore.address, { from: owner });
-        //oracleCore = await OracleCore.deployed();
-        //gateKeeper = await Gatekeeper.at(await oracleCore.getGateKeeper());
         escrow = await new web3.eth.Contract(
             Escrow.abi,
             await oracleCore.getEscrow(),
