@@ -337,7 +337,7 @@ contract Insurance is Common {
      * @return number of closed contracts
      *
      */
-    function getNumberClosedContracts(bytes32 key)
+    function getNumberClosedContractsByKey(bytes32 key)
         public
         view
         returns (uint256)
@@ -358,7 +358,7 @@ contract Insurance is Common {
         view
         returns (uint256)
     {
-        return getNumberClosedContracts(getSeasonRegionKey(season, region));
+        return getNumberClosedContractsByKey(getSeasonRegionKey(season, region));
     }
 
     /**
@@ -369,7 +369,7 @@ contract Insurance is Common {
      * @return key of a contract
      *
      */
-    function getClosedContractsAt(bytes32 key, uint256 index)
+    function getClosedContractsAtByKey(bytes32 key, uint256 index)
         public
         view
         returns (bytes32)
@@ -391,7 +391,7 @@ contract Insurance is Common {
         bytes32 region,
         uint256 index
     ) public view returns (bytes32) {
-        return getClosedContractsAt(getSeasonRegionKey(season, region), index);
+        return getClosedContractsAtByKey(getSeasonRegionKey(season, region), index);
     }
 
     /**
@@ -434,7 +434,7 @@ contract Insurance is Common {
      * @return number of open contracts
      *
      */
-    function getNumberOpenContracts(bytes32 key) public view returns (uint256) {
+    function getNumberOpenContractsByKey(bytes32 key) public view returns (uint256) {
         return openContracts[key].length;
     }
 
@@ -451,7 +451,7 @@ contract Insurance is Common {
         view
         returns (uint256)
     {
-        return getNumberOpenContracts(getSeasonRegionKey(season, region));
+        return getNumberOpenContractsByKey(getSeasonRegionKey(season, region));
     }
 
     /**
@@ -462,7 +462,7 @@ contract Insurance is Common {
      * @return key of a contract
      *
      */
-    function getOpenContractsAt(bytes32 key, uint256 index)
+    function getOpenContractsAtByKey(bytes32 key, uint256 index)
         public
         view
         returns (bytes32)
@@ -484,7 +484,7 @@ contract Insurance is Common {
         bytes32 region,
         uint256 index
     ) public view returns (bytes32) {
-        return getOpenContractsAt(getSeasonRegionKey(season, region), index);
+        return getOpenContractsAtByKey(getSeasonRegionKey(season, region), index);
     }
 
     /**
