@@ -40,6 +40,38 @@ contract Insurance is Common {
         bytes32 key
     );
 
+    /// @dev Emitted when a `contract` is closed without any compensation
+    event InsuranceClosed(
+        uint16 indexed season,
+        bytes32 region,
+        bytes32 farmID,
+        uint256 size,
+        address indexed farmer,
+        address indexed insurer,
+        address government,
+        uint256 totalStaked,
+        uint256 compensation,
+        uint256 changeGovernment,
+        uint256 changeFarmer,
+        Severity severity,
+        bytes32 key
+    );
+
+    /// @dev Emitted when a `contract` is closed with any compensation
+    event InsuranceCompensated(
+        uint16 indexed season,
+        bytes32 region,
+        bytes32 farmID,
+        uint256 size,
+        address indexed farmer,
+        address indexed insurer,
+        address government,
+        uint256 totalStaked,
+        uint256 compensation,
+        Severity severity,
+        bytes32 key
+    );
+
     /// @dev Emitted when an `insurer` withdraws `amount` from the contract. remaining contract balance is `balance`
     event WithdrawInsurer(
         address indexed insurer,
@@ -77,6 +109,9 @@ contract Insurance is Common {
         uint16 season;
         uint256 totalStaked;
         uint256 compensation;
+        uint256 changeGovernment;
+        uint256 changeFarmer;
+        Severity severity;
     }
 
     /// @dev OracleFacade used to get the status of a season(open/closed) and Severity for a given season + region
@@ -91,9 +126,6 @@ contract Insurance is Common {
     /// @dev contracts that have already been closed by season,region
     mapping(bytes32 => bytes32[]) closedContracts;
 
-    /// @dev amount locked for every insurer
-    mapping(address => uint256) locked;
-
     uint256 public constant KEEPER_FEE = 0.01 ether;
 
     /// @dev needed to track worst case scenario -> must have at anytime money to pay for severity/D4 : 2.5*PERMIUM_PER_HA*totalsize
@@ -105,9 +137,10 @@ contract Insurance is Common {
     /**
      * @dev rules to calculate the compensation
      *
-     * D2 gives 1.5 times the premium
+     * D1 gives 0.5 times the premium
+     * D2 gives 1 times the premium
      * D3 gives 2 times the premium
-     * D4 gives 3 times the premium
+     * D4 gives 2.5 times the premium
      */
     mapping(Severity => uint8) rules;
 
@@ -121,8 +154,8 @@ contract Insurance is Common {
         Common(_gatekeeper)
     {
         rules[Severity.D0] = 0;
-        rules[Severity.D1] = 0;
-        rules[Severity.D2] = 15;
+        rules[Severity.D1] = 5;
+        rules[Severity.D2] = 10;
         rules[Severity.D3] = 20;
         rules[Severity.D4] = 25;
         oracleFacade = OracleFacade(_oracleFacade);
@@ -137,6 +170,15 @@ contract Insurance is Common {
         );
     }
 
+    /// @dev season must be closed in order to check compensations
+    modifier seasonClosed(uint16 season) {
+        require(
+            oracleFacade.getSeasonState(season) == SeasonState.CLOSED,
+            "Season must be closed."
+        );
+        _;
+    }
+
     /// @dev season must be open in order to receive insurance requests
     modifier seasonOpen(uint16 season) {
         require(
@@ -147,8 +189,8 @@ contract Insurance is Common {
     }
 
     /**
-     * @dev retrieve contract data
-     * @param key keecak combination of season, region & farmID
+     * @dev retrieve contract data part1
+     * @param _key keecak combination of season, region & farmID
      *
      * @return key unique id of the contract
      * @return farmID unique ID of a farm
@@ -157,12 +199,8 @@ contract Insurance is Common {
      * @return government address
      * @return insurer address
      * @return size number of HA of a farmer (minimum: 1 HA)
-     * @return region ID of a region
-     * @return season (year)
-     * @return totalStaked eth that were taked in this contract
-     * @return compensation for this contract
      */
-    function getContract(bytes32 _key)
+    function getContractData1(bytes32 _key)
         public
         view
         returns (
@@ -172,11 +210,7 @@ contract Insurance is Common {
             address farmer,
             address government,
             address insurer,
-            uint256 size,
-            bytes32 region,
-            uint16 season,
-            uint256 totalStaked,
-            uint256 compensation
+            uint256 size
         )
     {
         Contract memory _contract = contracts[_key];
@@ -187,17 +221,48 @@ contract Insurance is Common {
         government = _contract.government;
         insurer = _contract.insurer;
         size = _contract.size;
+    }
+
+    /**
+     * @dev retrieve contract data part2
+     * @param _key keecak combination of season, region & farmID
+     *
+     * @return region ID of a region
+     * @return season (year)
+     * @return totalStaked eth that were taked in this contract
+     * @return compensation for this contract
+     * @return changeGovernment money returned to government
+     * @return changeFarmer  money returned to farmer
+     * @return severity Drought severity fetched from oracleFacade when the contract is closed
+     */
+    function getContractData2(bytes32 _key)
+        public
+        view
+        returns (
+            bytes32 region,
+            uint16 season,
+            uint256 totalStaked,
+            uint256 compensation,
+            uint256 changeGovernment,
+            uint256 changeFarmer,
+            Severity severity
+        )
+    {
+        Contract memory _contract = contracts[_key];
         region = _contract.region;
         season = _contract.season;
         totalStaked = _contract.totalStaked;
         compensation = _contract.compensation;
+        changeGovernment = _contract.changeGovernment;
+        changeFarmer = _contract.changeFarmer;
+        severity = _contract.severity;
     }
 
     /**
-     * @dev retrieve contract data
-     * @param season farming season(year)
-     * @param region region ID
-     * @param farmID unique ID of a farm
+     * @dev retrieve contract data (1st part)
+     * @param _season farming season(year)
+     * @param _region region ID
+     * @param _farmID unique ID of a farm
      *
      * @return key unique ID of the contract
      * @return farmID unique ID of a farm
@@ -206,33 +271,77 @@ contract Insurance is Common {
      * @return government address
      * @return insurer address
      * @return size number of HA of a farmer (minimum: 1 HA)
-     * @return region ID of a region
-     * @return season (year)
-     * @return totalStaked eth that were taked in this contract
-     * @return compensation for this contract
      */
-    function getContract(
-        uint16 season,
-        bytes32 region,
-        bytes32 farmID
+    function getContractData1(
+        uint16 _season,
+        bytes32 _region,
+        bytes32 _farmID
     )
         public
         view
         returns (
-            bytes32,
-            bytes32,
-            ContractState,
-            address,
-            address,
-            address,
-            uint256,
-            bytes32,
-            uint16,
-            uint256,
-            uint256
+            bytes32 key,
+            bytes32 farmID,
+            ContractState state,
+            address farmer,
+            address government,
+            address insurer,
+            uint256 size
         )
     {
-        return getContract(getContractKey(season, region, farmID));
+        bytes32 _key = getContractKey(_season, _region, _farmID);
+        (
+            key,
+            farmID,
+            state,
+            farmer,
+            government,
+            insurer,
+            size
+        ) = getContractData1(_key);
+    }
+
+    /**
+     * @dev retrieve contract data (2nd part)
+     * @param _season farming season(year)
+     * @param _region region ID
+     * @param _farmID unique ID of a farm
+     *
+     * @return region ID of a region
+     * @return season (year)
+     * @return totalStaked eth that were taked in this contract
+     * @return compensation for this contract
+     * @return changeGovernment money returned to government
+     * @return changeFarmer  money returned to farmer
+     * @return severity Drought severity when the contract is closed
+     */
+    function getContractData2(
+        uint16 _season,
+        bytes32 _region,
+        bytes32 _farmID
+    )
+        public
+        view
+        returns (
+            bytes32 region,
+            uint16 season,
+            uint256 totalStaked,
+            uint256 compensation,
+            uint256 changeGovernment,
+            uint256 changeFarmer,
+            Severity severity
+        )
+    {
+        bytes32 _key = getContractKey(_season, _region, _farmID);
+        (
+            region,
+            season,
+            totalStaked,
+            compensation,
+            changeGovernment,
+            changeFarmer,
+            severity
+        ) = getContractData2(_key);
     }
 
     /**
@@ -263,10 +372,7 @@ contract Insurance is Common {
         view
         returns (uint256)
     {
-        return
-            getNumberClosedContracts(
-                keccak256(abi.encodePacked(season, region))
-            );
+        return getNumberClosedContracts(getSeasonRegionKey(season, region));
     }
 
     /**
@@ -299,11 +405,7 @@ contract Insurance is Common {
         bytes32 region,
         uint256 index
     ) public view returns (bytes32) {
-        return
-            getClosedContractsAt(
-                keccak256(abi.encodePacked(season, region)),
-                index
-            );
+        return getClosedContractsAt(getSeasonRegionKey(season, region), index);
     }
 
     /**
@@ -321,6 +423,22 @@ contract Insurance is Common {
         bytes32 farmID
     ) public pure returns (bytes32) {
         return keccak256(abi.encodePacked(season, region, farmID));
+    }
+
+    /**
+     * @dev calculate key of `season`, `region`
+     *
+     * @param season season (year)
+     * @param region region id
+     * @return key (hash value of the 2 parameters)
+     *
+     */
+    function getSeasonRegionKey(uint16 season, bytes32 region)
+        public
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(season, region));
     }
 
     /**
@@ -347,8 +465,7 @@ contract Insurance is Common {
         view
         returns (uint256)
     {
-        return
-            getNumberOpenContracts(keccak256(abi.encodePacked(season, region)));
+        return getNumberOpenContracts(getSeasonRegionKey(season, region));
     }
 
     /**
@@ -381,11 +498,7 @@ contract Insurance is Common {
         bytes32 region,
         uint256 index
     ) public view returns (bytes32) {
-        return
-            getOpenContractsAt(
-                keccak256(abi.encodePacked(season, region)),
-                index
-            );
+        return getOpenContractsAt(getSeasonRegionKey(season, region), index);
     }
 
     /**
@@ -483,7 +596,7 @@ contract Insurance is Common {
     {
         // Generate a unique key for storing the request
         bytes32 key = getContractKey(season, region, farmID);
-        require(contracts[key].key == 0x0 , "Duplicate");
+        require(contracts[key].key == 0x0, "Duplicate");
         uint256 fee = HALF_PERMIUM_PER_HA * size;
         require(msg.value >= fee, "Not enough money to pay for premium");
         Contract memory _contract;
@@ -498,7 +611,7 @@ contract Insurance is Common {
 
         contracts[key] = _contract;
 
-        openContracts[keccak256(abi.encodePacked(season, region))].push(key);
+        openContracts[getSeasonRegionKey(season, region)].push(key);
         totalOpenSize += size;
         totalOpenContracts++;
         // return change
@@ -580,6 +693,141 @@ contract Insurance is Common {
             msg.sender,
             key
         );
+    }
+
+    /**
+     * @dev process an insurance file. triggered by a `keeper`
+     * @dev as a combination of `season`,`region` can have several open insurances files, a keeper will have to loop over this function until there are no more open insurances files. looping is done offchain rather than onchain in order to avoid any out of gas exception
+     * @param season farming season(year)
+     * @param region region ID
+     *
+     *  Emits a {InsuranceClosed} event in case an insurance file has been closed without any compensation (e.g.: Drought severity <= D1) or returned back becase government has not staked 1/2 of the premium
+     *  Emits a {InsuranceCompensated} event in case an insurance file has been processed with compensation (e.g.: Drought severity >= D2)
+     *
+     * Requirements:
+     * - Contract is active (circuit-breaker)
+     * - Can only be called by keeper
+     * - Check contract must exist
+     * - Season must be closed
+     * - Must be open contracts to process
+     * - Severity for `season`,`region` must be valid
+     * - Must be enough eth staked within the contract
+     * @notice call nonReentrant to check against Reentrancy
+     */
+    function process(uint16 season, bytes32 region)
+        external
+        payable
+        onlyActive
+        onlyKeeper
+        seasonClosed(season)
+        nonReentrant
+        minimumCovered
+    {
+        Severity severity = oracleFacade.getRegionSeverity(season, region);
+        require(severity != Severity.D, "Severity not correct");
+
+        bytes32[] memory _openContracts = openContracts[
+            getSeasonRegionKey(season, region)
+        ];
+        require(
+            _openContracts.length > 0,
+            "No open insurance contracts to process for this season,region"
+        );
+
+        // get last element
+        bytes32 key = _openContracts[_openContracts.length - 1];
+        Contract memory _contract = contracts[key];
+        _contract.severity = severity;
+        Contract memory newContract = _process(_contract);
+
+        // Update internal state
+        openContracts[getSeasonRegionKey(season, region)].pop();
+        closedContracts[getSeasonRegionKey(season, region)].push(key);
+        contracts[key] = newContract;
+        totalOpenSize -= newContract.size;
+        totalOpenContracts--;
+
+        // pay back
+        if (newContract.changeFarmer > 0) {
+            _deposit(newContract.farmer, newContract.changeFarmer);
+        }
+        if (newContract.changeGovernment > 0) {
+            _deposit(newContract.government, newContract.changeGovernment);
+        }
+
+        // emit events
+        if (newContract.state == ContractState.COMPENSATED) {
+            emit InsuranceCompensated(
+                newContract.season,
+                newContract.region,
+                newContract.farmID,
+                newContract.size,
+                newContract.farmer,
+                newContract.insurer,
+                newContract.government,
+                newContract.totalStaked,
+                newContract.compensation,
+                newContract.severity,
+                newContract.key
+            );
+        } else {
+            emit InsuranceClosed(
+                newContract.season,
+                newContract.region,
+                newContract.farmID,
+                newContract.size,
+                newContract.farmer,
+                newContract.insurer,
+                newContract.government,
+                newContract.totalStaked,
+                newContract.compensation,
+                newContract.changeGovernment,
+                newContract.changeFarmer,
+                newContract.severity,
+                newContract.key
+            );
+        }
+    }
+
+    /**
+     * @dev private function to calculate the new version of the insurance contract after processing
+     * @param _contract current contract before processing
+     * @return newContract new contract after processing
+     *
+     */
+    function _process(Contract memory _contract)
+        private
+        view
+        returns (Contract memory newContract)
+    {
+        bool isCompensated = false;
+        newContract = _contract;
+
+        if (newContract.state == ContractState.INSURED) {
+            if (newContract.severity == Severity.D0) {
+                // no compensation if D0
+            } else {
+                isCompensated = true;
+                // calculate compensation
+                newContract.compensation =
+                    (rules[newContract.severity] * newContract.totalStaked) /
+                    10;
+                newContract.changeFarmer = newContract.compensation;
+            }
+        } else if (newContract.state == ContractState.REGISTERED) {
+            // return money back if season closed validation before approval of government
+            newContract.changeFarmer = newContract.totalStaked;
+        } else if (newContract.state == ContractState.VALIDATED) {
+            newContract.changeFarmer = newContract.totalStaked / 2;
+            newContract.changeGovernment = newContract.totalStaked / 2;
+        }
+
+        //Update contract state
+        if (isCompensated) {
+            newContract.state = ContractState.COMPENSATED;
+        } else {
+            newContract.state = ContractState.CLOSED;
+        }
     }
 
     /**

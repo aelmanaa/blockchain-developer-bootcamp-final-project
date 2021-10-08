@@ -15,12 +15,12 @@ contract OracleCore is Common, IOracle, IERC165 {
     using Math for uint256;
 
     /// @dev keep track of every region and its history
-    /// `region` in bytes => season => severity
-    mapping(bytes => mapping(uint16 => Severity)) regions;
+    /// `region` in bytes32 => season => severity
+    mapping(bytes32 => mapping(uint16 => Severity)) regions;
 
     /// @dev keep track of submissions
-    /// `region` in bytes => year(season) => Submission (struct defined above)
-    mapping(bytes => mapping(uint16 => Submission)) submissions;
+    /// `region` in bytes32 => year(season) => Submission (struct defined above)
+    mapping(bytes32 => mapping(uint16 => Submission)) submissions;
 
     /// @dev keep track of seasons
     // season must be in OPEN state in order to accept submissions
@@ -58,7 +58,7 @@ contract OracleCore is Common, IOracle, IERC165 {
     /**
      * @inheritdoc IOracle
      */
-    function aggregate(uint16 season, bytes calldata region)
+    function aggregate(uint16 season, bytes32 region)
         external
         override
         onlyKeeper
@@ -135,7 +135,7 @@ contract OracleCore is Common, IOracle, IERC165 {
     /**
      * @inheritdoc IOracle
      */
-    function getRegionSeverity(uint16 season, bytes calldata region)
+    function getRegionSeverity(uint16 season, bytes32 region)
         public
         view
         override
@@ -161,7 +161,7 @@ contract OracleCore is Common, IOracle, IERC165 {
      */
     function getSubmission(
         uint16 season,
-        bytes calldata region,
+        bytes32 region,
         address oracle
     ) public view override returns (Severity) {
         return submissions[region][season].oracles[oracle];
@@ -172,7 +172,7 @@ contract OracleCore is Common, IOracle, IERC165 {
      */
     function getSubmissionNumberForSeverity(
         uint16 season,
-        bytes calldata region,
+        bytes32 region,
         Severity severity
     ) public view override returns (uint256) {
         return submissions[region][season].numberAnswers[severity];
@@ -181,7 +181,7 @@ contract OracleCore is Common, IOracle, IERC165 {
     /**
      * @inheritdoc IOracle
      */
-    function getSubmissionTotal(uint16 season, bytes calldata region)
+    function getSubmissionTotal(uint16 season, bytes32 region)
         public
         view
         override
@@ -223,7 +223,7 @@ contract OracleCore is Common, IOracle, IERC165 {
      */
     function submit(
         uint16 season,
-        bytes calldata region,
+        bytes32 region,
         Severity severity
     )
         external

@@ -57,12 +57,12 @@ contract OracleFacade is Ownable, ReentrancyGuard {
      * @dev Retrieve  `severity` of a `region` + `season`.
      *
      * @param season year (e.g. 2021).
-     * @param region region code in bytes
+     * @param region region code in bytes32
      * @return Common.Severity
      *
      * @notice caller must check Severity. In fact, final severity is calculated after aggregation. if aggregation not triggered yet then Severity will have the default value
      */
-    function getRegionSeverity(uint16 season, bytes calldata region)
+    function getRegionSeverity(uint16 season, bytes32 region)
         public
         view
         returns (Common.Severity)
