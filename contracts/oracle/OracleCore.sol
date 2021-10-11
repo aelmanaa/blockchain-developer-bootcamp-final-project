@@ -97,7 +97,7 @@ contract OracleCore is Common, IOracle, IERC165 {
                 (totalD2 + totalD3 + totalD4) >=
                 (50 * totalAnswers).ceilDiv(100)
             ) {
-                if (totalD4.max(totalD3) == totalD4) {
+                if (totalD4.max(totalD3.max(totalD2)) == totalD4) {
                     severity = Severity.D4;
                 } else if (totalD3.max(totalD2) == totalD3) {
                     severity = Severity.D3;
