@@ -57,6 +57,6 @@ Insurance policies still rely on government and insurance company collaboration 
 
 # Documentation
 
-![Diagrams & Design patterns](./design_pattern_decisions.md)
+## [Diagrams & Design patterns](./design_pattern_decisions.md)
 
-![Avoid common attacks](./avoiding_common_attacks.md)
+## [Avoid common attacks](./avoiding_common_attacks.md)
