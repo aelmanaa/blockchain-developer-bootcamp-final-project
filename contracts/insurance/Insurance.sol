@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity 0.8.9;
 import "../core/Common.sol";
 import "../oracle/OracleFacade.sol";
 
@@ -117,13 +117,13 @@ contract Insurance is Common {
     OracleFacade private oracleFacade;
 
     /// @dev a contract is a unique combination between season,region,farmID
-    mapping(bytes32 => Contract) contracts;
+    mapping(bytes32 => Contract) private contracts;
 
     /// @dev contracts that must be treated by season,region
-    mapping(bytes32 => bytes32[]) openContracts;
+    mapping(bytes32 => bytes32[]) private openContracts;
 
     /// @dev contracts that have already been closed by season,region
-    mapping(bytes32 => bytes32[]) closedContracts;
+    mapping(bytes32 => bytes32[]) private closedContracts;
 
     uint256 public constant KEEPER_FEE = 0.01 ether;
 
@@ -141,7 +141,7 @@ contract Insurance is Common {
      * D3 gives 2 times the premium
      * D4 gives 2.5 times the premium
      */
-    mapping(Severity => uint8) rules;
+    mapping(Severity => uint8) private rules;
 
     /// @dev premium is  0.15ETH/HA
     uint256 public constant PERMIUM_PER_HA = 150000000 gwei;
@@ -149,6 +149,10 @@ contract Insurance is Common {
     /// @dev used for calculation (farmer must stake half of premium. Same for government)
     uint256 public constant HALF_PERMIUM_PER_HA = 75000000 gwei;
 
+    /**
+     * @dev Initialize `rules` for compensation. Also setup `gatekeeer` and `oracleFacade`
+     *
+     */
     constructor(address _gatekeeper, address _oracleFacade)
         Common(_gatekeeper)
     {
@@ -358,7 +362,8 @@ contract Insurance is Common {
         view
         returns (uint256)
     {
-        return getNumberClosedContractsByKey(getSeasonRegionKey(season, region));
+        return
+            getNumberClosedContractsByKey(getSeasonRegionKey(season, region));
     }
 
     /**
@@ -374,6 +379,7 @@ contract Insurance is Common {
         view
         returns (bytes32)
     {
+        require(closedContracts[key].length > index, "Out of bounds access.");
         return closedContracts[key][index];
     }
 
@@ -391,7 +397,11 @@ contract Insurance is Common {
         bytes32 region,
         uint256 index
     ) public view returns (bytes32) {
-        return getClosedContractsAtByKey(getSeasonRegionKey(season, region), index);
+        return
+            getClosedContractsAtByKey(
+                getSeasonRegionKey(season, region),
+                index
+            );
     }
 
     /**
@@ -434,7 +444,11 @@ contract Insurance is Common {
      * @return number of open contracts
      *
      */
-    function getNumberOpenContractsByKey(bytes32 key) public view returns (uint256) {
+    function getNumberOpenContractsByKey(bytes32 key)
+        public
+        view
+        returns (uint256)
+    {
         return openContracts[key].length;
     }
 
@@ -467,6 +481,7 @@ contract Insurance is Common {
         view
         returns (bytes32)
     {
+        require(openContracts[key].length > index, "Out of bounds access.");
         return openContracts[key][index];
     }
 
@@ -484,7 +499,8 @@ contract Insurance is Common {
         bytes32 region,
         uint256 index
     ) public view returns (bytes32) {
-        return getOpenContractsAtByKey(getSeasonRegionKey(season, region), index);
+        return
+            getOpenContractsAtByKey(getSeasonRegionKey(season, region), index);
     }
 
     /**
@@ -713,11 +729,16 @@ contract Insurance is Common {
             _openContracts.length > 0,
             "No open insurance contracts to process for this season,region"
         );
-        
-        
+
         Severity severity = oracleFacade.getRegionSeverity(season, region);
-        uint256 numberSubmissions = oracleFacade.getSubmissionTotal(season, region);
-        require(!((numberSubmissions>0)&&(severity == Severity.D)),"Severity has not been aggregated yet");
+        uint256 numberSubmissions = oracleFacade.getSubmissionTotal(
+            season,
+            region
+        );
+        require(
+            !((numberSubmissions > 0) && (severity == Severity.D)),
+            "Severity has not been aggregated yet"
+        );
         // get last element
         bytes32 key = _openContracts[_openContracts.length - 1];
         Contract memory _contract = contracts[key];
@@ -730,7 +751,7 @@ contract Insurance is Common {
         contracts[key] = newContract;
         totalOpenSize -= newContract.size;
         totalOpenContracts--;
-       
+
         // pay back
         if (newContract.compensation > 0) {
             _deposit(newContract.farmer, newContract.compensation);
@@ -738,7 +759,6 @@ contract Insurance is Common {
         if (newContract.changeGovernment > 0) {
             _deposit(newContract.government, newContract.changeGovernment);
         }
-        
 
         // pay keeper for its work
         _deposit(msg.sender, KEEPER_FEE);
@@ -774,7 +794,6 @@ contract Insurance is Common {
                 newContract.key
             );
         }
-        
     }
 
     /**

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity 0.8.9;
 import "../access/IGateKeeper.sol";
 import "@openzeppelin/contracts/interfaces/IERC165.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -73,6 +73,10 @@ abstract contract Common is Ownable, ReentrancyGuard {
 
     bool private stopped = false;
 
+    /**
+     * @dev Setup `gatekeeer` and `oracleFacade` . Create an `Escrow` contract to hold ETH of actors
+     *
+     */
     constructor(address _gatekeeper) {
         setGateKeeper(_gatekeeper);
         escrow = new Escrow();

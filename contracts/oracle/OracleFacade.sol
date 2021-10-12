@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity 0.8.9;
 import "../core/Common.sol";
 import "./IOracle.sol";
 import "@openzeppelin/contracts/interfaces/IERC165.sol";
@@ -23,6 +23,10 @@ contract OracleFacade is Ownable, ReentrancyGuard {
     /// @dev reference to oracle contract
     IOracle private oracleCore;
 
+    /**
+     * @dev Setup `oracleCore`
+     *
+     */
     constructor(address _oracleCore) {
         setOracle(_oracleCore);
     }
@@ -70,7 +74,7 @@ contract OracleFacade is Ownable, ReentrancyGuard {
         return oracleCore.getRegionSeverity(season, region);
     }
 
-/**
+    /**
      * @dev Retrieve total submissions for a given `region` and `season`.
      *
      * @param season year (e.g. 2021).

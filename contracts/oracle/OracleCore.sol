@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity 0.8.9;
 import "../core/Common.sol";
 import "./IOracle.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
@@ -16,19 +16,23 @@ contract OracleCore is Common, IOracle, IERC165 {
 
     /// @dev keep track of every region and its history
     /// `region` in bytes32 => season => severity
-    mapping(bytes32 => mapping(uint16 => Severity)) regions;
+    mapping(bytes32 => mapping(uint16 => Severity)) private regions;
 
     /// @dev keep track of submissions
     /// `region` in bytes32 => year(season) => Submission (struct defined above)
-    mapping(bytes32 => mapping(uint16 => Submission)) submissions;
+    mapping(bytes32 => mapping(uint16 => Submission)) private submissions;
 
     /// @dev keep track of seasons
     // season must be in OPEN state in order to accept submissions
-    mapping(uint16 => SeasonState) seasons;
+    mapping(uint16 => SeasonState) private seasons;
 
     uint256 public constant KEEPER_FEE = 0.1 ether;
     uint256 public constant ORACLE_FEE = 0.5 ether;
 
+    /**
+     * @dev Setup `gatekeeer` by calling constructor of parent contract `Common`
+     *
+     */
     constructor(address _gatekeeper) Common(_gatekeeper) {}
 
     /// @dev called when to check that a season is in initial state
