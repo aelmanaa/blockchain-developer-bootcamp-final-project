@@ -55,15 +55,8 @@ Insurance policies still rely on government and insurance company collaboration 
 - Insurance company cannot default as ETH are staked within the smart contract. Hence, once a farmer 
 - Full transparency. Both  a government employee and an insurance company admin validate information provided by the farmer during his/her onboarding and approval transaction is perform within the blockchain 
 
-# Architecture
-## Class diagram
+# Documentation
 
-![class diagram](./img/class-diagram.svg)
+![Diagrams & Design patterns](./design_pattern_decisions.md)
 
-## Sequence diagram
-
-### Severity calculation
-![sequence diagram severity calculation](./img/sequencediagram-calculate-severity.svg)
-
-### Insurance
-![sequence diagram insurance](./img/sequencediagram-insurancedapp.svg)
+![Avoid common attacks](./avoiding_common_attacks.md)
