@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const ONBOARD_TEXT = "Click here to install MetaMask!";
-const CONNECT_TEXT = "Connect";
+const CONNECT_TEXT = "Connect Account";
 const CONNECTED_TEXT = "Connected";
 
 const accountSlice = createSlice({
@@ -11,6 +11,10 @@ const accountSlice = createSlice({
     accountButtonEnabled: true,
     accounts: [],
     isMetamaskInstalled: false,
+    isConnected: false,
+    web3Loaded: false,
+    chainId: null,
+    providerRpcError: null,
   },
   reducers: {
     showNotification(state, action) {
@@ -23,8 +27,17 @@ const accountSlice = createSlice({
     checkMetamaskInstalled(state, action) {
       state.isMetamaskInstalled = action.payload.isMetamaskInstalled;
     },
+    connect(state, action) {
+      state.isConnected = action.payload.isConnected;
+      if (action.payload.providerRpcError) {
+        state.providerRpcError = action.payload.providerRpcError;
+      }
+    },
     loadAccounts(state, action) {
       state.accounts = action.payload.accounts;
+    },
+    loadChainId(state, action) {
+      state.chainId = action.payload.chainId;
     },
     afterAccountsLoading(state, action) {
       state.accountButtonEnabled = action.payload.accountButtonEnabled;
@@ -33,6 +46,9 @@ const accountSlice = createSlice({
       } else {
         state.accountButtonText = CONNECTED_TEXT;
       }
+    },
+    loadWeb3(state, action) {
+      state.web3Loaded = action.payload.web3Loaded;
     },
   },
 });

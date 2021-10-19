@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   checkMetamaskInstalled,
-  loadAccounts,
+  connect,
   afterAccountsLoading,
 } from "../../store/metamask";
 
@@ -26,20 +26,19 @@ const Account = (props) => {
     dispatch(checkMetamaskInstalled());
   }, [dispatch]);
 
-  /*
-  useEffect(() => {
-    dispatch(loadAccounts(isMetamaskInstalled));
-  }, [dispatch, isMetamaskInstalled]);
-*/
   useEffect(() => {
     dispatch(afterAccountsLoading(accounts));
   }, [dispatch, accounts]);
 
   const connectHandler = () => {
-    dispatch(loadAccounts(isMetamaskInstalled));
+    dispatch(connect(isMetamaskInstalled));
   };
 
-  return <button disabled={!accountButtonEnabled} onClick={connectHandler}>{accountButtonText}</button>;
+  return (
+    <button disabled={!accountButtonEnabled} onClick={connectHandler}>
+      {accountButtonText}
+    </button>
+  );
 };
 
 export default Account;

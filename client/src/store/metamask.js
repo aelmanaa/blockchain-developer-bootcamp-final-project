@@ -1,24 +1,48 @@
 import MetaMaskOnboarding from "@metamask/onboarding";
+import Web3 from "web3";
 import { accountActions } from "./account";
 
 const onboarding = new MetaMaskOnboarding();
+let web3 = null;
 
 export const checkMetamaskInstalled = () => {
   return async (dispatch) => {
     if (!MetaMaskOnboarding.isMetaMaskInstalled()) {
       onboarding.startOnboarding();
     }
-    let isMetamaskInstalled = true;
-    dispatch(accountActions.checkMetamaskInstalled({ isMetamaskInstalled }));
+    dispatch(
+      accountActions.checkMetamaskInstalled({ isMetamaskInstalled: true })
+    );
+    window.ethereum.on("connect", (connectInfo) => {
+      dispatch(accountActions.connect({ isConnected: true, providerRpcError: null }));
+      dispatch(accountActions.loadChainId({ chainId: connectInfo.chainId }));
+      web3 = new Web3(window.ethereum);
+      dispatch(accountActions.loadWeb3({ web3Loaded: true }));
+    });
+
+    window.ethereum.on("chainChanged", (chainId) => {
+      dispatch(accountActions.loadChainId({ chainId }));
+    });
+
+    window.ethereum.on("disconnect", (error) => {
+      console.log(JSON.stringify(error));
+      dispatch(
+        accountActions.connect({ isConnected: false, providerRpcError: error.code })
+      );
+      dispatch(accountActions.loadChainId({ chainId: null }));
+      web3 = null;
+      dispatch(accountActions.loadWeb3({ web3Loaded: false }));
+    });
   };
 };
 
-export const loadAccounts = (isMetamaskInstalled) => {
+export const connect = (isMetamaskInstalled) => {
   return async (dispatch) => {
     if (isMetamaskInstalled) {
       let accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
+
       dispatch(accountActions.loadAccounts({ accounts }));
 
       window.ethereum.on("accountsChanged", (accounts) => {
@@ -41,4 +65,8 @@ export const afterAccountsLoading = (accounts) => {
       );
     }
   };
+};
+
+export const getWeb3 = () => {
+  return web3;
 };
