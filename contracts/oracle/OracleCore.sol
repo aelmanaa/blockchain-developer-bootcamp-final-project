@@ -26,6 +26,9 @@ contract OracleCore is Common, IOracle, IERC165 {
     // season must be in OPEN state in order to accept submissions
     mapping(uint16 => SeasonState) private seasons;
 
+    /// @dev placeholder to retrieve seasons
+    uint16[] private seasonsArray;
+
     uint256 public constant KEEPER_FEE = 0.1 ether;
     uint256 public constant ORACLE_FEE = 0.5 ether;
 
@@ -153,6 +156,21 @@ contract OracleCore is Common, IOracle, IERC165 {
     /**
      * @inheritdoc IOracle
      */
+    function getSeasonsNumber() public view override returns (uint256) {
+        return seasonsArray.length;
+    }
+
+    /**
+     * @inheritdoc IOracle
+     */
+    function getSeasonAt(uint256 index) public view returns (uint16) {
+        require(seasonsArray.length > index, "Out of bounds access.");
+        return seasonsArray[index];
+    }
+
+    /**
+     * @inheritdoc IOracle
+     */
     function getSeasonState(uint16 season)
         public
         view
@@ -208,6 +226,7 @@ contract OracleCore is Common, IOracle, IERC165 {
         nonReentrant
     {
         seasons[season] = SeasonState.OPEN;
+        seasonsArray.push(season);
         _deposit(msg.sender, KEEPER_FEE);
         emit SeasonOpen(season, msg.sender);
     }

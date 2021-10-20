@@ -99,6 +99,22 @@ interface IOracle {
         returns (Common.Severity);
 
     /**
+     * @dev Retrieve number of seasons
+     *
+     * @return number of seasons defined so far
+     */
+    function getSeasonsNumber() external view returns (uint256);
+
+    /**
+     * @dev Retrieve season at `index`
+     *
+     * @return `season`
+     *
+     * @notice must check not out of bound exception
+     */
+    function getSeasonAt(uint256 index) external view returns (uint16);
+
+    /**
      * @dev Retrieve a `season` state.
      *
      * @param season year (e.g. 2021).
@@ -151,7 +167,7 @@ interface IOracle {
      * @return number of submissions
      *
      */
-    function getSubmissionTotal(uint16 season, bytes32  region)
+    function getSubmissionTotal(uint16 season, bytes32 region)
         external
         view
         returns (uint256);
