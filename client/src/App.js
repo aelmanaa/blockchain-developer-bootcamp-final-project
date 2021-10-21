@@ -1,13 +1,30 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
 
 import Layout from "./components/Layout/Layout";
+import Notification from "./components/UI/Notification";
+import { checkMetamaskInstalled } from "./store/metamask";
 
-function App() {
+const App = () => {
+  const dispatch = useDispatch();
+  const notification = useSelector((state) => state.ui.notification);
+
+  useEffect(() => {
+    dispatch(checkMetamaskInstalled());
+  }, [dispatch]);
+
   return (
     <Fragment>
+      {notification && (
+        <Notification
+          status={notification.status}
+          title={notification.title}
+          message={notification.message}
+        />
+      )}
       <Layout></Layout>
     </Fragment>
   );
-}
+};
 
 export default App;

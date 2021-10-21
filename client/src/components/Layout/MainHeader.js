@@ -6,7 +6,6 @@ import AccountDisplayer from "../header/AccountDisplayer";
 const MainHeader = (props) => {
   return (
     <header /*className={classes.header}*/>
-      <h1>ReduxCart</h1>
       <Account />
       <AccountDisplayer />
     </header>

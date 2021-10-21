@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  checkMetamaskInstalled,
   connect,
   afterAccountsLoading,
 } from "../../store/metamask";
@@ -9,7 +8,7 @@ import {
 //import { uiActions } from '../../store/ui-slice';
 //import classes from './CartButton.module.css';
 
-const Account = (props) => {
+const Account = () => {
   const dispatch = useDispatch();
   const isMetamaskInstalled = useSelector(
     (state) => state.account.isMetamaskInstalled
@@ -22,9 +21,6 @@ const Account = (props) => {
     (state) => state.account.accountButtonEnabled
   );
 
-  useEffect(() => {
-    dispatch(checkMetamaskInstalled());
-  }, [dispatch]);
 
   useEffect(() => {
     dispatch(afterAccountsLoading(accounts));

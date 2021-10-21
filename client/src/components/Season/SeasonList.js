@@ -1,10 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { loadSeasonList } from "../../store/artifact";
+import SeasonItem from "./SeasonItem";
 
-const SeasonList = (props) => {
+const SeasonList = () => {
   const dispatch = useDispatch();
   const oracleCoreLoaded = useSelector((state) => state.contract.oracleCoreLoaded);
+  const seasonsNumber = useSelector((state) => state.oracleCore.seasonsNumber);
+  const seasons = useSelector((state) => state.oracleCore.seasons);
 
   useEffect(() => {
     dispatch(loadSeasonList(oracleCoreLoaded));
@@ -23,19 +26,28 @@ const SeasonList = (props) => {
   );
   const tbody = (
     <tbody>
-      <tr>
-        <td>2021</td>
-        <td>Open</td>
-        <td>
-          <button>clickme</button>
-        </td>
-      </tr>
+        {seasons.map((season) => (
+          <SeasonItem
+            key={season.id}
+            id={season.id}
+            state={season.state}
+          />
+        ))}
     </tbody>
+  );
+
+  const tfoot = (
+    <tfoot>
+    <tr>
+      <td>Number of seasons: {seasonsNumber}</td>
+    </tr>
+  </tfoot>
   );
   return (
     <table>
       {tableHeaders}
       {tbody}
+      {tfoot}
     </table>
   );
 };

@@ -13,12 +13,15 @@ export const checkMetamaskInstalled = () => {
     dispatch(
       accountActions.checkMetamaskInstalled({ isMetamaskInstalled: true })
     );
-    window.ethereum.on("connect", (connectInfo) => {
-      dispatch(accountActions.connect({ isConnected: true, providerRpcError: null }));
-      dispatch(accountActions.loadChainId({ chainId: connectInfo.chainId }));
-      web3 = new Web3(window.ethereum);
-      dispatch(accountActions.loadWeb3({ web3Loaded: true }));
+    // chainID
+    let chainId = await window.ethereum.request({
+      method: "eth_chainId",
     });
+    dispatch(accountActions.loadChainId({ chainId }));
+
+    // load web3
+    web3 = new Web3(window.ethereum);
+    dispatch(accountActions.loadWeb3({ web3Loaded: true }));
 
     window.ethereum.on("chainChanged", (chainId) => {
       dispatch(accountActions.loadChainId({ chainId }));
@@ -27,7 +30,10 @@ export const checkMetamaskInstalled = () => {
     window.ethereum.on("disconnect", (error) => {
       console.log(JSON.stringify(error));
       dispatch(
-        accountActions.connect({ isConnected: false, providerRpcError: error.code })
+        accountActions.connect({
+          isConnected: false,
+          providerRpcError: error.code,
+        })
       );
       dispatch(accountActions.loadChainId({ chainId: null }));
       web3 = null;
@@ -49,6 +55,10 @@ export const connect = (isMetamaskInstalled) => {
         dispatch(accountActions.loadAccounts({ accounts }));
       });
     }
+
+    dispatch(
+      accountActions.connect({ isConnected: true, providerRpcError: null })
+    );
   };
 };
 
