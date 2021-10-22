@@ -1,9 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  connect,
-  afterAccountsLoading,
-} from "../../store/metamask";
+import { connect, afterAccountsLoading } from "../../store/metamask";
+import { getOracleEscrow } from "../../store/artifact";
 
 //import { uiActions } from '../../store/ui-slice';
 //import classes from './CartButton.module.css';
@@ -13,7 +11,12 @@ const Account = () => {
   const isMetamaskInstalled = useSelector(
     (state) => state.account.isMetamaskInstalled
   );
+  const oracleCoreLoaded = useSelector(
+    (state) => state.contract.oracleCoreLoaded
+  );
+
   const accounts = useSelector((state) => state.account.accounts);
+
   const accountButtonText = useSelector(
     (state) => state.account.accountButtonText
   );
@@ -21,10 +24,15 @@ const Account = () => {
     (state) => state.account.accountButtonEnabled
   );
 
-
   useEffect(() => {
     dispatch(afterAccountsLoading(accounts));
   }, [dispatch, accounts]);
+
+  useEffect(() => {
+    if (accounts[0]) {
+      dispatch(getOracleEscrow(accounts[0]));
+    }
+  }, [dispatch, accounts, oracleCoreLoaded]);
 
   const connectHandler = () => {
     dispatch(connect(isMetamaskInstalled));

@@ -4,6 +4,7 @@ import oracleCore from "../contracts/OracleCore.json";
 import insurance from "../contracts/Insurance.json";
 import { getWeb3 } from "./metamask";
 import { uiActions } from "./ui";
+import { accountActions } from "./account";
 
 let oracleCoreMeta, insuranceMeta;
 export const loadContracts = (web3Loaded, chainId) => {
@@ -42,20 +43,21 @@ export const loadContracts = (web3Loaded, chainId) => {
   };
 };
 
-export const loadSeasonList = (oracleCoreLoaded) => {
+export const afterOracleCoreLoading = (oracleCoreLoaded) => {
   return async (dispatch) => {
     if (oracleCoreLoaded) {
       const { getSeasonsNumber, getSeasonAt, getSeasonState } =
         oracleCoreMeta.methods;
-      const seasonsNumber = parseInt(await getSeasonsNumber().call());
+      const seasonsNumber = parseInt(await getSeasonsNumber().call()) || 0;
+
       dispatch(oracleCoreActions.loadSeasonsNumber({ seasonsNumber }));
       if (seasonsNumber > 0) {
         const seasons = [];
         for (let i = 0; i < seasonsNumber; i++) {
-          const seasonId = getSeasonAt(i.toString()).call();
-          const seasonState = getSeasonState(seasonId).call();
+          const seasonId = await getSeasonAt(i.toString()).call();
+          const seasonState = await getSeasonState(seasonId).call();
           seasons.push({
-            id: seasonId,
+            id: Number(seasonId),
             state: seasonState,
           });
         }
@@ -75,13 +77,14 @@ export const loadSeasonList = (oracleCoreLoaded) => {
           console.log(event); // same results as the optional callback above
           dispatch(
             oracleCoreActions.addSeason({
-              id: event.returnValues.season,
+              id: Number(event.returnValues.season),
             })
           );
         })
         .on("error", (error, receipt) => {
           // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
           //TODO
+          console.error("Emit error season open event");
           console.error(error, receipt);
         });
 
@@ -98,17 +101,18 @@ export const loadSeasonList = (oracleCoreLoaded) => {
           console.log(event); // same results as the optional callback above
           dispatch(
             oracleCoreActions.closeSeason({
-              id: event.returnValues.season,
+              id: Number(event.returnValues.season),
             })
           );
         })
         .on("error", (error, receipt) => {
           // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
           //TODO
+          console.error("Emit error season closed event");
           console.error(error, receipt);
         });
     } else {
-      // TODO
+      dispatch(oracleCoreActions.loadSeasons({ seasons: [] }));
     }
   };
 };
@@ -133,6 +137,8 @@ export const openSeason = (newSeason, account) => {
           message: "openSeason successfull!",
         })
       );
+
+      dispatch(getOracleEscrow(account));
     } catch (error) {
       console.error(error);
       dispatch(
@@ -142,6 +148,57 @@ export const openSeason = (newSeason, account) => {
           message: "openSeason failed!",
         })
       );
+    }
+  };
+};
+
+export const closeSeason = (season, account) => {
+  return async (dispatch) => {
+    dispatch(
+      uiActions.showNotification({
+        status: "pending",
+        title: "Sending...",
+        message: "Starting closeSeason transaction!",
+      })
+    );
+    const { closeSeason } = oracleCoreMeta.methods;
+    try {
+      let res = await closeSeason(season.toString()).send({ from: account });
+      console.log(res);
+      dispatch(
+        uiActions.showNotification({
+          status: "success",
+          title: "Success!",
+          message: "closeSeason successfull!",
+        })
+      );
+      dispatch(getOracleEscrow(account));
+    } catch (error) {
+      console.error(error);
+      dispatch(
+        uiActions.showNotification({
+          status: "error",
+          title: "Error!",
+          message: "closeSeason failed!",
+        })
+      );
+    }
+  };
+};
+
+export const getOracleEscrow = (account) => {
+  return async (dispatch) => {
+    const { depositsOf } = oracleCoreMeta.methods;
+    try {
+      const balance = await depositsOf(account).call({ from: account });
+      dispatch(
+        accountActions.updateOracleEscrow({
+          account,
+          balance,
+        })
+      );
+    } catch (error) {
+      console.error(error);
     }
   };
 };

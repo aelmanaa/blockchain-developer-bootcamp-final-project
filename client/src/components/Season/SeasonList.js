@@ -1,20 +1,12 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { loadSeasonList } from "../../store/artifact";
+import { useSelector } from "react-redux";
 import SeasonItem from "./SeasonItem";
 
 const SeasonList = () => {
-  const dispatch = useDispatch();
-  const oracleCoreLoaded = useSelector((state) => state.contract.oracleCoreLoaded);
+
   const seasonsNumber = useSelector((state) => state.oracleCore.seasonsNumber);
   const seasons = useSelector((state) => state.oracleCore.seasons);
 
-  useEffect(() => {
-    dispatch(loadSeasonList(oracleCoreLoaded));
-  }, [dispatch, oracleCoreLoaded]);
 
-
-  
   const tableHeaders = (
     <thead>
       <tr>

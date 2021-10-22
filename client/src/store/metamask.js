@@ -68,6 +68,16 @@ export const afterAccountsLoading = (accounts) => {
       dispatch(
         accountActions.afterAccountsLoading({ accountButtonEnabled: false })
       );
+      // account balance
+      for (let i = 0; i < accounts.length; i++) {
+        let balance = await web3.eth.getBalance(accounts[i]);
+        dispatch(
+          accountActions.updateAccountBalance({
+            account: accounts[i],
+            balance: balance,
+          })
+        );
+      }
       onboarding.stopOnboarding();
     } else {
       dispatch(

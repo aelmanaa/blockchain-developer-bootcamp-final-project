@@ -10,6 +10,7 @@ const SeasonManagement = () => {
     (state) => state.contract.oracleCoreLoaded
   );
   let defaultSeason = useSelector((state) => state.oracleCore.defaultSeason);
+
   let maxSeason = useSelector((state) => state.oracleCore.maxSeason);
   let newSeason = useSelector((state) => state.oracleCore.newSeason);
   let connectedAccount = useSelector((state) => state.account.accounts[0]);
@@ -36,11 +37,11 @@ const SeasonManagement = () => {
               min: defaultSeason,
               max: maxSeason,
               step: "1",
-              defaultValue: defaultSeason,
+              value: defaultSeason,
               onChange: handleChange,
             }}
           />
-          <button>Open new season</button>
+          <button>Open new season {defaultSeason}</button>
         </form>
       )}
     </Fragment>

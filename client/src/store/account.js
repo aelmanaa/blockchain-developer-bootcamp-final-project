@@ -10,6 +10,9 @@ const accountSlice = createSlice({
     accountButtonText: ONBOARD_TEXT,
     accountButtonEnabled: true,
     accounts: [],
+    accountsBalances: {},
+    accountsOracleEscrow: {},
+    accountsInsuranceEscrow: {},
     isMetamaskInstalled: false,
     isConnected: false,
     web3Loaded: false,
@@ -50,6 +53,12 @@ const accountSlice = createSlice({
     loadWeb3(state, action) {
       state.web3Loaded = action.payload.web3Loaded;
     },
+    updateAccountBalance(state,action){
+      state.accountsBalances[action.payload.account]=action.payload.balance;
+    },
+    updateOracleEscrow(state,action){
+      state.accountsOracleEscrow[action.payload.account]=action.payload.balance;
+    }
   },
 });
 
