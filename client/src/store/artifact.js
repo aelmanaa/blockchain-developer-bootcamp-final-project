@@ -5,7 +5,7 @@ import insurance from "../contracts/Insurance.json";
 import { getWeb3 } from "./metamask";
 import { uiActions } from "./ui";
 import { accountActions } from "./account";
-import { SEASON_STATE} from "../utils/constant";
+import { REGIONS, SEASON_STATE, SEVERITY } from "../utils/constant";
 
 let oracleCoreMeta, insuranceMeta;
 export const loadContracts = (web3Loaded, chainId) => {
@@ -200,6 +200,41 @@ export const getOracleEscrow = (account) => {
       );
     } catch (error) {
       console.error(error);
+    }
+  };
+};
+
+export const submitSeverity = (season, region, severity, account) => {
+  return async (dispatch) => {
+    dispatch(
+      uiActions.showNotification({
+        status: "pending",
+        title: "Sending...",
+        message: "Starting openSeason transaction!",
+      })
+    );
+    const { submit } = oracleCoreMeta.methods;
+    try {
+      let res = await submit(season.toString(), REGIONS[region].hash, SEVERITY[severity].value).send({ from: account });
+      console.log(res);
+      dispatch(
+        uiActions.showNotification({
+          status: "success",
+          title: "Success!",
+          message: "Submission successfull!",
+        })
+      );
+
+      dispatch(getOracleEscrow(account));
+    } catch (error) {
+      console.error(error);
+      dispatch(
+        uiActions.showNotification({
+          status: "error",
+          title: "Error!",
+          message: "Submision failed!",
+        })
+      );
     }
   };
 };

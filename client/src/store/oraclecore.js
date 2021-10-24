@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { SEASON_STATE} from "../utils/constant";
+import { SEASON_STATE, REGIONS, SEVERITY } from "../utils/constant";
 
 const oracleCoreSlice = createSlice({
   name: "oracleCore",
@@ -9,6 +9,9 @@ const oracleCoreSlice = createSlice({
     defaultSeason: 2021,
     maxSeason: 2026,
     newSeason: 2021,
+    submitOracleSeason: null,
+    submitOracleRegion: REGIONS.REGA.keyName,
+    submitOracleSeverity: SEVERITY.D0.keyName,
   },
   reducers: {
     loadSeasonsNumber(state, action) {
@@ -48,6 +51,15 @@ const oracleCoreSlice = createSlice({
     },
     encodeNewSeason(state, action) {
       state.newSeason = action.payload.newSeason;
+    },
+    encodeSubmitOracleSeason(state, action) {
+      state.submitOracleSeason = action.payload.submitOracleSeason;
+    },
+    encodeSubmitOracleRegion(state, action) {
+      state.submitOracleRegion = action.payload.submitOracleRegion;
+    },
+    encodeSubmitOracleSeverity(state, action) {
+      state.submitOracleSeverity = action.payload.submitOracleSeverity;
     },
   },
 });

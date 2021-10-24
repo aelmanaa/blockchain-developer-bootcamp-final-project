@@ -77,7 +77,7 @@ contract OracleCore is Common, IOracle, IERC165 {
             regions[region][season] == Severity.D,
             "Severity already aggregated"
         );
-        uint256 totalAnswers = submissions[region][season].totalAnswers;
+        uint256 totalAnswers = submissions[region][season].submitters.length;
         if (totalAnswers > 0) {
             uint256 totalD0 = submissions[region][season].numberAnswers[
                 Severity.D0
@@ -211,7 +211,19 @@ contract OracleCore is Common, IOracle, IERC165 {
         override
         returns (uint256)
     {
-        return submissions[region][season].totalAnswers;
+        return submissions[region][season].submitters.length;
+    }
+
+    /**
+     * @inheritdoc IOracle
+     */
+    function getSubmitterAt(
+        uint16 season,
+        bytes32 region,
+        uint256 index
+    ) public view override returns (address) {
+        require(submissions[region][season].submitters.length > index, "Out of bounds access.");
+        return submissions[region][season].submitters[index];
     }
 
     /**
@@ -274,7 +286,7 @@ contract OracleCore is Common, IOracle, IERC165 {
 
         submissions[region][season].oracles[msg.sender] = severity;
         submissions[region][season].numberAnswers[severity] += 1;
-        submissions[region][season].totalAnswers += 1;
+        submissions[region][season].submitters.push(msg.sender);
         _deposit(msg.sender, ORACLE_FEE);
         emit SeveritySubmitted(season, region, severity, msg.sender);
     }

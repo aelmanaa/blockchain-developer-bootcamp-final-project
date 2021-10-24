@@ -14,7 +14,7 @@ const Select = (props) => {
   return (
     <div>
       <label htmlFor={props.select.id}>{props.label}</label>
-      <select {...selectAttributes}>{optionsTags}</select>
+      <select {...props.select}>{optionsTags}</select>
     </div>
   );
 };

@@ -39,7 +39,7 @@ interface IOracle {
     struct Submission {
         mapping(address => Common.Severity) oracles;
         mapping(Common.Severity => uint256) numberAnswers;
-        uint256 totalAnswers;
+        address[] submitters;
     }
 
     /**
@@ -171,6 +171,22 @@ interface IOracle {
         external
         view
         returns (uint256);
+
+    /**
+     * @dev Retrieve submitter  for a given `region` and `season` at a given `index`.
+     *
+     * @param season year (e.g. 2021).
+     * @param region region code in bytes32
+     *
+     * @return address of oracle
+     *
+     * @notice caller must call getSubmissionTotal before in order to ensure no out of bounds array access
+     */
+    function getSubmitterAt(
+        uint16 season,
+        bytes32 region,
+        uint256 index
+    ) external view returns (address);
 
     /**
      * @dev Open a `season`.
