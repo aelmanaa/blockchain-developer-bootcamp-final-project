@@ -5,6 +5,7 @@ import insurance from "../contracts/Insurance.json";
 import { getWeb3 } from "./metamask";
 import { uiActions } from "./ui";
 import { accountActions } from "./account";
+import { SEASON_STATE} from "../utils/constant";
 
 let oracleCoreMeta, insuranceMeta;
 export const loadContracts = (web3Loaded, chainId) => {
@@ -58,7 +59,7 @@ export const afterOracleCoreLoading = (oracleCoreLoaded) => {
           const seasonState = await getSeasonState(seasonId).call();
           seasons.push({
             id: Number(seasonId),
-            state: seasonState,
+            state: SEASON_STATE[seasonState],
           });
         }
         dispatch(oracleCoreActions.loadSeasons({ seasons }));

@@ -1,8 +1,8 @@
 import { Fragment, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 
-import Layout from "./components/Layout/Layout";
-import Notification from "./components/UI/Notification";
+import Layout from "./components/layout/Layout";
+import Notification from "./components/ui/Notification";
 import { checkMetamaskInstalled } from "./store/metamask";
 
 const App = () => {

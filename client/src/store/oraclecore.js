@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { SEASON_STATE} from "../utils/constant";
 
 const oracleCoreSlice = createSlice({
   name: "oracleCore",
@@ -30,20 +31,17 @@ const oracleCoreSlice = createSlice({
     addSeason(state, action) {
       state.seasons.push({
         id: action.payload.id,
-        state: "1",
+        state: SEASON_STATE[1],
       });
-      console.log("add season ", state.defaultSeason);
       state.defaultSeason++;
       state.newSeason = state.defaultSeason;
-      console.log("add season ", state.defaultSeason);
-      console.log("add season ", state.newSeason);
       state.maxSeason = state.defaultSeason + 5;
       state.seasonsNumber = state.seasonsNumber + 1;
     },
     closeSeason(state, action) {
       for (let season of state.seasons) {
         if (season.id === action.payload.id) {
-          season.state = "2";
+          season.state = SEASON_STATE[2];
           break;
         }
       }

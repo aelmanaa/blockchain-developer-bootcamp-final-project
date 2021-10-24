@@ -12,7 +12,6 @@ export const toWei = (ether) => {
 
 export const toTwoDec = (bn) => {
   const [main, decimal] = bn.split(".");
-  const result = decimal?(main + "." + decimal.substr(0, 2)):main;
-  
+  const result = decimal ? main + "." + decimal.substr(0, 2) : main;
   return result;
 };

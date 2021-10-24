@@ -1,14 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 import { closeSeason } from "../../store/artifact";
+import { SEASON_STATE } from "../../utils/constant";
 
 const SeasonItem = (props) => {
   const dispatch = useDispatch();
   let connectedAccount = useSelector((state) => state.account.accounts[0]);
-
-  const labels = {
-    1: "Open",
-    2: "Closed",
-  };
 
   const closeHandler = (event) => {
     event.preventDefault();
@@ -16,7 +12,7 @@ const SeasonItem = (props) => {
   };
 
   const elem =
-    (props.state === "1" && connectedAccount) ? (
+    props.state === SEASON_STATE[1] && connectedAccount ? (
       <button onClick={closeHandler} value={props.id}>
         Close season
       </button>
@@ -26,7 +22,7 @@ const SeasonItem = (props) => {
   return (
     <tr>
       <td>{props.id}</td>
-      <td>{labels[props.state]}</td>
+      <td>{SEASON_STATE[props.state].label}</td>
       <td>{elem}</td>
     </tr>
   );

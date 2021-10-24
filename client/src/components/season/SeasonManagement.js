@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import Input from "../UI/Input";
+import Input from "../ui/Input";
 import { Fragment } from "react";
 import { oracleCoreActions } from "../../store/oraclecore";
 import { openSeason } from "../../store/artifact";
