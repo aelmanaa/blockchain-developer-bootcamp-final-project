@@ -1,10 +1,8 @@
 import { useSelector } from "react-redux";
-import { REGIONS } from "../../utils/constant";
-//import OracleItem from "./OracleItem";
+import OracleItem from "./OracleItem";
 
 const OracleList = () => {
-  const seasons = useSelector((state) => state.oracleCore.seasons);
-  const regions = Object.keys(REGIONS);
+  const submissions = useSelector((state) => state.oracleCore.submissions);
 
   const tableHeaders = (
     <thead>
@@ -18,24 +16,27 @@ const OracleList = () => {
   );
   const tbody = (
     <tbody>
-      {seasons.map((season) => (
-        <OracleItem key={season.id} id={season.id} state={season.state} />
-      ))}
+      {submissions.map((submission) => {
+        const key =
+          submission.seasonId + submission.region + submission.submitter;
+        return (
+          <OracleItem
+            key={key}
+            seasonId={submission.seasonId}
+            region={submission.region}
+            severity={submission.severity}
+            submitter={submission.submitter}
+          />
+        );
+      })}
     </tbody>
   );
 
-  const tfoot = (
-    <tfoot>
-      <tr>
-        <td>Number of seasons: {seasonsNumber}</td>
-      </tr>
-    </tfoot>
-  );
   return (
     <table>
+      <caption>Oracles submissions</caption>
       {tableHeaders}
       {tbody}
-      {tfoot}
     </table>
   );
 };

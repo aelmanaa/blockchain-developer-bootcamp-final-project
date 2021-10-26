@@ -3,6 +3,7 @@ import Select from "../ui/Select";
 import { Fragment } from "react";
 import { SEASON_STATE, REGIONS, SEVERITY } from "../../utils/constant";
 import { oracleCoreActions } from "../../store/oraclecore";
+import { submitSeverity } from "../../store/artifact";
 
 const OracleManagement = () => {
   const dispatch = useDispatch();
@@ -80,7 +81,14 @@ const OracleManagement = () => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    //dispatch(openSeason(newSeason, connectedAccount));
+    dispatch(
+      submitSeverity(
+        submitOracleSeason,
+        submitOracleRegion,
+        submitOracleSeverity,
+        connectedAccount
+      )
+    );
   };
 
   return (

@@ -15,3 +15,11 @@ export const toTwoDec = (bn) => {
   const result = decimal ? main + "." + decimal.substr(0, 2) : main;
   return result;
 };
+
+export const renderAddress = (address) => {
+  return (
+    address.substring(0, 4) +
+    ".." +
+    address.substring(address.length - 3, address.length)
+  );
+};
