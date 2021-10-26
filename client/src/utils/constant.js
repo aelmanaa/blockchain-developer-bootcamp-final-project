@@ -38,6 +38,11 @@ export const REGIONS = {
 };
 
 export const SEVERITY = {
+  D: {
+    label: "Default",
+    value: "0",
+    keyName: "D",
+  },
   D0: {
     label: "Abnormally Dry",
     value: "1",
@@ -66,6 +71,7 @@ export const SEVERITY = {
 };
 
 export const SEVERITY_VALUES = {
+  0: "D",
   1: "D0",
   2: "D1",
   3: "D2",

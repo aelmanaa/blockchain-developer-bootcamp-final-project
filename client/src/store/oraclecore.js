@@ -13,6 +13,7 @@ const oracleCoreSlice = createSlice({
     submitOracleRegion: REGIONS.REGA.keyName,
     submitOracleSeverity: SEVERITY.D0.keyName,
     submissions: [],
+    severities: [],
   },
   reducers: {
     loadSeasonsNumber(state, action) {
@@ -35,6 +36,9 @@ const oracleCoreSlice = createSlice({
     loadSubmissions(state, action) {
       state.submissions = action.payload.submissions;
     },
+    loadSeverities(state, action) {
+      state.severities = action.payload.severities;
+    },
     addSeason(state, action) {
       state.seasons.push({
         id: action.payload.id,
@@ -52,6 +56,34 @@ const oracleCoreSlice = createSlice({
         severity: action.payload.severity,
         submitter: action.payload.submitter,
       });
+    },
+    addSeverity(state, action) {
+      state.severities.push({
+        seasonId: action.payload.seasonId,
+        region: action.payload.region,
+        severity: action.payload.severity,
+        submissionsCount: action.payload.submissionsCount,
+      });
+    },
+    updateSeverity(state, action) {
+      const index = state.severities.findIndex(
+        (element) =>
+          element.seasonId === action.payload.seasonId &&
+          element.region &&
+          element.action.payload.region
+      );
+      if (index === -1) {
+        state.severities.push({
+          seasonId: action.payload.seasonId,
+          region: action.payload.region,
+          severity: action.payload.severity,
+          submissionsCount: action.payload.submissionsCount,
+        });
+      } else {
+        state.severities[index].severity = action.payload.severity;
+        state.severities[index].submissionsCount =
+          action.payload.submissionsCount;
+      }
     },
     closeSeason(state, action) {
       for (let season of state.seasons) {

@@ -4,6 +4,7 @@ import { loadContracts } from "../../store/artifact";
 import { afterOracleCoreLoading } from "../../store/artifact";
 import Season from "../season/Season";
 import Oracle from "../oracle/Oracle";
+import Severity from "../severity/Severity";
 
 const Main = (props) => {
   const dispatch = useDispatch();
@@ -25,6 +26,7 @@ const Main = (props) => {
     <Fragment>
       <Season />
       <Oracle />
+      <Severity />
     </Fragment>
   );
 };
