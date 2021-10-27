@@ -69,21 +69,9 @@ const oracleCoreSlice = createSlice({
       const index = state.severities.findIndex(
         (element) =>
           element.seasonId === action.payload.seasonId &&
-          element.region &&
-          element.action.payload.region
+          element.region === action.payload.region
       );
-      if (index === -1) {
-        state.severities.push({
-          seasonId: action.payload.seasonId,
-          region: action.payload.region,
-          severity: action.payload.severity,
-          submissionsCount: action.payload.submissionsCount,
-        });
-      } else {
-        state.severities[index].severity = action.payload.severity;
-        state.severities[index].submissionsCount =
-          action.payload.submissionsCount;
-      }
+      state.severities[index].severity = action.payload.severity;
     },
     closeSeason(state, action) {
       for (let season of state.seasons) {

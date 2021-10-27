@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { REGIONS, SEVERITY, SEVERITY_VALUES } from "../../utils/constant";
-//import { aggregateSeverity } from "../../store/artifact";
+import { aggregateSeverity } from "../../store/artifact";
 
 const SeverityItem = (props) => {
   const dispatch = useDispatch();
@@ -8,9 +8,8 @@ const SeverityItem = (props) => {
 
   const aggregateHandler = (event) => {
     event.preventDefault();
-    console.log(event.target);
-    console.log(event.target.value);
-    //dispatch(aggregateSeverity(event.target.value, connectedAccount));
+    const [seasonId, region] = event.target.value.split("_");
+    dispatch(aggregateSeverity(seasonId, region, connectedAccount));
   };
 
   const elem =

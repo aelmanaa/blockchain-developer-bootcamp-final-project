@@ -61,8 +61,8 @@ export const afterOracleCoreLoading = (oracleCoreLoaded) => {
         const closedSeasons = seasons.filter((season) => {
           return season.state === SEASON_STATE[2];
         });
-        if (openSeasons.length > 0) {
-          await initialLoadSubmissions(dispatch, openSeasons);
+        if (seasons.length > 0) {
+          await initialLoadSubmissions(dispatch, seasons);
         }
         if (closedSeasons.length > 0) {
           await initialLoadSeverities(dispatch, closedSeasons);
@@ -80,6 +80,7 @@ export const afterOracleCoreLoading = (oracleCoreLoaded) => {
     } else {
       dispatch(oracleCoreActions.loadSeasons({ seasons: [] }));
       dispatch(oracleCoreActions.loadSubmissions({ submissions: [] }));
+      dispatch(oracleCoreActions.loadSeverities({ severities: [] }));
     }
   };
 };
@@ -209,6 +210,43 @@ export const submitSeverity = (season, region, severity, account) => {
   };
 };
 
+export const aggregateSeverity = (season, region, account) => {
+  return async (dispatch) => {
+    dispatch(
+      uiActions.showNotification({
+        status: "pending",
+        title: "Sending...",
+        message: "Aggregate severity!",
+      })
+    );
+    const { aggregate } = oracleCoreMeta.methods;
+    try {
+      let res = await aggregate(season.toString(), REGIONS[region].hash).send({
+        from: account,
+      });
+      console.log(res);
+      dispatch(
+        uiActions.showNotification({
+          status: "success",
+          title: "Success!",
+          message: "Aggregation successfull!",
+        })
+      );
+
+      dispatch(getOracleEscrow(account));
+    } catch (error) {
+      console.error(error);
+      dispatch(
+        uiActions.showNotification({
+          status: "error",
+          title: "Error!",
+          message: "Aggregation of severities failed!",
+        })
+      );
+    }
+  };
+};
+
 const initialLoadSeasons = async (dispatch) => {
   const { getSeasonsNumber, getSeasonAt, getSeasonState } =
     oracleCoreMeta.methods;
@@ -282,7 +320,7 @@ const initialLoadSeasons = async (dispatch) => {
   return seasons;
 };
 
-const initialLoadSubmissions = async (dispatch, openSeasons) => {
+const initialLoadSubmissions = async (dispatch, seasons) => {
   const { getSubmissionTotal, getSubmitterAt, getSubmission } =
     oracleCoreMeta.methods;
 
@@ -291,8 +329,8 @@ const initialLoadSubmissions = async (dispatch, openSeasons) => {
   const regionsHashes = Object.keys(REGIONS).map(
     (region) => REGIONS[region].hash
   );
-  for (let i = 0; i < openSeasons.length; i++) {
-    seasonId = openSeasons[i].id;
+  for (let i = 0; i < seasons.length; i++) {
+    seasonId = seasons[i].id;
     for (let j = 0; j < regionsHashes.length; j++) {
       regionHash = regionsHashes[j];
       submissionsCount =
@@ -404,15 +442,11 @@ const initialLoadSeverities = async (dispatch, closedSeasons) => {
     })
     .on("data", async (event) => {
       console.log(event); // same results as the optional callback above
-      const submissionsCount = parseInt(
-        await getSubmissionTotal(seasonId.toString(), regionHash).call()
-      );
       dispatch(
         oracleCoreActions.updateSeverity({
           seasonId: Number(event.returnValues.season),
           region: REGIONS_HASHES[event.returnValues.region],
-          severity: SEVERITY_VALUES[event.returnValues.severity],
-          submissionsCount,
+          severity: SEVERITY_VALUES[event.returnValues.severity]
         })
       );
     })
