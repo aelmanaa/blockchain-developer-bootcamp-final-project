@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { connect, afterAccountsLoading } from "../../store/metamask";
-import { getOracleEscrow } from "../../store/artifact";
+import { connect, afterAccountsLoading } from "../../store/interactions/metamask";
+import { getOracleEscrow } from "../../store/interactions/oraclecore";
 
 //import { uiActions } from '../../store/ui-slice';
 //import classes from './CartButton.module.css';

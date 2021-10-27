@@ -1,7 +1,7 @@
 import { Fragment, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { loadContracts } from "../../store/artifact";
-import { afterOracleCoreLoading } from "../../store/artifact";
+import { loadContracts } from "../../store/interactions/contracts";
+import { afterOracleCoreLoading } from "../../store/interactions/oraclecore";
 import Season from "../season/Season";
 import Oracle from "../oracle/Oracle";
 import Severity from "../severity/Severity";

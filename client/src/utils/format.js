@@ -1,4 +1,4 @@
-import { getWeb3 } from "../store/metamask";
+import { getWeb3 } from "../store/interactions/metamask";
 
 export const toEther = (wei) => {
   const web3 = getWeb3();

@@ -2,8 +2,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Select from "../ui/Select";
 import { Fragment } from "react";
 import { SEASON_STATE, REGIONS, SEVERITY } from "../../utils/constant";
-import { oracleCoreActions } from "../../store/oraclecore";
-import { submitSeverity } from "../../store/artifact";
+import { oracleCoreActions } from "../../store/state/oraclecore";
+import { submitSeverity } from "../../store/interactions/oraclecore-actors";
 
 const OracleManagement = () => {
   const dispatch = useDispatch();
@@ -39,7 +39,9 @@ const OracleManagement = () => {
     (region) => REGIONS[region].label
   );
 
-  const severityOptions = Object.keys(SEVERITY);
+  let sev = { ...SEVERITY };
+  delete sev.D; // remove default value
+  const severityOptions = Object.keys(sev);
   const severityOptionsLabels = severityOptions.map(
     (severity) => SEVERITY[severity].label
   );

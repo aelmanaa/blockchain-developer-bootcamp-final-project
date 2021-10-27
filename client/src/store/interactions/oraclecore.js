@@ -1,51 +1,29 @@
-import { contractActions } from "./contract";
-import { oracleCoreActions } from "./oraclecore";
-import oracleCore from "../contracts/OracleCore.json";
-import insurance from "../contracts/Insurance.json";
-import { getWeb3 } from "./metamask";
-import { uiActions } from "./ui";
-import { accountActions } from "./account";
+import { getOracleCoreMeta } from "./contracts";
+import { uiActions } from "../state/ui";
+import { oracleCoreActions } from "../state/oraclecore";
+import { accountActions } from "../state/account";
 import {
   REGIONS,
   SEASON_STATE,
   SEVERITY,
   REGIONS_HASHES,
   SEVERITY_VALUES,
-} from "../utils/constant";
+} from "../../utils/constant";
 
-let oracleCoreMeta, insuranceMeta;
-export const loadContracts = (web3Loaded, chainId) => {
+export const getOracleEscrow = (account) => {
   return async (dispatch) => {
-    if (web3Loaded) {
-      const web3 = getWeb3();
-      const networkId = await web3.eth.net.getId();
-      dispatch(contractActions.loadNetworkId({ networkId }));
-      // load oracle core
-      const oracleDeployedNetwork = oracleCore.networks[networkId];
-      oracleCoreMeta = await new web3.eth.Contract(
-        oracleCore.abi,
-        oracleDeployedNetwork.address
-      );
+    try {
+      const oracleCoreMeta = getOracleCoreMeta();
+      const { depositsOf } = oracleCoreMeta.methods;
+      const balance = await depositsOf(account).call({ from: account });
       dispatch(
-        contractActions.loadOracleCore({
-          oracleCoreLoaded: true,
-          address: oracleDeployedNetwork.address,
+        accountActions.updateOracleEscrow({
+          account,
+          balance,
         })
       );
-      // load insurance contract
-      const insuranceDeployedNetwork = insurance.networks[networkId];
-      insuranceMeta = await new web3.eth.Contract(
-        insurance.abi,
-        insuranceDeployedNetwork.address
-      );
-      dispatch(
-        contractActions.loadInsurance({
-          insuranceLoaded: true,
-          address: insuranceDeployedNetwork.address,
-        })
-      );
-    } else {
-      // TODO
+    } catch (error) {
+      console.error(error);
     }
   };
 };
@@ -55,9 +33,6 @@ export const afterOracleCoreLoading = (oracleCoreLoaded) => {
     if (oracleCoreLoaded) {
       try {
         const seasons = await initialLoadSeasons(dispatch);
-        const openSeasons = seasons.filter((season) => {
-          return season.state === SEASON_STATE[1];
-        });
         const closedSeasons = seasons.filter((season) => {
           return season.state === SEASON_STATE[2];
         });
@@ -85,169 +60,8 @@ export const afterOracleCoreLoading = (oracleCoreLoaded) => {
   };
 };
 
-export const openSeason = (newSeason, account) => {
-  return async (dispatch) => {
-    dispatch(
-      uiActions.showNotification({
-        status: "pending",
-        title: "Sending...",
-        message: "Starting openSeason transaction!",
-      })
-    );
-    const { openSeason } = oracleCoreMeta.methods;
-    try {
-      let res = await openSeason(newSeason.toString()).send({ from: account });
-      console.log(res);
-      dispatch(
-        uiActions.showNotification({
-          status: "success",
-          title: "Success!",
-          message: "openSeason successfull!",
-        })
-      );
-
-      dispatch(getOracleEscrow(account));
-    } catch (error) {
-      console.error(error);
-      dispatch(
-        uiActions.showNotification({
-          status: "error",
-          title: "Error!",
-          message: "openSeason failed!",
-        })
-      );
-    }
-  };
-};
-
-export const closeSeason = (season, account) => {
-  return async (dispatch) => {
-    dispatch(
-      uiActions.showNotification({
-        status: "pending",
-        title: "Sending...",
-        message: "Starting closeSeason transaction!",
-      })
-    );
-    const { closeSeason } = oracleCoreMeta.methods;
-    try {
-      let res = await closeSeason(season.toString()).send({ from: account });
-      console.log(res);
-      dispatch(
-        uiActions.showNotification({
-          status: "success",
-          title: "Success!",
-          message: "closeSeason successfull!",
-        })
-      );
-      dispatch(getOracleEscrow(account));
-    } catch (error) {
-      console.error(error);
-      dispatch(
-        uiActions.showNotification({
-          status: "error",
-          title: "Error!",
-          message: "closeSeason failed!",
-        })
-      );
-    }
-  };
-};
-
-export const getOracleEscrow = (account) => {
-  return async (dispatch) => {
-    const { depositsOf } = oracleCoreMeta.methods;
-    try {
-      const balance = await depositsOf(account).call({ from: account });
-      dispatch(
-        accountActions.updateOracleEscrow({
-          account,
-          balance,
-        })
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
-};
-
-export const submitSeverity = (season, region, severity, account) => {
-  return async (dispatch) => {
-    dispatch(
-      uiActions.showNotification({
-        status: "pending",
-        title: "Sending...",
-        message: "Starting openSeason transaction!",
-      })
-    );
-    const { submit } = oracleCoreMeta.methods;
-    try {
-      let res = await submit(
-        season.toString(),
-        REGIONS[region].hash,
-        SEVERITY[severity].value
-      ).send({ from: account });
-      console.log(res);
-      dispatch(
-        uiActions.showNotification({
-          status: "success",
-          title: "Success!",
-          message: "Submission successfull!",
-        })
-      );
-
-      dispatch(getOracleEscrow(account));
-    } catch (error) {
-      console.error(error);
-      dispatch(
-        uiActions.showNotification({
-          status: "error",
-          title: "Error!",
-          message: "Submision failed!",
-        })
-      );
-    }
-  };
-};
-
-export const aggregateSeverity = (season, region, account) => {
-  return async (dispatch) => {
-    dispatch(
-      uiActions.showNotification({
-        status: "pending",
-        title: "Sending...",
-        message: "Aggregate severity!",
-      })
-    );
-    const { aggregate } = oracleCoreMeta.methods;
-    try {
-      let res = await aggregate(season.toString(), REGIONS[region].hash).send({
-        from: account,
-      });
-      console.log(res);
-      dispatch(
-        uiActions.showNotification({
-          status: "success",
-          title: "Success!",
-          message: "Aggregation successfull!",
-        })
-      );
-
-      dispatch(getOracleEscrow(account));
-    } catch (error) {
-      console.error(error);
-      dispatch(
-        uiActions.showNotification({
-          status: "error",
-          title: "Error!",
-          message: "Aggregation of severities failed!",
-        })
-      );
-    }
-  };
-};
-
 const initialLoadSeasons = async (dispatch) => {
+  const oracleCoreMeta = getOracleCoreMeta();
   const { getSeasonsNumber, getSeasonAt, getSeasonState } =
     oracleCoreMeta.methods;
   const seasons = [];
@@ -321,6 +135,7 @@ const initialLoadSeasons = async (dispatch) => {
 };
 
 const initialLoadSubmissions = async (dispatch, seasons) => {
+  const oracleCoreMeta = getOracleCoreMeta();
   const { getSubmissionTotal, getSubmitterAt, getSubmission } =
     oracleCoreMeta.methods;
 
@@ -391,6 +206,7 @@ const initialLoadSubmissions = async (dispatch, seasons) => {
 };
 
 const initialLoadSeverities = async (dispatch, closedSeasons) => {
+  const oracleCoreMeta = getOracleCoreMeta();
   const { getRegionSeverity, getSubmissionTotal } = oracleCoreMeta.methods;
 
   const severities = [];
@@ -446,7 +262,7 @@ const initialLoadSeverities = async (dispatch, closedSeasons) => {
         oracleCoreActions.updateSeverity({
           seasonId: Number(event.returnValues.season),
           region: REGIONS_HASHES[event.returnValues.region],
-          severity: SEVERITY_VALUES[event.returnValues.severity]
+          severity: SEVERITY_VALUES[event.returnValues.severity],
         })
       );
     })
@@ -459,6 +275,7 @@ const initialLoadSeverities = async (dispatch, closedSeasons) => {
 };
 
 const addSeasonToSeverities = async (dispatch, closedSeasonId) => {
+  const oracleCoreMeta = getOracleCoreMeta();
   const { getSubmissionTotal } = oracleCoreMeta.methods;
   let regionHash, submissionsCount;
   const regionsHashes = Object.keys(REGIONS).map(

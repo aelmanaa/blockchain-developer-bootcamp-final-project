@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { SEASON_STATE, REGIONS, SEVERITY } from "../utils/constant";
+import { SEASON_STATE, REGIONS, SEVERITY } from "../../utils/constant";
 
 const oracleCoreSlice = createSlice({
   name: "oracleCore",
@@ -40,30 +40,54 @@ const oracleCoreSlice = createSlice({
       state.severities = action.payload.severities;
     },
     addSeason(state, action) {
-      state.seasons.push({
-        id: action.payload.id,
-        state: SEASON_STATE[1],
-      });
-      state.defaultSeason++;
-      state.newSeason = state.defaultSeason;
-      state.maxSeason = state.defaultSeason + 5;
-      state.seasonsNumber = state.seasonsNumber + 1;
+      // handle duplicates
+      const index = state.seasons.findIndex(
+        (element) => element.id === action.payload.id
+      );
+      if (index === -1) {
+        state.seasons.push({
+          id: action.payload.id,
+          state: SEASON_STATE[1],
+        });
+        state.defaultSeason++;
+        state.newSeason = state.defaultSeason;
+        state.maxSeason = state.defaultSeason + 5;
+        state.seasonsNumber = state.seasonsNumber + 1;
+      }
     },
     addSubmission(state, action) {
-      state.submissions.push({
-        seasonId: action.payload.seasonId,
-        region: action.payload.region,
-        severity: action.payload.severity,
-        submitter: action.payload.submitter,
-      });
+      // handle duplicate
+      const index = state.submissions.findIndex(
+        (element) =>
+          element.seasonId === action.payload.seasonId &&
+          element.region === action.payload.region &&
+          element.submitter === action.payload.submitter
+      );
+      if (index === -1) {
+        state.submissions.push({
+          seasonId: action.payload.seasonId,
+          region: action.payload.region,
+          severity: action.payload.severity,
+          submitter: action.payload.submitter,
+        });
+      }
     },
     addSeverity(state, action) {
-      state.severities.push({
-        seasonId: action.payload.seasonId,
-        region: action.payload.region,
-        severity: action.payload.severity,
-        submissionsCount: action.payload.submissionsCount,
-      });
+      // handle duplicate
+      const index = state.severities.findIndex(
+        (element) =>
+          element.seasonId === action.payload.seasonId &&
+          element.region === action.payload.region &&
+          element.severity === action.payload.severity
+      );
+      if (index === -1) {
+        state.severities.push({
+          seasonId: action.payload.seasonId,
+          region: action.payload.region,
+          severity: action.payload.severity,
+          submissionsCount: action.payload.submissionsCount,
+        });
+      }
     },
     updateSeverity(state, action) {
       const index = state.severities.findIndex(
@@ -74,11 +98,12 @@ const oracleCoreSlice = createSlice({
       state.severities[index].severity = action.payload.severity;
     },
     closeSeason(state, action) {
-      for (let season of state.seasons) {
-        if (season.id === action.payload.id) {
-          season.state = SEASON_STATE[2];
-          break;
-        }
+      // handle duplicates
+      const index = state.seasons.findIndex(
+        (element) => element.id === action.payload.id
+      );
+      if (index > -1 && state.seasons[index].state === SEASON_STATE[1]) {
+        state.seasons[index].state = SEASON_STATE[2];
       }
     },
     encodeNewSeason(state, action) {

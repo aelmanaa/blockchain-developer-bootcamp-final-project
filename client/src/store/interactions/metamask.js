@@ -1,6 +1,6 @@
 import MetaMaskOnboarding from "@metamask/onboarding";
 import Web3 from "web3";
-import { accountActions } from "./account";
+import { accountActions } from "../state/account";
 
 const onboarding = new MetaMaskOnboarding();
 let web3 = null;

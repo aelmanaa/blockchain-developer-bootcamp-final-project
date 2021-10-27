@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { REGIONS, SEVERITY, SEVERITY_VALUES } from "../../utils/constant";
-import { aggregateSeverity } from "../../store/artifact";
+import { aggregateSeverity } from "../../store/interactions/oraclecore-actors";
 
 const SeverityItem = (props) => {
   const dispatch = useDispatch();

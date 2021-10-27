@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Layout from "./components/layout/Layout";
 import Notification from "./components/ui/Notification";
-import { checkMetamaskInstalled } from "./store/metamask";
+import { checkMetamaskInstalled } from "./store/interactions/metamask";
 
 const App = () => {
   const dispatch = useDispatch();

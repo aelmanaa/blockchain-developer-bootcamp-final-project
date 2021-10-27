@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
 import Input from "../ui/Input";
 import { Fragment } from "react";
-import { oracleCoreActions } from "../../store/oraclecore";
-import { openSeason } from "../../store/artifact";
+import { oracleCoreActions } from "../../store/state/oraclecore";
+import { openSeason } from "../../store/interactions/oraclecore-actors";
 
 const SeasonManagement = () => {
   const dispatch = useDispatch();

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { closeSeason } from "../../store/artifact";
+import { closeSeason } from "../../store/interactions/oraclecore-actors";
 import { SEASON_STATE } from "../../utils/constant";
 
 const SeasonItem = (props) => {
