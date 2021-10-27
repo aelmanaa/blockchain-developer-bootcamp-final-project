@@ -58,6 +58,9 @@ const accountSlice = createSlice({
     },
     updateOracleEscrow(state,action){
       state.accountsOracleEscrow[action.payload.account]=action.payload.balance;
+    },
+    updateInsuranceEscrow(state,action){
+      state.accountsInsuranceEscrow[action.payload.account]=action.payload.balance;
     }
   },
 });

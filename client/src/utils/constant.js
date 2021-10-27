@@ -78,3 +78,31 @@ export const SEVERITY_VALUES = {
   4: "D3",
   5: "D4",
 };
+
+export const FARMS = {
+  FARM1: {
+    label: "FARM 1",
+    hash: "0xca5bb4a9f0619904f63c1dac333b02f34b02642811721ac526f4eb679203b35d",
+    keyName: "FARM1",
+  },
+  FARM2: {
+    label: "FARM 2",
+    hash: "0x3ee3946d8cd7a8eea7e658c0a01f5c2512634303de54e9f177ef97c269d403cf",
+    keyName: "FARM2",
+  },
+  FARM3: {
+    label: "FARM 3",
+    hash: "0x12388371dbdb706b9475443244a3705c3fe47f3dc791c2d40a023fba03f35915",
+    keyName: "FARM3",
+  },
+  FARM4: {
+    label: "FARM 4",
+    hash: "0x92c07225f38425966baa97330cf41cecf622e7424d347b72474e3e8cbf3c5898",
+    keyName: "FARM4",
+  },
+  FARM5: {
+    label: "FARM 5",
+    hash: "0x8fc641594078f7bb5dec106ae04d315ad9a8e72c06fea8fcd8946bf7d35e5cc6",
+    keyName: "FARM5",
+  },
+};

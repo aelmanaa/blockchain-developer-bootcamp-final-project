@@ -12,7 +12,9 @@ const AccountDisplayer = (props) => {
     (state) => state.account.accountsOracleEscrow
   );
 
-  const chainId = useSelector((state) => state.account.chainId);
+  const accountsInsuranceEscrow = useSelector(
+    (state) => state.account.accountsInsuranceEscrow
+  );
 
   let infoAccount = connectedAccount && (
     <Fragment>
@@ -29,15 +31,16 @@ const AccountDisplayer = (props) => {
           {toTwoDec(toEther(accountsOracleEscrow[connectedAccount]))} ETH
         </p>
       )}
+      {accountsInsuranceEscrow[connectedAccount] && (
+        <p>
+          Escrow in insurance:{" "}
+          {toTwoDec(toEther(accountsInsuranceEscrow[connectedAccount]))} ETH
+        </p>
+      )}
     </Fragment>
   );
 
-  return (
-    <Fragment>
-      {infoAccount}
-      <p>ChainID: {chainId}</p>
-    </Fragment>
-  );
+  return <Fragment>{infoAccount}</Fragment>;
 };
 
 export default AccountDisplayer;

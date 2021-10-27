@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { connect, afterAccountsLoading } from "../../store/interactions/metamask";
 import { getOracleEscrow } from "../../store/interactions/oraclecore";
+import { getInsuranceEscrow } from "../../store/interactions/insurance";
 
 //import { uiActions } from '../../store/ui-slice';
 //import classes from './CartButton.module.css';
@@ -13,6 +14,9 @@ const Account = () => {
   );
   const oracleCoreLoaded = useSelector(
     (state) => state.contract.oracleCoreLoaded
+  );
+  const insuranceLoaded = useSelector(
+    (state) => state.contract.insuranceLoaded
   );
 
   const accounts = useSelector((state) => state.account.accounts);
@@ -33,6 +37,14 @@ const Account = () => {
       dispatch(getOracleEscrow(accounts[0]));
     }
   }, [dispatch, accounts, oracleCoreLoaded]);
+
+  useEffect(() => {
+    if (accounts[0]) {
+      dispatch(getInsuranceEscrow(accounts[0]));
+    }
+  }, [dispatch, accounts, insuranceLoaded]);
+
+
 
   const connectHandler = () => {
     dispatch(connect(isMetamaskInstalled));
