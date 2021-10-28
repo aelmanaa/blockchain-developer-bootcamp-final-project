@@ -1,3 +1,5 @@
+export const ZERO_ACCOUNT = "0x0000000000000000000000000000000000000000";
+
 export const SEASON_STATE = {
   0: "DEFAULT",
   1: "OPEN",
@@ -79,6 +81,14 @@ export const SEVERITY_VALUES = {
   5: "D4",
 };
 
+export const FARMS_HASHES = {
+  "0xca5bb4a9f0619904f63c1dac333b02f34b02642811721ac526f4eb679203b35d": "FARM1",
+  "0x3ee3946d8cd7a8eea7e658c0a01f5c2512634303de54e9f177ef97c269d403cf": "FARM2",
+  "0x12388371dbdb706b9475443244a3705c3fe47f3dc791c2d40a023fba03f35915": "FARM3",
+  "0x92c07225f38425966baa97330cf41cecf622e7424d347b72474e3e8cbf3c5898": "FARM4",
+  "0x8fc641594078f7bb5dec106ae04d315ad9a8e72c06fea8fcd8946bf7d35e5cc6": "FARM5",
+};
+
 export const FARMS = {
   FARM1: {
     label: "FARM 1",
@@ -104,5 +114,61 @@ export const FARMS = {
     label: "FARM 5",
     hash: "0x8fc641594078f7bb5dec106ae04d315ad9a8e72c06fea8fcd8946bf7d35e5cc6",
     keyName: "FARM5",
+  },
+};
+
+export const CONTRACT = {
+  DEFAULT: {
+    label: "Default",
+    value: "0",
+    keyName: "DEFAULT",
+  },
+  REGISTERED: {
+    label: "Registered",
+    value: "1",
+    keyName: "REGISTERED",
+  },
+  VALIDATED: {
+    label: "Validated",
+    value: "2",
+    keyName: "VALIDATED",
+  },
+  INSURED: {
+    label: "Insured",
+    value: "3",
+    keyName: "INSURED",
+  },
+  CLOSED: {
+    label: "Closed",
+    value: "4",
+    keyName: "CLOSED",
+  },
+  COMPENSATED: {
+    label: "Compensated",
+    value: "5",
+    keyName: "COMPENSATED",
+  },
+};
+
+export const CONTRACT_VALUES = {
+  0: "DEFAULT",
+  1: "REGISTERED",
+  2: "VALIDATED",
+  3: "INSURED",
+  4: "CLOSED",
+  5: "COMPENSATED",
+};
+
+export const CONTRACT_ACTIONS = {
+  NONE: {
+    keyName: "NONE",
+  },
+  VALIDATE: {
+    keyName: "VALIDATE",
+    label: "Validate",
+  },
+  ACTIVATE: {
+    keyName: "ACTIVATE",
+    label: "Activate",
   },
 };

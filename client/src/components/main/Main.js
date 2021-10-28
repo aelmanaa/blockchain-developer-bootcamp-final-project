@@ -2,7 +2,10 @@ import { Fragment, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loadContracts } from "../../store/interactions/contracts";
 import { afterOracleCoreLoading } from "../../store/interactions/oraclecore";
-import { afterInsuranceLoading } from "../../store/interactions/insurance";
+import {
+  afterInsuranceLoading,
+  loadInsuranceContracts,
+} from "../../store/interactions/insurance";
 import Season from "../season/Season";
 import Oracle from "../oracle/Oracle";
 import Severity from "../severity/Severity";
@@ -18,6 +21,7 @@ const Main = (props) => {
   const insuranceLoaded = useSelector(
     (state) => state.contract.insuranceLoaded
   );
+  const seasons = useSelector((state) => state.oracleCore.seasons);
 
   useEffect(() => {
     dispatch(afterOracleCoreLoading(oracleCoreLoaded));
@@ -27,7 +31,9 @@ const Main = (props) => {
     dispatch(afterInsuranceLoading(insuranceLoaded));
   }, [dispatch, insuranceLoaded]);
 
-  
+  useEffect(() => {
+    dispatch(loadInsuranceContracts(seasons));
+  }, [dispatch, seasons]);
 
   useEffect(() => {
     dispatch(loadContracts(web3Loaded, chainId));

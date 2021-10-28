@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Select from "../ui/Select";
 import Input from "../ui/Input";
 import { Fragment } from "react";
-import { SEASON_STATE, REGIONS, SEVERITY, FARMS } from "../../utils/constant";
+import { SEASON_STATE, REGIONS, FARMS } from "../../utils/constant";
 import { insuranceActions } from "../../store/state/insurance";
 import { register } from "../../store/interactions/insurance-actors";
 

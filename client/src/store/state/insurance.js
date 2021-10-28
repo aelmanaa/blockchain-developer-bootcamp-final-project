@@ -8,8 +8,7 @@ const insuranceSlice = createSlice({
     registerContractRegion: REGIONS.REGA.keyName,
     registerContractFarm: FARMS.FARM1.keyName,
     registerContractSize: 1,
-    openContracts: [],
-    closedContracts: [],
+    contracts: [],
     premiumPerHA: 0,
     halfPremiumPerHA: 0,
     minimumLiquidity: 0,
@@ -39,6 +38,29 @@ const insuranceSlice = createSlice({
     },
     encodeRegisterContractSize(state, action) {
       state.registerContractSize = action.payload.registerContractSize;
+    },
+    loadContracts(state, action) {
+      state.contracts = action.payload.contracts;
+    },
+    addContract(state, action) {
+      // handle duplicates
+      const index = state.contracts.findIndex(
+        (element) => element.key === action.payload.contract.key
+      );
+      if (index === -1) {
+        state.contracts.push(action.payload.contract);
+      }
+    },
+    updateContract(state, action) {
+      // handle duplicates
+      const index = state.contracts.findIndex(
+        (element) => element.key === action.payload.contract.key
+      );
+      if (index === -1) {
+        state.contracts.push(action.payload.contract);
+      } else {
+        state.contracts[index] = action.payload.contract;
+      }
     },
   },
 });
