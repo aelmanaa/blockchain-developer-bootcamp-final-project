@@ -13,11 +13,17 @@ const accountSlice = createSlice({
     accountsBalances: {},
     accountsOracleEscrow: {},
     accountsInsuranceEscrow: {},
+    accountsRoles: {},
     isMetamaskInstalled: false,
     isConnected: false,
     web3Loaded: false,
     chainId: null,
     providerRpcError: null,
+    isFarmer: false,
+    isOracle: false,
+    isKeeper: false,
+    isGovernment: false,
+    isInsurer: false,
   },
   reducers: {
     showNotification(state, action) {
@@ -53,15 +59,20 @@ const accountSlice = createSlice({
     loadWeb3(state, action) {
       state.web3Loaded = action.payload.web3Loaded;
     },
-    updateAccountBalance(state,action){
-      state.accountsBalances[action.payload.account]=action.payload.balance;
+    updateAccountBalance(state, action) {
+      state.accountsBalances[action.payload.account] = action.payload.balance;
     },
-    updateOracleEscrow(state,action){
-      state.accountsOracleEscrow[action.payload.account]=action.payload.balance;
+    updateAccountRoles(state, action) {
+      state.accountsRoles[action.payload.account] = action.payload.roles;
     },
-    updateInsuranceEscrow(state,action){
-      state.accountsInsuranceEscrow[action.payload.account]=action.payload.balance;
-    }
+    updateOracleEscrow(state, action) {
+      state.accountsOracleEscrow[action.payload.account] =
+        action.payload.balance;
+    },
+    updateInsuranceEscrow(state, action) {
+      state.accountsInsuranceEscrow[action.payload.account] =
+        action.payload.balance;
+    },
   },
 });
 

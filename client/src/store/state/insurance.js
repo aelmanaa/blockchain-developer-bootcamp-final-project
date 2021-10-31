@@ -9,6 +9,7 @@ const insuranceSlice = createSlice({
     registerContractFarm: FARMS.FARM1.keyName,
     registerContractSize: 1,
     contracts: [],
+    pendings: [],
     premiumPerHA: 0,
     halfPremiumPerHA: 0,
     minimumLiquidity: 0,
@@ -41,6 +42,22 @@ const insuranceSlice = createSlice({
     },
     loadContracts(state, action) {
       state.contracts = action.payload.contracts;
+    },
+    loadPendings(state, action) {
+      state.pendings = action.payload.pendings;
+    },
+    decrementPending(state, action) {
+      const index = state.pendings.findIndex(
+        (element) =>
+          element.seasonId === action.payload.seasonId &&
+          element.region === action.payload.region
+      );
+      if (index > -1) {
+        state.pendings[index].numberOpenContracts -= 1;
+        if (state.pendings[index].numberOpenContracts <= 0) {
+          state.pendings.splice(index, 1);
+        }
+      }
     },
     addContract(state, action) {
       // handle duplicates

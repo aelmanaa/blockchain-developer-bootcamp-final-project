@@ -7,6 +7,8 @@ const contractSlice = createSlice({
     oracleCoreAddress: 0x0,
     insuranceLoaded: false,
     insuranceAddress: 0x0,
+    gateKeeperLoaded: false,
+    gateKeeperAddress: 0x0,
     networkId: null,
   },
   reducers: {
@@ -17,6 +19,10 @@ const contractSlice = createSlice({
     loadInsurance(state, action) {
       state.insuranceLoaded = action.payload.insuranceLoaded;
       state.insuranceAddress = action.payload.address;
+    },
+    loadGateKeeper(state, action) {
+      state.gateKeeperLoaded = action.payload.gateKeeperLoaded;
+      state.gateKeeperAddress = action.payload.address;
     },
     loadNetworkId(state, action) {
       state.networkId = action.payload.networkId;

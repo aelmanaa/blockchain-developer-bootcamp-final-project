@@ -79,11 +79,13 @@ const InsuranceOpenList = () => {
   );
 
   return (
-    <table>
-      <caption>Insurance open contract</caption>
-      {tableHeaders}
-      {tbody}
-    </table>
+    openContracts.length > 0 && (
+      <table>
+        <caption>Insurance open contract</caption>
+        {tableHeaders}
+        {tbody}
+      </table>
+    )
   );
 };
 

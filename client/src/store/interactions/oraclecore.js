@@ -13,6 +13,13 @@ import {
 export const getOracleEscrow = (account) => {
   return async (dispatch) => {
     try {
+      dispatch(
+        uiActions.showNotification({
+          status: "pending",
+          title: "Sending...",
+          message: `Start update oracle escrow!`,
+        })
+      );
       const oracleCoreMeta = getOracleCoreMeta();
       const { depositsOf } = oracleCoreMeta.methods;
       const balance = await depositsOf(account).call({ from: account });
@@ -22,8 +29,22 @@ export const getOracleEscrow = (account) => {
           balance,
         })
       );
+      dispatch(
+        uiActions.showNotification({
+          status: "success",
+          title: "Success!",
+          message: `update oracle escrow successfull!`,
+        })
+      );
     } catch (error) {
       console.error(error);
+      dispatch(
+        uiActions.showNotification({
+          status: "error",
+          title: "Error!",
+          message: `update oracle escrow failed!`,
+        })
+      );
     }
   };
 };

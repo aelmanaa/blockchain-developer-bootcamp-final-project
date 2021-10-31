@@ -5,6 +5,7 @@ import OracleManagement from "./OracleManagement";
 const Oracle = () => {
   return (
     <Fragment>
+      <h1>ORACLE MANAGEMENT</h1>
       <OracleManagement />
       <OracleList />
     </Fragment>

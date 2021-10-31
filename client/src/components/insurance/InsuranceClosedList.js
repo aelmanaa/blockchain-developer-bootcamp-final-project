@@ -74,11 +74,13 @@ const InsuranceClosedList = () => {
   );
 
   return (
-    <table>
-      <caption>Insurance closed contract</caption>
-      {tableHeaders}
-      {tbody}
-    </table>
+    closedContracts.length > 0 && (
+      <table>
+        <caption>Insurance closed contract</caption>
+        {tableHeaders}
+        {tbody}
+      </table>
+    )
   );
 };
 

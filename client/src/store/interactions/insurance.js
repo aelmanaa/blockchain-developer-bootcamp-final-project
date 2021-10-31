@@ -8,6 +8,7 @@ import {
   REGIONS_HASHES,
   SEVERITY_VALUES,
   FARMS_HASHES,
+  SEASON_STATE,
 } from "../../utils/constant";
 
 export const getInsuranceEscrow = (account) => {
@@ -211,7 +212,7 @@ export const loadInsuranceContracts = (seasons) => {
   return async (dispatch) => {
     if (seasons && seasons.length > 0) {
       try {
-        await initialLoadContracts(dispatch, seasons);
+        await loadContracts(dispatch, seasons);
       } catch (error) {
         console.error(error);
         dispatch(
@@ -224,6 +225,7 @@ export const loadInsuranceContracts = (seasons) => {
       }
     } else {
       dispatch(insuranceActions.loadContracts({ contracts: [] }));
+      dispatch(insuranceActions.loadPendings({ pendings: [] }));
     }
   };
 };
@@ -241,7 +243,7 @@ const getPremiumConstants = async (dispatch) => {
   );
 };
 
-const initialLoadContracts = async (dispatch, seasons) => {
+const loadContracts = async (dispatch, seasons) => {
   const insuranceMeta = getInsuranceMeta();
   const regions = Object.keys(REGIONS_HASHES);
   const {
@@ -251,6 +253,7 @@ const initialLoadContracts = async (dispatch, seasons) => {
     getClosedContractsAt,
   } = insuranceMeta.methods;
   const contracts = [];
+  const pendings = [];
   let numberOpenContracts,
     numberClosedContracts,
     contractKey,
@@ -263,6 +266,13 @@ const initialLoadContracts = async (dispatch, seasons) => {
         parseInt(
           await getNumberOpenContracts(seasonId.toString(), regions[j]).call()
         ) || 0;
+      if (numberOpenContracts > 0 && seasons[i].state === SEASON_STATE[2]) {
+        pendings.push({
+          seasonId: seasons[i].id,
+          region: REGIONS_HASHES[regions[j]],
+          numberOpenContracts: numberOpenContracts,
+        });
+      }
       numberClosedContracts =
         parseInt(
           await getNumberClosedContracts(seasonId.toString(), regions[j]).call()
@@ -291,6 +301,7 @@ const initialLoadContracts = async (dispatch, seasons) => {
   }
 
   dispatch(insuranceActions.loadContracts({ contracts }));
+  dispatch(insuranceActions.loadPendings({ pendings }));
 };
 
 const getContractData = async (contractKey) => {

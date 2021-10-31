@@ -21,6 +21,8 @@ const OracleManagement = () => {
   );
 
   let connectedAccount = useSelector((state) => state.account.accounts[0]);
+  const accountsRoles = useSelector((state) => state.account.accountsRoles);
+  const currentRoles = accountsRoles[connectedAccount];
   const seasons = useSelector((state) => state.oracleCore.seasons);
 
   const openSeasons = seasons
@@ -95,41 +97,45 @@ const OracleManagement = () => {
 
   return (
     <Fragment>
-      {oracleCoreLoaded && connectedAccount && openSeasons.length > 0 && (
-        <form onSubmit={submitHandler}>
-          <Select
-            label="Season"
-            select={{
-              name: "season_select",
-              id: "season_select",
-              onChange: handleChange,
-              options: openSeasons,
-              optionLabels: openSeasons,
-            }}
-          />
-          <Select
-            label="Region"
-            select={{
-              name: "region_select",
-              id: "region_select",
-              onChange: handleChange,
-              options: regionsOptions,
-              optionLabels: regionsOptionsLabels,
-            }}
-          />
-          <Select
-            label="Severity"
-            select={{
-              name: "severity_select",
-              id: "severity_select",
-              onChange: handleChange,
-              options: severityOptions,
-              optionLabels: severityOptionsLabels,
-            }}
-          />
-          <button>Submit</button>
-        </form>
-      )}
+      {oracleCoreLoaded &&
+        connectedAccount &&
+        openSeasons.length > 0 &&
+        currentRoles &&
+        currentRoles.isOracle && (
+          <form onSubmit={submitHandler}>
+            <Select
+              label="Season"
+              select={{
+                name: "season_select",
+                id: "season_select",
+                onChange: handleChange,
+                options: openSeasons,
+                optionLabels: openSeasons,
+              }}
+            />
+            <Select
+              label="Region"
+              select={{
+                name: "region_select",
+                id: "region_select",
+                onChange: handleChange,
+                options: regionsOptions,
+                optionLabels: regionsOptionsLabels,
+              }}
+            />
+            <Select
+              label="Severity"
+              select={{
+                name: "severity_select",
+                id: "severity_select",
+                onChange: handleChange,
+                options: severityOptions,
+                optionLabels: severityOptionsLabels,
+              }}
+            />
+            <button>Submit</button>
+          </form>
+        )}
     </Fragment>
   );
 };

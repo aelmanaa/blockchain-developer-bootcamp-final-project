@@ -33,6 +33,8 @@ const InsuranceManagement = () => {
   );
 
   let connectedAccount = useSelector((state) => state.account.accounts[0]);
+  const accountsRoles = useSelector((state) => state.account.accountsRoles);
+  const currentRoles = accountsRoles[connectedAccount];
 
   const seasons = useSelector((state) => state.oracleCore.seasons);
 
@@ -100,13 +102,6 @@ const InsuranceManagement = () => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    console.log(
-      registerContractSeason,
-      registerContractRegion,
-      registerContractFarm,
-      registerContractSize,
-      halfPremiumPerHA
-    );
     dispatch(
       register(
         registerContractSeason,
@@ -121,52 +116,56 @@ const InsuranceManagement = () => {
 
   return (
     <Fragment>
-      {oracleCoreLoaded && insuranceLoaded && connectedAccount && (
-        <form onSubmit={submitHandler}>
-          <Select
-            label="Season"
-            select={{
-              name: "insurance_season",
-              id: "insurance_season",
-              onChange: handleChange,
-              options: openSeasons,
-              optionLabels: openSeasons,
-            }}
-          />
-          <Select
-            label="Region"
-            select={{
-              name: "insurance_region",
-              id: "insurance_region",
-              onChange: handleChange,
-              options: regionsOptions,
-              optionLabels: regionsOptionsLabels,
-            }}
-          />
-          <Select
-            label="Farm"
-            select={{
-              name: "insurance_farm",
-              id: "insurance_farm",
-              onChange: handleChange,
-              options: farmsOptions,
-              optionLabels: farmsOptionsLabels,
-            }}
-          />
-          <Input
-            label="Size"
-            input={{
-              id: "insurance_size",
-              type: "number",
-              min: 1,
-              step: "1",
-              defaultValue: 1,
-              onChange: handleChange,
-            }}
-          />
-          <button>Submit</button>
-        </form>
-      )}
+      {oracleCoreLoaded &&
+        insuranceLoaded &&
+        connectedAccount &&
+        currentRoles &&
+        currentRoles.isFarmer && (
+          <form onSubmit={submitHandler}>
+            <Select
+              label="Season"
+              select={{
+                name: "insurance_season",
+                id: "insurance_season",
+                onChange: handleChange,
+                options: openSeasons,
+                optionLabels: openSeasons,
+              }}
+            />
+            <Select
+              label="Region"
+              select={{
+                name: "insurance_region",
+                id: "insurance_region",
+                onChange: handleChange,
+                options: regionsOptions,
+                optionLabels: regionsOptionsLabels,
+              }}
+            />
+            <Select
+              label="Farm"
+              select={{
+                name: "insurance_farm",
+                id: "insurance_farm",
+                onChange: handleChange,
+                options: farmsOptions,
+                optionLabels: farmsOptionsLabels,
+              }}
+            />
+            <Input
+              label="Size"
+              input={{
+                id: "insurance_size",
+                type: "number",
+                min: 1,
+                step: "1",
+                defaultValue: 1,
+                onChange: handleChange,
+              }}
+            />
+            <button>Submit</button>
+          </form>
+        )}
     </Fragment>
   );
 };

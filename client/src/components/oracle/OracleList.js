@@ -33,11 +33,13 @@ const OracleList = () => {
   );
 
   return (
-    <table>
-      <caption>Oracles submissions</caption>
-      {tableHeaders}
-      {tbody}
-    </table>
+    submissions.length > 0 && (
+      <table>
+        <caption>Oracles submissions</caption>
+        {tableHeaders}
+        {tbody}
+      </table>
+    )
   );
 };
 

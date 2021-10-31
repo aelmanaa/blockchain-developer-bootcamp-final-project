@@ -30,12 +30,14 @@ const SeasonList = () => {
     </tfoot>
   );
   return (
-    <table>
-      <caption>Seasons</caption>
-      {tableHeaders}
-      {tbody}
-      {tfoot}
-    </table>
+    seasons.length > 0 && (
+      <table>
+        <caption>Seasons</caption>
+        {tableHeaders}
+        {tbody}
+        {tfoot}
+      </table>
+    )
   );
 };
 

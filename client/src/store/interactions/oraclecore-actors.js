@@ -1,153 +1,60 @@
 import { getOracleCoreMeta } from "./contracts";
-import { uiActions } from "../state/ui";
 import { getOracleEscrow } from "./oraclecore";
 import { REGIONS, SEVERITY } from "../../utils/constant";
+import { transact } from "./helper";
 
 export const openSeason = (newSeason, account) => {
   return async (dispatch) => {
-    dispatch(
-      uiActions.showNotification({
-        status: "pending",
-        title: "Sending...",
-        message: "Starting openSeason transaction!",
-      })
+    const { openSeason } = getOracleCoreMeta().methods;
+    await transact(
+      dispatch,
+      openSeason,
+      [newSeason.toString()],
+      { from: account },
+      "OPEN SEASON"
     );
-    try {
-      const oracleCoreMeta = getOracleCoreMeta();
-      const { openSeason } = oracleCoreMeta.methods;
-      let res = await openSeason(newSeason.toString()).send({ from: account });
-      console.log(res);
-      dispatch(
-        uiActions.showNotification({
-          status: "success",
-          title: "Success!",
-          message: "openSeason successfull!",
-        })
-      );
-
-      dispatch(getOracleEscrow(account));
-    } catch (error) {
-      console.error(error);
-      dispatch(
-        uiActions.showNotification({
-          status: "error",
-          title: "Error!",
-          message: "openSeason failed!",
-        })
-      );
-    }
+    dispatch(getOracleEscrow(account));
   };
 };
 
 export const closeSeason = (season, account) => {
   return async (dispatch) => {
-    dispatch(
-      uiActions.showNotification({
-        status: "pending",
-        title: "Sending...",
-        message: "Starting closeSeason transaction!",
-      })
+    const { closeSeason } = getOracleCoreMeta().methods;
+    await transact(
+      dispatch,
+      closeSeason,
+      [season.toString()],
+      { from: account },
+      "CLOSE SEASON"
     );
-    try {
-      const oracleCoreMeta = getOracleCoreMeta();
-      const { closeSeason } = oracleCoreMeta.methods;
-      let res = await closeSeason(season.toString()).send({ from: account });
-      console.log(res);
-      dispatch(
-        uiActions.showNotification({
-          status: "success",
-          title: "Success!",
-          message: "closeSeason successfull!",
-        })
-      );
-      dispatch(getOracleEscrow(account));
-    } catch (error) {
-      console.error(error);
-      dispatch(
-        uiActions.showNotification({
-          status: "error",
-          title: "Error!",
-          message: "closeSeason failed!",
-        })
-      );
-    }
+    dispatch(getOracleEscrow(account));
   };
 };
 
 export const submitSeverity = (season, region, severity, account) => {
   return async (dispatch) => {
-    dispatch(
-      uiActions.showNotification({
-        status: "pending",
-        title: "Sending...",
-        message: "Starting openSeason transaction!",
-      })
+    const { submit } = getOracleCoreMeta().methods;
+    await transact(
+      dispatch,
+      submit,
+      [season.toString(), REGIONS[region].hash, SEVERITY[severity].value],
+      { from: account },
+      "SUBMIT SEVERITY"
     );
-    try {
-      const oracleCoreMeta = getOracleCoreMeta();
-      const { submit } = oracleCoreMeta.methods;
-      let res = await submit(
-        season.toString(),
-        REGIONS[region].hash,
-        SEVERITY[severity].value
-      ).send({ from: account });
-      console.log(res);
-      dispatch(
-        uiActions.showNotification({
-          status: "success",
-          title: "Success!",
-          message: "Submission successfull!",
-        })
-      );
-
-      dispatch(getOracleEscrow(account));
-    } catch (error) {
-      console.error(error);
-      dispatch(
-        uiActions.showNotification({
-          status: "error",
-          title: "Error!",
-          message: "Submision failed!",
-        })
-      );
-    }
+    dispatch(getOracleEscrow(account));
   };
 };
 
 export const aggregateSeverity = (season, region, account) => {
   return async (dispatch) => {
-    dispatch(
-      uiActions.showNotification({
-        status: "pending",
-        title: "Sending...",
-        message: "Aggregate severity!",
-      })
+    const { aggregate } = getOracleCoreMeta().methods;
+    await transact(
+      dispatch,
+      aggregate,
+      [season.toString(), REGIONS[region].hash],
+      { from: account },
+      "AGGREGATE SEVERITY"
     );
-    try {
-      const oracleCoreMeta = getOracleCoreMeta();
-      const { aggregate } = oracleCoreMeta.methods;
-      let res = await aggregate(season.toString(), REGIONS[region].hash).send({
-        from: account,
-      });
-      console.log(res);
-      dispatch(
-        uiActions.showNotification({
-          status: "success",
-          title: "Success!",
-          message: "Aggregation successfull!",
-        })
-      );
-
-      dispatch(getOracleEscrow(account));
-    } catch (error) {
-      console.error(error);
-      dispatch(
-        uiActions.showNotification({
-          status: "error",
-          title: "Error!",
-          message: "Aggregation of severities failed!",
-        })
-      );
-    }
+    dispatch(getOracleEscrow(account));
   };
 };

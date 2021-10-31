@@ -1,7 +1,9 @@
 import { getInsuranceMeta } from "./contracts";
-import { uiActions } from "../state/ui";
 import { FARMS, REGIONS } from "../../utils/constant";
 import { multiplyBigNumbers } from "../../utils/operations";
+import { transact } from "./helper";
+import { getInsuranceEscrow } from "./insurance";
+import { insuranceActions } from "../state/insurance";
 
 export const register = (
   season,
@@ -12,42 +14,20 @@ export const register = (
   account
 ) => {
   return async (dispatch) => {
-    dispatch(
-      uiActions.showNotification({
-        status: "pending",
-        title: "Sending...",
-        message: "Starting register transaction!",
-      })
-    );
-    try {
-      const insuranceMeta = getInsuranceMeta();
-      const fee = multiplyBigNumbers(halfPremiumPerHA, size);
-      const { register } = insuranceMeta.methods;
-
-      let res = await register(
+    const { register } = getInsuranceMeta().methods;
+    const fee = multiplyBigNumbers(halfPremiumPerHA, size);
+    await transact(
+      dispatch,
+      register,
+      [
         season.toString(),
         REGIONS[region].hash,
         FARMS[farm].hash,
-        size.toString()
-      ).send({ from: account, value: fee });
-      console.log(res);
-      dispatch(
-        uiActions.showNotification({
-          status: "success",
-          title: "Success!",
-          message: "register contract successfull!",
-        })
-      );
-    } catch (error) {
-      console.error(error);
-      dispatch(
-        uiActions.showNotification({
-          status: "error",
-          title: "Error!",
-          message: "register contract failed!",
-        })
-      );
-    }
+        size.toString(),
+      ],
+      { from: account, value: fee },
+      "REGISTER"
+    );
   };
 };
 
@@ -60,79 +40,56 @@ export const validate = (
   account
 ) => {
   return async (dispatch) => {
-    dispatch(
-      uiActions.showNotification({
-        status: "pending",
-        title: "Sending...",
-        message: "Starting validate transaction!",
-      })
+    const { validate } = getInsuranceMeta().methods;
+    const fee = multiplyBigNumbers(halfPremiumPerHA, size);
+    await transact(
+      dispatch,
+      validate,
+      [season.toString(), REGIONS[region].hash, FARMS[farm].hash],
+      { from: account, value: fee },
+      "VALIDATE"
     );
-    try {
-      const insuranceMeta = getInsuranceMeta();
-      const fee = multiplyBigNumbers(halfPremiumPerHA, size);
-      const { validate } = insuranceMeta.methods;
-
-      let res = await validate(
-        season.toString(),
-        REGIONS[region].hash,
-        FARMS[farm].hash
-      ).send({ from: account, value: fee });
-      console.log(res);
-      dispatch(
-        uiActions.showNotification({
-          status: "success",
-          title: "Success!",
-          message: "validate contract successfull!",
-        })
-      );
-    } catch (error) {
-      console.error(error);
-      dispatch(
-        uiActions.showNotification({
-          status: "error",
-          title: "Error!",
-          message: "validate contract failed!",
-        })
-      );
-    }
   };
 };
 
 export const activate = (season, region, farm, account) => {
   return async (dispatch) => {
-    dispatch(
-      uiActions.showNotification({
-        status: "pending",
-        title: "Sending...",
-        message: "Starting activate transaction!",
-      })
+    const { activate } = getInsuranceMeta().methods;
+    await transact(
+      dispatch,
+      activate,
+      [season.toString(), REGIONS[region].hash, FARMS[farm].hash],
+      { from: account },
+      "ACTIVATE"
     );
-    try {
-      const insuranceMeta = getInsuranceMeta();
-      const { activate } = insuranceMeta.methods;
+  };
+};
 
-      let res = await activate(
-        season.toString(),
-        REGIONS[region].hash,
-        FARMS[farm].hash
-      ).send({ from: account });
-      console.log(res);
-      dispatch(
-        uiActions.showNotification({
-          status: "success",
-          title: "Success!",
-          message: "activate contract successfull!",
-        })
+export const pocessContracts = (
+  season,
+  region,
+  numberOpenContracts,
+  account
+) => {
+  return async (dispatch) => {
+    const { process } = getInsuranceMeta().methods;
+    for (let i = 0; i < numberOpenContracts; i++) {
+      const res = await transact(
+        dispatch,
+        process,
+        [season.toString(), REGIONS[region].hash],
+        { from: account },
+        "PROCESS CONTRACTS"
       );
-    } catch (error) {
-      console.error(error);
-      dispatch(
-        uiActions.showNotification({
-          status: "error",
-          title: "Error!",
-          message: "activate contract failed!",
-        })
-      );
+      if (res) {
+        dispatch(
+          insuranceActions.decrementPending({
+            seasonId: season,
+            region,
+          })
+        );
+      }
     }
+    dispatch(getInsuranceEscrow(account));
   };
 };

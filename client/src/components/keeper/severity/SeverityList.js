@@ -34,11 +34,13 @@ const SeverityList = () => {
   );
 
   return (
-    <table>
-      <caption>Aggregated Severities</caption>
-      {tableHeaders}
-      {tbody}
-    </table>
+    severities.length > 0 && (
+      <table>
+        <caption>Aggregated Severities</caption>
+        {tableHeaders}
+        {tbody}
+      </table>
+    )
   );
 };
 

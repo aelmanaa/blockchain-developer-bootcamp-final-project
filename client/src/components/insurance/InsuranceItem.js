@@ -12,28 +12,31 @@ import { activate, validate } from "../../store/interactions/insurance-actors";
 const InsuranceItem = (props) => {
   const dispatch = useDispatch();
   let connectedAccount = useSelector((state) => state.account.accounts[0]);
+  const accountsRoles = useSelector((state) => state.account.accountsRoles);
+  const currentRoles = accountsRoles[connectedAccount];
+
   const halfPremiumPerHA = useSelector(
     (state) => state.insurance.halfPremiumPerHA
   );
   const clickHandler = (event) => {
     event.preventDefault();
-    const [action, seasonId, region, farm, size] = event.target.value.split("_");
-    console.log(action, seasonId, region, farm, size)
+    const [action, seasonId, region, farm, size] =
+      event.target.value.split("_");
     switch (action) {
       case CONTRACT_ACTIONS.VALIDATE.keyName:
         dispatch(
           validate(
-            seasonId,
+            Number(seasonId),
             region,
             farm,
             halfPremiumPerHA,
-            size,
+            Number(size),
             connectedAccount
           )
         );
         break;
       case CONTRACT_ACTIONS.ACTIVATE.keyName:
-        dispatch(activate(seasonId, region, farm, connectedAccount));
+        dispatch(activate(Number(seasonId), region, farm, connectedAccount));
         break;
       default:
         console.error(`action ${action} not supported`);
@@ -42,7 +45,10 @@ const InsuranceItem = (props) => {
   };
 
   const elem =
-    connectedAccount && !(props.action === CONTRACT_ACTIONS.NONE.keyName) ? (
+    connectedAccount &&
+    currentRoles &&
+    (currentRoles.isGovernment || currentRoles.isInsurer) &&
+    !(props.action === CONTRACT_ACTIONS.NONE.keyName) ? (
       <button
         onClick={clickHandler}
         value={

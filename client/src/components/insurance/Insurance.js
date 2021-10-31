@@ -6,6 +6,7 @@ import InsuranceClosedList from "./InsuranceClosedList";
 const Insurance = () => {
   return (
     <Fragment>
+      <h1>INSURANCE MANAGEMENT</h1>
       <InsuranceManagement />
       <InsuranceOpenList />
       <InsuranceClosedList />

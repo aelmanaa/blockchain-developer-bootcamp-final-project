@@ -1,6 +1,7 @@
 import MetaMaskOnboarding from "@metamask/onboarding";
 import Web3 from "web3";
 import { accountActions } from "../state/account";
+import { updateRoles } from "./gateKeeper";
 
 const onboarding = new MetaMaskOnboarding();
 let web3 = null;
@@ -77,6 +78,7 @@ export const afterAccountsLoading = (accounts) => {
             balance: balance,
           })
         );
+        dispatch(updateRoles(accounts[i]));
       }
       onboarding.stopOnboarding();
     } else {

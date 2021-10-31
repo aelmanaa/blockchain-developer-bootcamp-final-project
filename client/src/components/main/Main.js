@@ -6,12 +6,11 @@ import {
   afterInsuranceLoading,
   loadInsuranceContracts,
 } from "../../store/interactions/insurance";
-import Season from "../season/Season";
 import Oracle from "../oracle/Oracle";
-import Severity from "../severity/Severity";
 import Insurance from "../insurance/Insurance";
+import Keeper from "../keeper/Keeper";
 
-const Main = (props) => {
+const Main = () => {
   const dispatch = useDispatch();
   const web3Loaded = useSelector((state) => state.account.web3Loaded);
   const chainId = useSelector((state) => state.account.chainId);
@@ -41,10 +40,9 @@ const Main = (props) => {
 
   return (
     <Fragment>
-      <Season />
+      <Keeper />
       <Insurance />
       <Oracle />
-      <Severity />
     </Fragment>
   );
 };

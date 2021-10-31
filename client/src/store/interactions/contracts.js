@@ -1,9 +1,10 @@
 import { contractActions } from "../state/contract";
 import oracleCore from "../../contracts/OracleCore.json";
 import insurance from "../../contracts/Insurance.json";
+import gateKeeper from "../../contracts/GateKeeper.json";
 import { getWeb3 } from "./metamask";
 
-let oracleCoreMeta, insuranceMeta;
+let oracleCoreMeta, insuranceMeta, gateKeeperMeta;
 
 export const loadContracts = (web3Loaded, chainId) => {
   return async (dispatch) => {
@@ -35,8 +36,37 @@ export const loadContracts = (web3Loaded, chainId) => {
           address: insuranceDeployedNetwork.address,
         })
       );
+      // Load gateKeeper contract
+      const gateKeeperDeployedNetwork = gateKeeper.networks[networkId];
+      gateKeeperMeta = await new web3.eth.Contract(
+        gateKeeper.abi,
+        gateKeeperDeployedNetwork.address
+      );
+      dispatch(
+        contractActions.loadGateKeeper({
+          gateKeeperLoaded: true,
+          address: gateKeeperDeployedNetwork.address,
+        })
+      );
     } else {
-      // TODO
+      dispatch(
+        contractActions.loadOracleCore({
+          oracleCoreLoaded: false,
+          address: 0x0,
+        })
+      );
+      dispatch(
+        contractActions.loadInsurance({
+          insuranceLoaded: false,
+          address: 0x0,
+        })
+      );
+      dispatch(
+        contractActions.loadGateKeeper({
+          gateKeeperLoaded: false,
+          address: 0x0,
+        })
+      );
     }
   };
 };
@@ -47,4 +77,8 @@ export const getOracleCoreMeta = () => {
 
 export const getInsuranceMeta = () => {
   return insuranceMeta;
+};
+
+export const getGateKeeperMeta = () => {
+  return gateKeeperMeta;
 };
