@@ -37,6 +37,7 @@ export const checkMetamaskInstalled = () => {
     dispatch(accountActions.loadWeb3({ web3Loaded: true }));
 
     window.ethereum.on("chainChanged", (chainId) => {
+      console.log("CHAIN CHAINGED!")
       dispatch(accountActions.loadChainId({ chainId }));
     });
 

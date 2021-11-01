@@ -8,6 +8,8 @@
     "web3": "^1.6.0"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.3.2"
+    "@openzeppelin/contracts": "^4.3.2",
+    "@truffle/hdwallet-provider": "^1.5.1",
+    "dotenv": "^10.0.0"
   }
 }

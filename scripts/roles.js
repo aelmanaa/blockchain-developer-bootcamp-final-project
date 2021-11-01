@@ -71,40 +71,60 @@ module.exports = async (callback) => {
       .send({ from: owner, gas: 3000000 });
 
     // set roles
-    await methods
-      .addRole(ROLES_CONST.INSURER_ROLE, ROLES_CONST.ADMIN_ROLE)
-      .send({ from: admin, gas: 3000000 });
-    await methods
-      .addRole(ROLES_CONST.GOVERNMENT_ROLE, ROLES_CONST.ADMIN_ROLE)
-      .send({ from: admin, gas: 3000000 });
-    await methods
-      .addRole(ROLES_CONST.KEEPER_ROLE, ROLES_CONST.ADMIN_ROLE)
-      .send({ from: admin, gas: 3000000 });
-    await methods
-      .addRole(ROLES_CONST.ORACLE_ROLE, ROLES_CONST.ADMIN_ROLE)
-      .send({ from: admin, gas: 3000000 });
-    await methods
-      .addRole(ROLES_CONST.FARMER_ROLE, ROLES_CONST.ADMIN_ROLE)
-      .send({ from: admin, gas: 3000000 });
-    // assign roles
-    await methods
-      .addAssignment(ROLES_CONST.INSURER_ROLE, insurer)
-      .send({ from: admin, gas: 3000000 });
-    await methods
-      .addAssignment(ROLES_CONST.GOVERNMENT_ROLE, government)
-      .send({ from: admin, gas: 3000000 });
-    await methods
-      .addAssignment(ROLES_CONST.KEEPER_ROLE, keeper)
-      .send({ from: admin, gas: 3000000 });
-    for (let oracle of oracles) {
+    console.log(
       await methods
-        .addAssignment(ROLES_CONST.ORACLE_ROLE, oracle)
-        .send({ from: admin, gas: 3000000 });
+        .addRole(ROLES_CONST.INSURER_ROLE, ROLES_CONST.ADMIN_ROLE)
+        .send({ from: admin, gas: 3000000 })
+    );
+    console.log(
+      await methods
+        .addRole(ROLES_CONST.GOVERNMENT_ROLE, ROLES_CONST.ADMIN_ROLE)
+        .send({ from: admin, gas: 3000000 })
+    );
+    console.log(
+      await methods
+        .addRole(ROLES_CONST.KEEPER_ROLE, ROLES_CONST.ADMIN_ROLE)
+        .send({ from: admin, gas: 3000000 })
+    );
+    console.log(
+      await methods
+        .addRole(ROLES_CONST.ORACLE_ROLE, ROLES_CONST.ADMIN_ROLE)
+        .send({ from: admin, gas: 3000000 })
+    );
+    console.log(
+      await methods
+        .addRole(ROLES_CONST.FARMER_ROLE, ROLES_CONST.ADMIN_ROLE)
+        .send({ from: admin, gas: 3000000 })
+    );
+    // assign roles
+    console.log(
+      await methods
+        .addAssignment(ROLES_CONST.INSURER_ROLE, insurer)
+        .send({ from: admin, gas: 3000000 })
+    );
+    console.log(
+      await methods
+        .addAssignment(ROLES_CONST.GOVERNMENT_ROLE, government)
+        .send({ from: admin, gas: 3000000 })
+    );
+    console.log(
+      await methods
+        .addAssignment(ROLES_CONST.KEEPER_ROLE, keeper)
+        .send({ from: admin, gas: 3000000 })
+    );
+    for (let oracle of oracles) {
+      console.log(
+        await methods
+          .addAssignment(ROLES_CONST.ORACLE_ROLE, oracle)
+          .send({ from: admin, gas: 3000000 })
+      );
     }
     for (let farmer of farmers) {
-      await methods
-        .addAssignment(ROLES_CONST.FARMER_ROLE, farmer)
-        .send({ from: admin, gas: 3000000 });
+      console.log(
+        await methods
+          .addAssignment(ROLES_CONST.FARMER_ROLE, farmer)
+          .send({ from: admin, gas: 3000000 })
+      );
     }
   } catch (error) {
     console.log(error);

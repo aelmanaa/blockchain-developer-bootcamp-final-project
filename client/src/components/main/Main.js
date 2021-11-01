@@ -36,6 +36,7 @@ const Main = () => {
   }, [dispatch, seasons]);
 
   useEffect(() => {
+    console.log("dispatch load contracts")
     dispatch(loadContracts(web3Loaded, chainId));
   }, [dispatch, web3Loaded, chainId]);
 

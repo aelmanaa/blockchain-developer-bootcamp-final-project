@@ -1,0 +1,104 @@
+Starting migrations...
+======================
+> Network name:    'rinkeby'
+> Network id:      4
+> Block gas limit: 29999943 (0x1c9c347)
+
+
+1_initial_migration.js
+======================
+
+   Deploying 'Migrations'
+   ----------------------
+   > transaction hash:    0xa43c11c20b17940d381cd6810d2e49c63b928369d50914ad5cd8e0d5296f2a85
+   > Blocks: 1            Seconds: 8
+   > contract address:    0x00346172fa615452EF174E6499Df64bb204874e7
+   > block number:        9569344
+   > block timestamp:     1635800531
+   > account:             0xf2750A63d5F5EA45a7797ef670D63415Eff198D6
+   > balance:             3.199869105998952848
+   > gas used:            130894 (0x1ff4e)
+   > gas price:           1.000000008 gwei
+   > value sent:          0 ETH
+   > total cost:          0.000130894001047152 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:     0.000130894001047152 ETH
+
+
+2_deploy_contracts.js
+=====================
+
+   Deploying 'GateKeeper'
+   ----------------------
+   > transaction hash:    0x684d11a4228eb576ce940dd13f7ef1f7fb22e166aeb4d7b83e86f44afd69b71c
+   > Blocks: 0            Seconds: 8
+   > contract address:    0x2D1C1B0D2BC62Cc98977389dba2a767a40b1B04f
+   > block number:        9569346
+   > block timestamp:     1635800561
+   > account:             0xf2750A63d5F5EA45a7797ef670D63415Eff198D6
+   > balance:             3.198783118990264952
+   > gas used:            1040286 (0xfdf9e)
+   > gas price:           1.000000008 gwei
+   > value sent:          0 ETH
+   > total cost:          0.001040286008322288 ETH
+
+
+   Deploying 'OracleCore'
+   ----------------------
+   > transaction hash:    0xea74ca78c5fd82da869d8596ea961ede4cbf92e3779dece7f8a7dd443212ab1e
+   > Blocks: 0            Seconds: 8
+   > contract address:    0xB662AE59DFC89263F0d4cF9df476653a3A6AdeF1
+   > block number:        9569347
+   > block timestamp:     1635800576
+   > account:             0xf2750A63d5F5EA45a7797ef670D63415Eff198D6
+   > balance:             3.19628381997027056
+   > gas used:            2499299 (0x2622e3)
+   > gas price:           1.000000008 gwei
+   > value sent:          0 ETH
+   > total cost:          0.002499299019994392 ETH
+
+
+   Deploying 'OracleFacade'
+   ------------------------
+   > transaction hash:    0xbe66d47e596280c4f92ee56c578eccf4159c85112184560ca4945d5451745390
+   > Blocks: 0            Seconds: 8
+   > contract address:    0x18a95A05Eb846413547be76ec2FF259844910886
+   > block number:        9569348
+   > block timestamp:     1635800591
+   > account:             0xf2750A63d5F5EA45a7797ef670D63415Eff198D6
+   > balance:             3.195513787964110304
+   > gas used:            770032 (0xbbff0)
+   > gas price:           1.000000008 gwei
+   > value sent:          0 ETH
+   > total cost:          0.000770032006160256 ETH
+
+
+   Deploying 'Insurance'
+   ---------------------
+   > transaction hash:    0xe393da5dab5d72a937c5709ef1f430aeb99a01e00a0fe7485b999100e33cb1ae
+   > Blocks: 1            Seconds: 12
+   > contract address:    0x7817bEE55EbC2c223a550bc7477cDA83a67A460A
+   > block number:        9569349
+   > block timestamp:     1635800606
+   > account:             0xf2750A63d5F5EA45a7797ef670D63415Eff198D6
+   > balance:             3.191534042932272344
+   > gas used:            3979745 (0x3cb9e1)
+   > gas price:           1.000000008 gwei
+   > value sent:          0 ETH
+   > total cost:          0.00397974503183796 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:     0.008289362066314896 ETH
+
+
+Summary
+=======
+> Total deployments:   5
+> Final cost:          0.008420256067362048 ETH
