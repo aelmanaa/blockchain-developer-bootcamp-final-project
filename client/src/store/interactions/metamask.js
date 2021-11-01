@@ -6,6 +6,18 @@ import { updateRoles } from "./gateKeeper";
 const onboarding = new MetaMaskOnboarding();
 let web3 = null;
 
+export const updateAccountBalance = (account) => {
+  return async (dispatch) => {
+    let balance = await web3.eth.getBalance(account);
+    dispatch(
+      accountActions.updateAccountBalance({
+        account: account,
+        balance: balance,
+      })
+    );
+  };
+};
+
 export const checkMetamaskInstalled = () => {
   return async (dispatch) => {
     if (!MetaMaskOnboarding.isMetaMaskInstalled()) {

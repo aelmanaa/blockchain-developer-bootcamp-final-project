@@ -2,6 +2,22 @@ import { getOracleCoreMeta } from "./contracts";
 import { getOracleEscrow } from "./oraclecore";
 import { REGIONS, SEVERITY } from "../../utils/constant";
 import { transact } from "./helper";
+import { updateAccountBalance } from "./metamask";
+
+export const withdraw = (account) => {
+  return async (dispatch) => {
+    const { withdraw } = getOracleCoreMeta().methods;
+    await transact(
+      dispatch,
+      withdraw,
+      [],
+      { from: account },
+      "WITHDRAW FROM ORACLE ESCROW"
+    );
+    dispatch(getOracleEscrow(account));
+    dispatch(updateAccountBalance(account));
+  };
+};
 
 export const openSeason = (newSeason, account) => {
   return async (dispatch) => {
@@ -14,6 +30,7 @@ export const openSeason = (newSeason, account) => {
       "OPEN SEASON"
     );
     dispatch(getOracleEscrow(account));
+    dispatch(updateAccountBalance(account));
   };
 };
 
@@ -28,6 +45,7 @@ export const closeSeason = (season, account) => {
       "CLOSE SEASON"
     );
     dispatch(getOracleEscrow(account));
+    dispatch(updateAccountBalance(account));
   };
 };
 
@@ -42,6 +60,7 @@ export const submitSeverity = (season, region, severity, account) => {
       "SUBMIT SEVERITY"
     );
     dispatch(getOracleEscrow(account));
+    dispatch(updateAccountBalance(account));
   };
 };
 
@@ -56,5 +75,6 @@ export const aggregateSeverity = (season, region, account) => {
       "AGGREGATE SEVERITY"
     );
     dispatch(getOracleEscrow(account));
+    dispatch(updateAccountBalance(account));
   };
 };

@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { toEther, toTwoDec } from "../../utils/format";
 import { liquidity } from "../../store/interactions/insurance";
 import { insuranceActions } from "../../store/state/insurance";
+import { subBigNumbers } from "../../utils/operations";
+import { withdrawInsurer } from "../../store/interactions/insurance-actors";
 
 const Common = (props) => {
   const dispatch = useDispatch();
@@ -26,6 +28,10 @@ const Common = (props) => {
     (state) => state.insurance.insuranceCounter
   );
 
+  let connectedAccount = useSelector((state) => state.account.accounts[0]);
+  const accountsRoles = useSelector((state) => state.account.accountsRoles);
+  const currentRoles = accountsRoles[connectedAccount];
+
   useEffect(() => {
     const timer = setTimeout(() => {
       dispatch(
@@ -41,6 +47,36 @@ const Common = (props) => {
     return () => clearTimeout(timer);
   }, [dispatch, insuranceLoaded, insuranceCounter]);
 
+  const insuranceWithdrawClickHandler = (event) => {
+    event.preventDefault();
+    dispatch(
+      withdrawInsurer(
+        subBigNumbers(
+          insuranceContractbalance,
+          insuranceContractMinimumLiquidity
+        ),
+        connectedAccount
+      )
+    );
+  };
+
+  const insuranceInfoElement = insuranceContractbalance && (
+    <p>
+      Insurance contract - Current balance:{" "}
+      {toTwoDec(toEther(insuranceContractbalance))} ETH
+      {currentRoles &&
+      currentRoles.isInsurer &&
+      subBigNumbers(
+        insuranceContractbalance,
+        insuranceContractMinimumLiquidity
+      ) > 0 ? (
+        <button onClick={insuranceWithdrawClickHandler}>Withdraw</button>
+      ) : (
+        ""
+      )}
+    </p>
+  );
+
   let info = insuranceLoaded && (
     <Fragment>
       {insuranceContractMinimumLiquidity && (
@@ -49,12 +85,7 @@ const Common = (props) => {
           {toTwoDec(toEther(insuranceContractMinimumLiquidity))} ETH
         </p>
       )}
-      {insuranceContractbalance && (
-        <p>
-          Insurance contract - Current balance:{" "}
-          {toTwoDec(toEther(insuranceContractbalance))} ETH
-        </p>
-      )}
+      {insuranceInfoElement}
     </Fragment>
   );
 

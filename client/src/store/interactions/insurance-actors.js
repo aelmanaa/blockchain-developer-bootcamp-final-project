@@ -4,6 +4,36 @@ import { multiplyBigNumbers } from "../../utils/operations";
 import { transact } from "./helper";
 import { getInsuranceEscrow } from "./insurance";
 import { insuranceActions } from "../state/insurance";
+import { updateAccountBalance } from "./metamask";
+
+export const withdrawInsurer = (amount, account) => {
+  return async (dispatch) => {
+    const { withdrawInsurer } = getInsuranceMeta().methods;
+    await transact(
+      dispatch,
+      withdrawInsurer,
+      [amount.toString()],
+      { from: account },
+      "WITHDRAW INSURER FROM INSURANCE CONTRACT"
+    );
+    dispatch(updateAccountBalance(account));
+  };
+};
+
+export const withdraw = (account) => {
+  return async (dispatch) => {
+    const { withdraw } = getInsuranceMeta().methods;
+    await transact(
+      dispatch,
+      withdraw,
+      [],
+      { from: account },
+      "WITHDRAW FROM INSURANCE ESCROW"
+    );
+    dispatch(getInsuranceEscrow(account));
+    dispatch(updateAccountBalance(account));
+  };
+};
 
 export const register = (
   season,
@@ -28,6 +58,7 @@ export const register = (
       { from: account, value: fee },
       "REGISTER"
     );
+    dispatch(updateAccountBalance(account));
   };
 };
 
@@ -49,6 +80,7 @@ export const validate = (
       { from: account, value: fee },
       "VALIDATE"
     );
+    dispatch(updateAccountBalance(account));
   };
 };
 
@@ -62,6 +94,7 @@ export const activate = (season, region, farm, account) => {
       { from: account },
       "ACTIVATE"
     );
+    dispatch(updateAccountBalance(account));
   };
 };
 
@@ -91,5 +124,6 @@ export const pocessContracts = (
       }
     }
     dispatch(getInsuranceEscrow(account));
+    dispatch(updateAccountBalance(account));
   };
 };
