@@ -3,6 +3,7 @@ import Input from "../../ui/Input";
 import { Fragment } from "react";
 import { oracleCoreActions } from "../../../store/state/oraclecore";
 import { openSeason } from "../../../store/interactions/oraclecore-actors";
+import classes from "./SeasonForm.module.css";
 
 const SeasonManagement = () => {
   const dispatch = useDispatch();
@@ -34,21 +35,26 @@ const SeasonManagement = () => {
         connectedAccount &&
         currentRoles &&
         currentRoles.isKeeper && (
-          <form onSubmit={submitHandler}>
-            <Input
-              label="Season"
-              input={{
-                id: "season",
-                type: "number",
-                min: defaultSeason,
-                max: maxSeason,
-                step: "1",
-                value: defaultSeason,
-                onChange: handleChange,
-              }}
-            />
-            <button>Open new season {defaultSeason}</button>
-          </form>
+          <Fragment>
+            <h3>Open a new season</h3>
+            <form className={classes.form} onSubmit={submitHandler}>
+              <div className={classes.control}>
+                <Input
+                  label="Season"
+                  input={{
+                    id: "season",
+                    type: "number",
+                    min: defaultSeason,
+                    max: maxSeason,
+                    step: "1",
+                    value: defaultSeason,
+                    onChange: handleChange,
+                  }}
+                />
+              </div>
+              <button>Open new season</button>
+            </form>
+          </Fragment>
         )}
     </Fragment>
   );

@@ -2,14 +2,14 @@ import Account from "../header/Account";
 import AccountDisplayer from "../header/AccountDisplayer";
 import Common from "../header/Common";
 
-//import classes from './MainHeader.module.css';
+import classes from "./MainHeader.module.css";
 
 const MainHeader = (props) => {
   return (
-    <header /*className={classes.header}*/>
+    <header className={classes.header}>
       <Common />
-      <Account />
       <AccountDisplayer />
+      <Account />
     </header>
   );
 };

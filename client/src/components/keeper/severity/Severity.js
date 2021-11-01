@@ -1,12 +1,11 @@
-import { Fragment } from "react";
 import SeverityList from "./SeverityList";
 
 const Severity = () => {
   return (
-    <Fragment>
+    <div>
       <h2>SEVERITY MANAGEMENT</h2>
       <SeverityList />
-    </Fragment>
+    </div>
   );
 };
 

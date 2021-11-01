@@ -5,6 +5,7 @@ import { Fragment } from "react";
 import { SEASON_STATE, REGIONS, FARMS } from "../../utils/constant";
 import { insuranceActions } from "../../store/state/insurance";
 import { register } from "../../store/interactions/insurance-actors";
+import classes from "./InsuranceForm.module.css";
 
 const InsuranceManagement = () => {
   const dispatch = useDispatch();
@@ -121,50 +122,55 @@ const InsuranceManagement = () => {
         connectedAccount &&
         currentRoles &&
         currentRoles.isFarmer && (
-          <form onSubmit={submitHandler}>
-            <Select
-              label="Season"
-              select={{
-                name: "insurance_season",
-                id: "insurance_season",
-                onChange: handleChange,
-                options: openSeasons,
-                optionLabels: openSeasons,
-              }}
-            />
-            <Select
-              label="Region"
-              select={{
-                name: "insurance_region",
-                id: "insurance_region",
-                onChange: handleChange,
-                options: regionsOptions,
-                optionLabels: regionsOptionsLabels,
-              }}
-            />
-            <Select
-              label="Farm"
-              select={{
-                name: "insurance_farm",
-                id: "insurance_farm",
-                onChange: handleChange,
-                options: farmsOptions,
-                optionLabels: farmsOptionsLabels,
-              }}
-            />
-            <Input
-              label="Size"
-              input={{
-                id: "insurance_size",
-                type: "number",
-                min: 1,
-                step: "1",
-                defaultValue: 1,
-                onChange: handleChange,
-              }}
-            />
-            <button>Submit</button>
-          </form>
+          <Fragment>
+            <h3>Register a new contract</h3>
+            <form className={classes.form} onSubmit={submitHandler}>
+              <div className={classes.control}>
+                <Select
+                  label="Season"
+                  select={{
+                    name: "insurance_season",
+                    id: "insurance_season",
+                    onChange: handleChange,
+                    options: openSeasons,
+                    optionLabels: openSeasons,
+                  }}
+                />
+                <Select
+                  label="Region"
+                  select={{
+                    name: "insurance_region",
+                    id: "insurance_region",
+                    onChange: handleChange,
+                    options: regionsOptions,
+                    optionLabels: regionsOptionsLabels,
+                  }}
+                />
+                <Select
+                  label="Farm"
+                  select={{
+                    name: "insurance_farm",
+                    id: "insurance_farm",
+                    onChange: handleChange,
+                    options: farmsOptions,
+                    optionLabels: farmsOptionsLabels,
+                  }}
+                />
+                <Input
+                  label="Size"
+                  input={{
+                    id: "insurance_size",
+                    type: "number",
+                    min: 1,
+                    step: "1",
+                    defaultValue: 1,
+                    onChange: handleChange,
+                  }}
+                />
+              </div>
+              <button>Submit</button>
+            </form>
+          </Fragment>
         )}
     </Fragment>
   );

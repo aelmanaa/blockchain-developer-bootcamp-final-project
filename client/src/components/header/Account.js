@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { connect, afterAccountsLoading } from "../../store/interactions/metamask";
+import {
+  connect,
+  afterAccountsLoading,
+} from "../../store/interactions/metamask";
 import { getOracleEscrow } from "../../store/interactions/oraclecore";
 import { getInsuranceEscrow } from "../../store/interactions/insurance";
-
-//import { uiActions } from '../../store/ui-slice';
-//import classes from './CartButton.module.css';
 
 const Account = () => {
   const dispatch = useDispatch();
@@ -43,8 +43,6 @@ const Account = () => {
       dispatch(getInsuranceEscrow(accounts[0]));
     }
   }, [dispatch, accounts, insuranceLoaded]);
-
-
 
   const connectHandler = () => {
     dispatch(connect(isMetamaskInstalled));

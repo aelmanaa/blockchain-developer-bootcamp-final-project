@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loadContracts } from "../../store/interactions/contracts";
 import { afterOracleCoreLoading } from "../../store/interactions/oraclecore";
@@ -9,6 +9,7 @@ import {
 import Oracle from "../oracle/Oracle";
 import Insurance from "../insurance/Insurance";
 import Keeper from "../keeper/Keeper";
+import classes from "./Main.module.css";
 
 const Main = () => {
   const dispatch = useDispatch();
@@ -39,11 +40,11 @@ const Main = () => {
   }, [dispatch, web3Loaded, chainId]);
 
   return (
-    <Fragment>
+    <div className={classes.main}>
       <Keeper />
       <Insurance />
       <Oracle />
-    </Fragment>
+    </div>
   );
 };
 

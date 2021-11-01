@@ -1,14 +1,13 @@
-import { Fragment } from "react";
 import Season from "./season/Season";
 import Severity from "./severity/Severity";
 
 const Keeper = () => {
   return (
-    <Fragment>
+    <div>
       <h1>KEEPER MANAGEMENT</h1>
       <Season />
       <Severity />
-    </Fragment>
+    </div>
   );
 };
 
