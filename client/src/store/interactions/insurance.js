@@ -70,139 +70,99 @@ export const liquidity = (
   };
 };
 
-export const afterInsuranceLoading = (insuranceLoaded) => {
+export const afterInsuranceLoading = () => {
   return async (dispatch) => {
-    if (insuranceLoaded) {
-      try {
-        await getPremiumConstants(dispatch);
-        const insuranceMeta = getInsuranceMeta();
+    try {
+      await getPremiumConstants(dispatch);
+      const insuranceMeta = getInsuranceMeta();
 
-        // treat events
-        insuranceMeta.events
-          .InsuranceRequested({
-            fromBlock: "latest",
-          })
-          .on("connected", (subscriptionId) => {
-            console.log(
-              `Subscribed to InsuranceRequested event. subscriptionId: ${subscriptionId}`
-            );
-          })
-          .on("data", async (event) => {
-            console.log(event); // same results as the optional callback above
-            const key = event.returnValues.key;
-            const contract = await getContractData(key);
+      // treat events
+      insuranceMeta.events
+        .InsuranceRequested({
+          fromBlock: "latest",
+        })
+        .on("connected", (subscriptionId) => {
+          console.log(
+            `Subscribed to InsuranceRequested event. subscriptionId: ${subscriptionId}`
+          );
+        })
+        .on("data", async (event) => {
+          console.log(event); // same results as the optional callback above
+          const key = event.returnValues.key;
+          const contract = await getContractData(key);
 
-            dispatch(insuranceActions.addContract({ contract }));
-          })
-          .on("error", (error, receipt) => {
-            // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-            //TODO
-            console.error("Emit error InsuranceRequested event");
-            console.error(error, receipt);
-          });
+          dispatch(insuranceActions.addContract({ contract }));
+        })
 
-        insuranceMeta.events
-          .InsuranceValidated({
-            fromBlock: "latest",
-          })
-          .on("connected", (subscriptionId) => {
-            console.log(
-              `Subscribed to InsuranceValidated event. subscriptionId: ${subscriptionId}`
-            );
-          })
-          .on("data", async (event) => {
-            console.log(event); // same results as the optional callback above
-            const key = event.returnValues.key;
-            const contract = await getContractData(key);
+      insuranceMeta.events
+        .InsuranceValidated({
+          fromBlock: "latest",
+        })
+        .on("connected", (subscriptionId) => {
+          console.log(
+            `Subscribed to InsuranceValidated event. subscriptionId: ${subscriptionId}`
+          );
+        })
+        .on("data", async (event) => {
+          console.log(event); // same results as the optional callback above
+          const key = event.returnValues.key;
+          const contract = await getContractData(key);
 
-            dispatch(insuranceActions.updateContract({ contract }));
-          })
-          .on("error", (error, receipt) => {
-            // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-            //TODO
-            console.error("Emit error InsuranceValidated event");
-            console.error(error, receipt);
-          });
+          dispatch(insuranceActions.updateContract({ contract }));
+        })
 
-        insuranceMeta.events
-          .InsuranceActivated({
-            fromBlock: "latest",
-          })
-          .on("connected", (subscriptionId) => {
-            console.log(
-              `Subscribed to InsuranceActivated event. subscriptionId: ${subscriptionId}`
-            );
-          })
-          .on("data", async (event) => {
-            console.log(event); // same results as the optional callback above
-            const key = event.returnValues.key;
-            const contract = await getContractData(key);
+      insuranceMeta.events
+        .InsuranceActivated({
+          fromBlock: "latest",
+        })
+        .on("connected", (subscriptionId) => {
+          console.log(
+            `Subscribed to InsuranceActivated event. subscriptionId: ${subscriptionId}`
+          );
+        })
+        .on("data", async (event) => {
+          console.log(event); // same results as the optional callback above
+          const key = event.returnValues.key;
+          const contract = await getContractData(key);
 
-            dispatch(insuranceActions.updateContract({ contract }));
-          })
-          .on("error", (error, receipt) => {
-            // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-            //TODO
-            console.error("Emit error InsuranceActivated event");
-            console.error(error, receipt);
-          });
+          dispatch(insuranceActions.updateContract({ contract }));
+        })
 
-        insuranceMeta.events
-          .InsuranceClosed({
-            fromBlock: "latest",
-          })
-          .on("connected", (subscriptionId) => {
-            console.log(
-              `Subscribed to InsuranceClosed event. subscriptionId: ${subscriptionId}`
-            );
-          })
-          .on("data", async (event) => {
-            console.log(event); // same results as the optional callback above
-            const key = event.returnValues.key;
-            const contract = await getContractData(key);
+      insuranceMeta.events
+        .InsuranceClosed({
+          fromBlock: "latest",
+        })
+        .on("connected", (subscriptionId) => {
+          console.log(
+            `Subscribed to InsuranceClosed event. subscriptionId: ${subscriptionId}`
+          );
+        })
+        .on("data", async (event) => {
+          console.log(event); // same results as the optional callback above
+          const key = event.returnValues.key;
+          const contract = await getContractData(key);
 
-            dispatch(insuranceActions.updateContract({ contract }));
-          })
-          .on("error", (error, receipt) => {
-            // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-            //TODO
-            console.error("Emit error InsuranceClosed event");
-            console.error(error, receipt);
-          });
+          dispatch(insuranceActions.updateContract({ contract }));
+        })
 
-        insuranceMeta.events
-          .InsuranceCompensated({
-            fromBlock: "latest",
-          })
-          .on("connected", (subscriptionId) => {
-            console.log(
-              `Subscribed to InsuranceCompensated event. subscriptionId: ${subscriptionId}`
-            );
-          })
-          .on("data", async (event) => {
-            console.log(event); // same results as the optional callback above
-            const key = event.returnValues.key;
-            const contract = await getContractData(key);
+      insuranceMeta.events
+        .InsuranceCompensated({
+          fromBlock: "latest",
+        })
+        .on("connected", (subscriptionId) => {
+          console.log(
+            `Subscribed to InsuranceCompensated event. subscriptionId: ${subscriptionId}`
+          );
+        })
+        .on("data", async (event) => {
+          console.log(event); // same results as the optional callback above
+          const key = event.returnValues.key;
+          const contract = await getContractData(key);
 
-            dispatch(insuranceActions.updateContract({ contract }));
-          })
-          .on("error", (error, receipt) => {
-            // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-            //TODO
-            console.error("Emit error InsuranceCompensated event");
-            console.error(error, receipt);
-          });
-      } catch (error) {
-        console.error(error);
-        dispatch(
-          uiActions.showNotification({
-            status: "error",
-            title: "Error!",
-            message: "Error during unitial loading of Insurance contracts data",
-          })
-        );
-      }
-    } else {
+          dispatch(insuranceActions.updateContract({ contract }));
+        })
+    } catch (error) {
+      console.error(error);
       dispatch(insuranceActions.loadContracts({ contracts: [] }));
     }
   };

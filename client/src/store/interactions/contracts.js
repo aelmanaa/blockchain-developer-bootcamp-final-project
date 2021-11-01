@@ -3,6 +3,8 @@ import oracleCore from "../../contracts/OracleCore.json";
 import insurance from "../../contracts/Insurance.json";
 import gateKeeper from "../../contracts/GateKeeper.json";
 import { getWeb3 } from "./metamask";
+import { afterOracleCoreLoading } from "./oraclecore";
+import { afterInsuranceLoading } from "./insurance";
 
 let oracleCoreMeta, insuranceMeta, gateKeeperMeta;
 
@@ -49,6 +51,10 @@ export const loadContracts = (web3Loaded, chainId) => {
             address: gateKeeperDeployedNetwork.address,
           })
         );
+
+        // post loading
+        dispatch(afterOracleCoreLoading());
+        dispatch(afterInsuranceLoading());
       } catch (error) {
         console.error(error);
         dispatch(

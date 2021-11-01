@@ -37,7 +37,6 @@ export const checkMetamaskInstalled = () => {
     dispatch(accountActions.loadWeb3({ web3Loaded: true }));
 
     window.ethereum.on("chainChanged", (chainId) => {
-      console.log("CHAIN CHAINGED!")
       dispatch(accountActions.loadChainId({ chainId }));
     });
 
@@ -49,9 +48,9 @@ export const checkMetamaskInstalled = () => {
           providerRpcError: error.code,
         })
       );
-      dispatch(accountActions.loadChainId({ chainId: null }));
-      web3 = null;
-      dispatch(accountActions.loadWeb3({ web3Loaded: false }));
+      // dispatch(accountActions.loadChainId({ chainId: null }));
+      // web3 = null;
+      // dispatch(accountActions.loadWeb3({ web3Loaded: false }));
     });
   };
 };

@@ -1,5 +1,4 @@
 import { getOracleCoreMeta } from "./contracts";
-import { uiActions } from "../state/ui";
 import { oracleCoreActions } from "../state/oraclecore";
 import { accountActions } from "../state/account";
 import {
@@ -28,31 +27,18 @@ export const getOracleEscrow = (account) => {
   };
 };
 
-export const afterOracleCoreLoading = (oracleCoreLoaded) => {
+export const afterOracleCoreLoading = () => {
   return async (dispatch) => {
-    if (oracleCoreLoaded) {
-      try {
-        const seasons = await initialLoadSeasons(dispatch);
-        const closedSeasons = seasons.filter((season) => {
-          return season.state === SEASON_STATE[2];
-        });
-        if (seasons.length > 0) {
-          await initialLoadSubmissions(dispatch, seasons);
-        }
-        if (closedSeasons.length > 0) {
-          await initialLoadSeverities(dispatch, closedSeasons);
-        }
-      } catch (error) {
-        console.error(error);
-        dispatch(
-          uiActions.showNotification({
-            status: "error",
-            title: "Error!",
-            message: "Error during unitial loading of OracleCore data",
-          })
-        );
-      }
-    } else {
+    try {
+      console.log("after oracle core oading");
+      const seasons = await initialLoadSeasons(dispatch);
+      const closedSeasons = seasons.filter((season) => {
+        return season.state === SEASON_STATE[2];
+      });
+      await initialLoadSubmissions(dispatch, seasons);
+      await initialLoadSeverities(dispatch, closedSeasons);
+    } catch (error) {
+      console.error(error);
       dispatch(oracleCoreActions.loadSeasons({ seasons: [] }));
       dispatch(oracleCoreActions.loadSubmissions({ submissions: [] }));
       dispatch(oracleCoreActions.loadSeverities({ severities: [] }));
@@ -77,8 +63,8 @@ const initialLoadSeasons = async (dispatch) => {
         state: SEASON_STATE[seasonState],
       });
     }
-    dispatch(oracleCoreActions.loadSeasons({ seasons }));
   }
+  dispatch(oracleCoreActions.loadSeasons({ seasons }));
   // treat events
   oracleCoreMeta.events
     .SeasonOpen({
@@ -96,12 +82,6 @@ const initialLoadSeasons = async (dispatch) => {
           id: Number(event.returnValues.season),
         })
       );
-    })
-    .on("error", (error, receipt) => {
-      // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-      //TODO
-      console.error("Emit error season open event");
-      console.error(error, receipt);
     });
 
   oracleCoreMeta.events
@@ -123,12 +103,6 @@ const initialLoadSeasons = async (dispatch) => {
       );
 
       await addSeasonToSeverities(dispatch, closedSeasonId);
-    })
-    .on("error", (error, receipt) => {
-      // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-      //TODO
-      console.error("Emit error season closed event");
-      console.error(error, receipt);
     });
 
   return seasons;
@@ -173,9 +147,7 @@ const initialLoadSubmissions = async (dispatch, seasons) => {
     }
   }
 
-  if (submissions.length > 0) {
-    dispatch(oracleCoreActions.loadSubmissions({ submissions }));
-  }
+  dispatch(oracleCoreActions.loadSubmissions({ submissions }));
 
   oracleCoreMeta.events
     .SeveritySubmitted({
@@ -196,12 +168,6 @@ const initialLoadSubmissions = async (dispatch, seasons) => {
           submitter: event.returnValues.oracle,
         })
       );
-    })
-    .on("error", (error, receipt) => {
-      // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-      //TODO
-      console.error("Emit error submit event");
-      console.error(error, receipt);
     });
 };
 
@@ -243,9 +209,7 @@ const initialLoadSeverities = async (dispatch, closedSeasons) => {
     }
   }
 
-  if (severities.length > 0) {
-    dispatch(oracleCoreActions.loadSeverities({ severities }));
-  }
+  dispatch(oracleCoreActions.loadSeverities({ severities }));
 
   oracleCoreMeta.events
     .SeverityAggregated({
@@ -265,12 +229,6 @@ const initialLoadSeverities = async (dispatch, closedSeasons) => {
           severity: SEVERITY_VALUES[event.returnValues.severity],
         })
       );
-    })
-    .on("error", (error, receipt) => {
-      // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-      //TODO
-      console.error("Emit error submit event");
-      console.error(error, receipt);
     });
 };
 
