@@ -1,0 +1,4415 @@
+{
+  "contractName": "IOracle",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint16",
+          "name": "season",
+          "type": "uint16"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "keeper",
+          "type": "address"
+        }
+      ],
+      "name": "SeasonClosed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint16",
+          "name": "season",
+          "type": "uint16"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "keeper",
+          "type": "address"
+        }
+      ],
+      "name": "SeasonOpen",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint16",
+          "name": "season",
+          "type": "uint16"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "region",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum Common.Severity",
+          "name": "severity",
+          "type": "uint8"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "keeper",
+          "type": "address"
+        }
+      ],
+      "name": "SeverityAggregated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint16",
+          "name": "season",
+          "type": "uint16"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "region",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum Common.Severity",
+          "name": "severity",
+          "type": "uint8"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "oracle",
+          "type": "address"
+        }
+      ],
+      "name": "SeveritySubmitted",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "season",
+          "type": "uint16"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "region",
+          "type": "bytes32"
+        }
+      ],
+      "name": "aggregate",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "season",
+          "type": "uint16"
+        }
+      ],
+      "name": "closeSeason",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "season",
+          "type": "uint16"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "region",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getRegionSeverity",
+      "outputs": [
+        {
+          "internalType": "enum Common.Severity",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getSeasonsNumber",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "getSeasonAt",
+      "outputs": [
+        {
+          "internalType": "uint16",
+          "name": "",
+          "type": "uint16"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "season",
+          "type": "uint16"
+        }
+      ],
+      "name": "getSeasonState",
+      "outputs": [
+        {
+          "internalType": "enum Common.SeasonState",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "season",
+          "type": "uint16"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "region",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "address",
+          "name": "oracle",
+          "type": "address"
+        }
+      ],
+      "name": "getSubmission",
+      "outputs": [
+        {
+          "internalType": "enum Common.Severity",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "season",
+          "type": "uint16"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "region",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "enum Common.Severity",
+          "name": "severity",
+          "type": "uint8"
+        }
+      ],
+      "name": "getSubmissionNumberForSeverity",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "season",
+          "type": "uint16"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "region",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getSubmissionTotal",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "season",
+          "type": "uint16"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "region",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint256",
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "getSubmitterAt",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "season",
+          "type": "uint16"
+        }
+      ],
+      "name": "openSeason",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint16",
+          "name": "season",
+          "type": "uint16"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "region",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "enum Common.Severity",
+          "name": "severity",
+          "type": "uint8"
+        }
+      ],
+      "name": "submit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint16\",\"name\":\"season\",\"type\":\"uint16\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"keeper\",\"type\":\"address\"}],\"name\":\"SeasonClosed\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint16\",\"name\":\"season\",\"type\":\"uint16\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"keeper\",\"type\":\"address\"}],\"name\":\"SeasonOpen\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint16\",\"name\":\"season\",\"type\":\"uint16\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"region\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"enum Common.Severity\",\"name\":\"severity\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"keeper\",\"type\":\"address\"}],\"name\":\"SeverityAggregated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint16\",\"name\":\"season\",\"type\":\"uint16\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"region\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"enum Common.Severity\",\"name\":\"severity\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"}],\"name\":\"SeveritySubmitted\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint16\",\"name\":\"season\",\"type\":\"uint16\"},{\"internalType\":\"bytes32\",\"name\":\"region\",\"type\":\"bytes32\"}],\"name\":\"aggregate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint16\",\"name\":\"season\",\"type\":\"uint16\"}],\"name\":\"closeSeason\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint16\",\"name\":\"season\",\"type\":\"uint16\"},{\"internalType\":\"bytes32\",\"name\":\"region\",\"type\":\"bytes32\"}],\"name\":\"getRegionSeverity\",\"outputs\":[{\"internalType\":\"enum Common.Severity\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getSeasonAt\",\"outputs\":[{\"internalType\":\"uint16\",\"name\":\"\",\"type\":\"uint16\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint16\",\"name\":\"season\",\"type\":\"uint16\"}],\"name\":\"getSeasonState\",\"outputs\":[{\"internalType\":\"enum Common.SeasonState\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getSeasonsNumber\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint16\",\"name\":\"season\",\"type\":\"uint16\"},{\"internalType\":\"bytes32\",\"name\":\"region\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"oracle\",\"type\":\"address\"}],\"name\":\"getSubmission\",\"outputs\":[{\"internalType\":\"enum Common.Severity\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint16\",\"name\":\"season\",\"type\":\"uint16\"},{\"internalType\":\"bytes32\",\"name\":\"region\",\"type\":\"bytes32\"},{\"internalType\":\"enum Common.Severity\",\"name\":\"severity\",\"type\":\"uint8\"}],\"name\":\"getSubmissionNumberForSeverity\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint16\",\"name\":\"season\",\"type\":\"uint16\"},{\"internalType\":\"bytes32\",\"name\":\"region\",\"type\":\"bytes32\"}],\"name\":\"getSubmissionTotal\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint16\",\"name\":\"season\",\"type\":\"uint16\"},{\"internalType\":\"bytes32\",\"name\":\"region\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"index\",\"type\":\"uint256\"}],\"name\":\"getSubmitterAt\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint16\",\"name\":\"season\",\"type\":\"uint16\"}],\"name\":\"openSeason\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint16\",\"name\":\"season\",\"type\":\"uint16\"},{\"internalType\":\"bytes32\",\"name\":\"region\",\"type\":\"bytes32\"},{\"internalType\":\"enum Common.Severity\",\"name\":\"severity\",\"type\":\"uint8\"}],\"name\":\"submit\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Define what's important for a OracleCore contract to implement. In fact, there can be different versions of a OracleCore contract\",\"events\":{\"SeasonClosed(uint16,address)\":{\"details\":\"Emitted when a `season` is closed by a `keeper`.\"},\"SeasonOpen(uint16,address)\":{\"details\":\"Emitted when a `season` is opened by a `keeper`.\"},\"SeverityAggregated(uint16,bytes32,uint8,address)\":{\"details\":\"Emitted when a `severity` is aggregated for a given `season` + `region`\"},\"SeveritySubmitted(uint16,bytes32,uint8,address)\":{\"details\":\"Emitted when a `severity` is submmited by a `oracle` for a given `season` + `region`\"}},\"kind\":\"dev\",\"methods\":{\"aggregate(uint16,bytes32)\":{\"details\":\"Aggregate a `severity` from all submissions. Rule benefit insurees: if 50% (roundup) of total submissions is >= totD2 + totD3 + totD4 then severity is severity which got the most number of submissions between D2,D3 & D4 Else severity which got most number of submissions between D0 & D1 Emits a {SeverityAggregated} event. Pays out the keeper for its job Requirements: - the caller must be keeper. - the season must be in closed state - contract must have enough balance to pay oracle - the keeper cannot trigger aggregation twice for this `season` + `region`\",\"params\":{\"region\":\"region in bytes32\",\"season\":\"year (e.g. 2021).\"}},\"closeSeason(uint16)\":{\"details\":\"Close a `season`. Emits a {SeasonClosed} event. Pays out the keeper for its job Requirements: - the caller must be keeper - the season must be opened - contract must have enough balance to pay keepers\",\"params\":{\"season\":\"year (e.g. 2021).\"}},\"getRegionSeverity(uint16,bytes32)\":{\"details\":\"Retrieve  `severity` of a `region` + `season`.\",\"params\":{\"region\":\"region code in bytes32\",\"season\":\"year (e.g. 2021).\"},\"returns\":{\"_0\":\"Severity\"}},\"getSeasonAt(uint256)\":{\"details\":\"Retrieve season at `index`\",\"returns\":{\"_0\":\"`season`\"}},\"getSeasonState(uint16)\":{\"details\":\"Retrieve a `season` state.\",\"params\":{\"season\":\"year (e.g. 2021).\"},\"returns\":{\"_0\":\"SeasonState .\"}},\"getSeasonsNumber()\":{\"details\":\"Retrieve number of seasons\",\"returns\":{\"_0\":\"number of seasons defined so far\"}},\"getSubmission(uint16,bytes32,address)\":{\"details\":\"Retrieve a `severity` for a given `region` and `season` , provided by `oracle`.\",\"params\":{\"oracle\":\"oracle address\",\"region\":\"region code in bytes32\",\"season\":\"year (e.g. 2021).\"},\"returns\":{\"_0\":\"Severity .\"}},\"getSubmissionNumberForSeverity(uint16,bytes32,uint8)\":{\"details\":\"Retrieve number of submissions for a given `region` and `season` and `severity`.\",\"params\":{\"region\":\"region code in bytes32\",\"season\":\"year (e.g. 2021).\",\"severity\":\"Severity code\"},\"returns\":{\"_0\":\"number of submissions.\"}},\"getSubmissionTotal(uint16,bytes32)\":{\"details\":\"Retrieve total submissions for a given `region` and `season`.\",\"params\":{\"region\":\"region code in bytes32\",\"season\":\"year (e.g. 2021).\"},\"returns\":{\"_0\":\"number of submissions\"}},\"getSubmitterAt(uint16,bytes32,uint256)\":{\"details\":\"Retrieve submitter  for a given `region` and `season` at a given `index`.\",\"params\":{\"region\":\"region code in bytes32\",\"season\":\"year (e.g. 2021).\"},\"returns\":{\"_0\":\"address of oracle\"}},\"openSeason(uint16)\":{\"details\":\"Open a `season`. Emits a {SeasonOpen} event. Pays out the keeper for its job Requirements: - the caller must be keeper. - the season must be in default state - contract must have enough balance to pay keepers\",\"params\":{\"season\":\"year (e.g. 2021).\"}},\"submit(uint16,bytes32,uint8)\":{\"details\":\"Submit a `severity` for a given `season` + `region`. Emits a {SeveritySubmitted} event. Pays out the oracle for its job Requirements: - the caller must be oracle. - the season must be in open state - contract must have enough balance to pay oracle - the oracle cannot submit twice for this `season` + `region` - severity code must be valid\",\"params\":{\"region\":\"region in bytes32\",\"season\":\"year (e.g. 2021).\",\"severity\":\"must be valid (between 1 and 5)\"}}},\"title\":\"Oracle interface\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"aggregate(uint16,bytes32)\":{\"notice\":\"call nonReentrant to check against Reentrancy\"},\"closeSeason(uint16)\":{\"notice\":\"call nonReentrant to check against Reentrancy\"},\"getRegionSeverity(uint16,bytes32)\":{\"notice\":\"caller must check Severity. In fact, final severity is calculated after aggregation. if aggregation not triggered yet then Severity will have the default value\"},\"getSeasonAt(uint256)\":{\"notice\":\"must check not out of bound exception\"},\"getSubmission(uint16,bytes32,address)\":{\"notice\":\"If Severity is the default value then it means that the oracle didn't provide any submission for `region` and `season`\"},\"getSubmitterAt(uint16,bytes32,uint256)\":{\"notice\":\"caller must call getSubmissionTotal before in order to ensure no out of bounds array access\"},\"openSeason(uint16)\":{\"notice\":\"call nonReentrant to check against Reentrancy\"},\"submit(uint16,bytes32,uint8)\":{\"notice\":\"call nonReentrant to check against Reentrancy\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/oracle/IOracle.sol\":\"IOracle\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/access/Ownable.sol\":{\"keccak256\":\"0x6bb804a310218875e89d12c053e94a13a4607cdf7cc2052f3e52bd32a0dc50a1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b2ebbbe6d0011175bd9e7268b83de3f9c2f9d8d4cbfbaef12aff977d7d727163\",\"dweb:/ipfs/Qmd5c7Vxtis9wzkDNhxwc6A2QT5H9xn9kfjhx7qx44vpro\"]},\"@openzeppelin/contracts/interfaces/IERC165.sol\":{\"keccak256\":\"0x2f27682302bd27f76399273e73cedecd2de098aa101401a3b5f2196f520da6c5\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a1434e19cd459c4ef6f991a39c310a8c90a6c146a13bfecc5a884f3d9d1edef9\",\"dweb:/ipfs/QmdYVBPo2NnvXSv9wXhVFoxAehD68vFwkS7qadoeQPkFQG\"]},\"@openzeppelin/contracts/security/ReentrancyGuard.sol\":{\"keccak256\":\"0x842ccf9a6cd33e17b7acef8372ca42090755217b358fe0c44c98e951ea549d3a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6cc5f36034a77d105263ae6d8cc18b16260b4a0f6cdb1a26f21ba3670fdd06dd\",\"dweb:/ipfs/QmdJrJ2LoG546BkfyZPta96BNmaVBfqZoh8kq7PqHuQyPk\"]},\"@openzeppelin/contracts/utils/Address.sol\":{\"keccak256\":\"0x3336baae5cf23e94274d75336e2d412193be508504aee185e61dc7d58cd05c8a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://39a05eec7083dfa0cc7e0cbfe6cd1bd085a340af1ede93fdff3ad047c5fb3d8e\",\"dweb:/ipfs/QmVApz5fCUq2QC8gKTsNNdCmcedJ3ETHp68zR5N3WUKS4r\"]},\"@openzeppelin/contracts/utils/Context.sol\":{\"keccak256\":\"0x90565a39ae45c80f0468dc96c7b20d0afc3055f344c8203a0c9258239f350b9f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://26e8b38a7ac8e7b4463af00cf7fff1bf48ae9875765bf4f7751e100124d0bc8c\",\"dweb:/ipfs/QmWcsmkVr24xmmjfnBQZoemFniXjj3vwT78Cz6uqZW1Hux\"]},\"@openzeppelin/contracts/utils/Strings.sol\":{\"keccak256\":\"0x391d3ba97ab6856a16b225d6ee29617ad15ff00db70f3b4df1ab5ea33aa47c9d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d636ba90bbbeed04a1ea7fe9ec2466757e30fd38ba2ca173636dbf69a518735e\",\"dweb:/ipfs/QmQwCB2BHnEuYR22PYt9HkpbgeFDhq4rHmaYqAZbX3WRC7\"]},\"@openzeppelin/contracts/utils/escrow/Escrow.sol\":{\"keccak256\":\"0xaf3f0d87fb0237dc255183be425f45fc902b343494d8a083878eb615211cc789\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://271399b7a3f92a81525320ccb879999cfd58cd5ce9f7e1cc29c995fc494bd08f\",\"dweb:/ipfs/QmNoB7sWcRJyJLwDeXttzKcxdUzZAKij4oAZUgcBAGZawj\"]},\"@openzeppelin/contracts/utils/introspection/IERC165.sol\":{\"keccak256\":\"0xa28007762d9da9db878dd421960c8cb9a10471f47ab5c1b3309bfe48e9e79ff4\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://796ab6e88af7bf0e78def0f059310c903af6a312b565344e0ff524a0f26e81c6\",\"dweb:/ipfs/QmcsVgLgzWdor3UnAztUkXKNGcysm1MPneWksF72AvnwBx\"]},\"project:/contracts/access/IGateKeeper.sol\":{\"keccak256\":\"0x865aee4c436842630a8121bc3315ce3d261e074baa9819e535a97b5ef189e124\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d2f5198a3203d8c34f69549ec808ee9b8c90676e8cd84c1084ee72dbef375b1f\",\"dweb:/ipfs/QmWEsxoWA1hBckxqZPuPzcGAPsE8ng7z8SjD7uKz5Nuy4j\"]},\"project:/contracts/core/Common.sol\":{\"keccak256\":\"0x4aaf2fd8d288fd9f36c8df81193d6517e9a5305e9b2f5891779c5881d63a10ba\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://edf4dfdaa85d06f6741aebf3972be489f664617a0d982d8555e5300f44cd027f\",\"dweb:/ipfs/QmdLWroLMkEsVbQRAxtJthAfPNLFZoUBz6ExUpqz35eQT5\"]},\"project:/contracts/oracle/IOracle.sol\":{\"keccak256\":\"0xb598ca30004366794e85036bc191c083ad7d725115813bc0f66b865d5989da7d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3a2ee5afbf7cddf170c01a7129dc9b078af54bbb7254555677f96180a88bec34\",\"dweb:/ipfs/QmaWx2PyCPowWCwoA1RqLvHXMzM4jDFuVu9KJvTdRE99dG\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "// SPDX-License-Identifier: MIT\r\npragma solidity 0.8.9;\r\nimport \"../core/Common.sol\";\r\n\r\n/**\r\n * @title Oracle interface\r\n * @dev Define what's important for a OracleCore contract to implement. In fact, there can be different versions of a OracleCore contract\r\n *\r\n */\r\ninterface IOracle {\r\n    /// @dev Emitted when a `season` is closed by a `keeper`.\r\n    event SeasonClosed(uint16 indexed season, address indexed keeper);\r\n\r\n    /// @dev Emitted when a `season` is opened by a `keeper`.\r\n    event SeasonOpen(uint16 indexed season, address indexed keeper);\r\n\r\n    /// @dev Emitted when a `severity` is aggregated for a given `season` + `region`\r\n    event SeverityAggregated(\r\n        uint16 indexed season,\r\n        bytes32 region,\r\n        Common.Severity severity,\r\n        address indexed keeper\r\n    );\r\n\r\n    /// @dev Emitted when a `severity` is submmited by a `oracle` for a given `season` + `region`\r\n    event SeveritySubmitted(\r\n        uint16 indexed season,\r\n        bytes32 region,\r\n        Common.Severity severity,\r\n        address indexed oracle\r\n    );\r\n\r\n    /**\r\n     * @dev struct to define a submission.\r\n     *\r\n     *`oracles` keeps track of oracles which have already submitted\r\n     *`numberAnswers` keeps track of number of answers by severity\r\n     */\r\n    struct Submission {\r\n        mapping(address => Common.Severity) oracles;\r\n        mapping(Common.Severity => uint256) numberAnswers;\r\n        address[] submitters;\r\n    }\r\n\r\n    /**\r\n     * @dev Aggregate a `severity` from all submissions.\r\n     *\r\n     * Rule benefit insurees:\r\n     * if 50% (roundup) of total submissions is >= totD2 + totD3 + totD4 then severity is severity which got the most number of submissions between D2,D3 & D4\r\n     * Else severity which got most number of submissions between D0 & D1\r\n     *\r\n     * Emits a {SeverityAggregated} event.\r\n     * Pays out the keeper for its job\r\n     *\r\n     * Requirements:\r\n     *\r\n     * - the caller must be keeper.\r\n     * - the season must be in closed state\r\n     * - contract must have enough balance to pay oracle\r\n     * - the keeper cannot trigger aggregation twice for this `season` + `region`\r\n     *\r\n     * @param season year (e.g. 2021).\r\n     * @param region region in bytes32\r\n     *\r\n     * @notice call nonReentrant to check against Reentrancy\r\n     */\r\n    function aggregate(uint16 season, bytes32 region) external;\r\n\r\n    /**\r\n     * @dev Close a `season`.\r\n     *\r\n     * Emits a {SeasonClosed} event.\r\n     * Pays out the keeper for its job\r\n     *\r\n     * Requirements:\r\n     *\r\n     * - the caller must be keeper\r\n     * - the season must be opened\r\n     * - contract must have enough balance to pay keepers\r\n     *\r\n     * @param season year (e.g. 2021).\r\n     *\r\n     * @notice call nonReentrant to check against Reentrancy\r\n     */\r\n    function closeSeason(uint16 season) external;\r\n\r\n    /**\r\n     * @dev Retrieve  `severity` of a `region` + `season`.\r\n     *\r\n     * @param season year (e.g. 2021).\r\n     * @param region region code in bytes32\r\n     * @return Severity\r\n     *\r\n     * @notice caller must check Severity. In fact, final severity is calculated after aggregation. if aggregation not triggered yet then Severity will have the default value\r\n     */\r\n    function getRegionSeverity(uint16 season, bytes32 region)\r\n        external\r\n        view\r\n        returns (Common.Severity);\r\n\r\n    /**\r\n     * @dev Retrieve number of seasons\r\n     *\r\n     * @return number of seasons defined so far\r\n     */\r\n    function getSeasonsNumber() external view returns (uint256);\r\n\r\n    /**\r\n     * @dev Retrieve season at `index`\r\n     *\r\n     * @return `season`\r\n     *\r\n     * @notice must check not out of bound exception\r\n     */\r\n    function getSeasonAt(uint256 index) external view returns (uint16);\r\n\r\n    /**\r\n     * @dev Retrieve a `season` state.\r\n     *\r\n     * @param season year (e.g. 2021).\r\n     * @return SeasonState .\r\n     */\r\n    function getSeasonState(uint16 season)\r\n        external\r\n        view\r\n        returns (Common.SeasonState);\r\n\r\n    /**\r\n     * @dev Retrieve a `severity` for a given `region` and `season` , provided by `oracle`.\r\n     *\r\n     * @param season year (e.g. 2021).\r\n     * @param region region code in bytes32\r\n     * @param oracle oracle address\r\n     *\r\n     * @return Severity .\r\n     *\r\n     * @notice If Severity is the default value then it means that the oracle didn't provide any submission for `region` and `season`\r\n     */\r\n    function getSubmission(\r\n        uint16 season,\r\n        bytes32 region,\r\n        address oracle\r\n    ) external view returns (Common.Severity);\r\n\r\n    /**\r\n     * @dev Retrieve number of submissions for a given `region` and `season` and `severity`.\r\n     *\r\n     * @param season year (e.g. 2021).\r\n     * @param region region code in bytes32\r\n     * @param severity Severity code\r\n     *\r\n     * @return number of submissions.\r\n     *\r\n     */\r\n    function getSubmissionNumberForSeverity(\r\n        uint16 season,\r\n        bytes32 region,\r\n        Common.Severity severity\r\n    ) external view returns (uint256);\r\n\r\n    /**\r\n     * @dev Retrieve total submissions for a given `region` and `season`.\r\n     *\r\n     * @param season year (e.g. 2021).\r\n     * @param region region code in bytes32\r\n     *\r\n     * @return number of submissions\r\n     *\r\n     */\r\n    function getSubmissionTotal(uint16 season, bytes32 region)\r\n        external\r\n        view\r\n        returns (uint256);\r\n\r\n    /**\r\n     * @dev Retrieve submitter  for a given `region` and `season` at a given `index`.\r\n     *\r\n     * @param season year (e.g. 2021).\r\n     * @param region region code in bytes32\r\n     *\r\n     * @return address of oracle\r\n     *\r\n     * @notice caller must call getSubmissionTotal before in order to ensure no out of bounds array access\r\n     */\r\n    function getSubmitterAt(\r\n        uint16 season,\r\n        bytes32 region,\r\n        uint256 index\r\n    ) external view returns (address);\r\n\r\n    /**\r\n     * @dev Open a `season`.\r\n     *\r\n     * Emits a {SeasonOpen} event.\r\n     * Pays out the keeper for its job\r\n     *\r\n     * Requirements:\r\n     *\r\n     * - the caller must be keeper.\r\n     * - the season must be in default state\r\n     * - contract must have enough balance to pay keepers\r\n     *\r\n     * @param season year (e.g. 2021).\r\n     *\r\n     * @notice call nonReentrant to check against Reentrancy\r\n     */\r\n    function openSeason(uint16 season) external;\r\n\r\n    /**\r\n     * @dev Submit a `severity` for a given `season` + `region`.\r\n     *\r\n     * Emits a {SeveritySubmitted} event.\r\n     * Pays out the oracle for its job\r\n     *\r\n     * Requirements:\r\n     *\r\n     * - the caller must be oracle.\r\n     * - the season must be in open state\r\n     * - contract must have enough balance to pay oracle\r\n     * - the oracle cannot submit twice for this `season` + `region`\r\n     * - severity code must be valid\r\n     *\r\n     * @param season year (e.g. 2021).\r\n     * @param region region in bytes32\r\n     * @param severity must be valid (between 1 and 5)\r\n     *\r\n     * @notice call nonReentrant to check against Reentrancy\r\n     */\r\n    function submit(\r\n        uint16 season,\r\n        bytes32 region,\r\n        Common.Severity severity\r\n    ) external;\r\n}\r\n",
+  "sourcePath": "/home/aelmanaa/playground/blockchain-developer-bootcamp-final-project/contracts/oracle/IOracle.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/oracle/IOracle.sol",
+    "exportedSymbols": {
+      "Address": [
+        443
+      ],
+      "Common": [
+        1460
+      ],
+      "Context": [
+        465
+      ],
+      "Escrow": [
+        764
+      ],
+      "IERC165": [
+        776
+      ],
+      "IGateKeeper": [
+        994
+      ],
+      "IOracle": [
+        3232
+      ],
+      "Ownable": [
+        103
+      ],
+      "ReentrancyGuard": [
+        146
+      ],
+      "Strings": [
+        668
+      ]
+    },
+    "id": 3233,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 3064,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".9"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:22:12"
+      },
+      {
+        "absolutePath": "project:/contracts/core/Common.sol",
+        "file": "../core/Common.sol",
+        "id": 3065,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 3233,
+        "sourceUnit": 1461,
+        "src": "57:28:12",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IOracle",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 3066,
+          "nodeType": "StructuredDocumentation",
+          "src": "89:179:12",
+          "text": " @title Oracle interface\n @dev Define what's important for a OracleCore contract to implement. In fact, there can be different versions of a OracleCore contract"
+        },
+        "fullyImplemented": false,
+        "id": 3232,
+        "linearizedBaseContracts": [
+          3232
+        ],
+        "name": "IOracle",
+        "nameLocation": "280:7:12",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": {
+              "id": 3067,
+              "nodeType": "StructuredDocumentation",
+              "src": "295:57:12",
+              "text": "@dev Emitted when a `season` is closed by a `keeper`."
+            },
+            "id": 3073,
+            "name": "SeasonClosed",
+            "nameLocation": "364:12:12",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 3072,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3069,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "392:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3073,
+                  "src": "377:21:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3068,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "377:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3071,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "keeper",
+                  "nameLocation": "416:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3073,
+                  "src": "400:22:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3070,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "400:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "376:47:12"
+            },
+            "src": "358:66:12"
+          },
+          {
+            "anonymous": false,
+            "documentation": {
+              "id": 3074,
+              "nodeType": "StructuredDocumentation",
+              "src": "432:57:12",
+              "text": "@dev Emitted when a `season` is opened by a `keeper`."
+            },
+            "id": 3080,
+            "name": "SeasonOpen",
+            "nameLocation": "501:10:12",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 3079,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3076,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "527:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3080,
+                  "src": "512:21:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3075,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "512:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3078,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "keeper",
+                  "nameLocation": "551:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3080,
+                  "src": "535:22:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3077,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "535:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "511:47:12"
+            },
+            "src": "495:64:12"
+          },
+          {
+            "anonymous": false,
+            "documentation": {
+              "id": 3081,
+              "nodeType": "StructuredDocumentation",
+              "src": "567:80:12",
+              "text": "@dev Emitted when a `severity` is aggregated for a given `season` + `region`"
+            },
+            "id": 3092,
+            "name": "SeverityAggregated",
+            "nameLocation": "659:18:12",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 3091,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3083,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "703:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3092,
+                  "src": "688:21:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3082,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "688:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3085,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "728:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3092,
+                  "src": "720:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3084,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "720:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3088,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "severity",
+                  "nameLocation": "761:8:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3092,
+                  "src": "745:24:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Severity_$1040",
+                    "typeString": "enum Common.Severity"
+                  },
+                  "typeName": {
+                    "id": 3087,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3086,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "745:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "745:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3090,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "keeper",
+                  "nameLocation": "796:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3092,
+                  "src": "780:22:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3089,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "780:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "677:132:12"
+            },
+            "src": "653:157:12"
+          },
+          {
+            "anonymous": false,
+            "documentation": {
+              "id": 3093,
+              "nodeType": "StructuredDocumentation",
+              "src": "818:93:12",
+              "text": "@dev Emitted when a `severity` is submmited by a `oracle` for a given `season` + `region`"
+            },
+            "id": 3104,
+            "name": "SeveritySubmitted",
+            "nameLocation": "923:17:12",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 3103,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3095,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "966:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3104,
+                  "src": "951:21:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3094,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "951:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3097,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "991:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3104,
+                  "src": "983:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3096,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "983:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3100,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "severity",
+                  "nameLocation": "1024:8:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3104,
+                  "src": "1008:24:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Severity_$1040",
+                    "typeString": "enum Common.Severity"
+                  },
+                  "typeName": {
+                    "id": 3099,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3098,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "1008:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "1008:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3102,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "oracle",
+                  "nameLocation": "1059:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3104,
+                  "src": "1043:22:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3101,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1043:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "940:132:12"
+            },
+            "src": "917:156:12"
+          },
+          {
+            "canonicalName": "IOracle.Submission",
+            "id": 3118,
+            "members": [
+              {
+                "constant": false,
+                "id": 3109,
+                "mutability": "mutable",
+                "name": "oracles",
+                "nameLocation": "1353:7:12",
+                "nodeType": "VariableDeclaration",
+                "scope": 3118,
+                "src": "1317:43:12",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_mapping$_t_address_$_t_enum$_Severity_$1040_$",
+                  "typeString": "mapping(address => enum Common.Severity)"
+                },
+                "typeName": {
+                  "id": 3108,
+                  "keyType": {
+                    "id": 3105,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1325:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "nodeType": "Mapping",
+                  "src": "1317:35:12",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_mapping$_t_address_$_t_enum$_Severity_$1040_$",
+                    "typeString": "mapping(address => enum Common.Severity)"
+                  },
+                  "valueType": {
+                    "id": 3107,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3106,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "1336:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "1336:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 3114,
+                "mutability": "mutable",
+                "name": "numberAnswers",
+                "nameLocation": "1407:13:12",
+                "nodeType": "VariableDeclaration",
+                "scope": 3118,
+                "src": "1371:49:12",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_mapping$_t_enum$_Severity_$1040_$_t_uint256_$",
+                  "typeString": "mapping(enum Common.Severity => uint256)"
+                },
+                "typeName": {
+                  "id": 3113,
+                  "keyType": {
+                    "id": 3111,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3110,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "1379:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "1379:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  },
+                  "nodeType": "Mapping",
+                  "src": "1371:35:12",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_mapping$_t_enum$_Severity_$1040_$_t_uint256_$",
+                    "typeString": "mapping(enum Common.Severity => uint256)"
+                  },
+                  "valueType": {
+                    "id": 3112,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1398:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 3117,
+                "mutability": "mutable",
+                "name": "submitters",
+                "nameLocation": "1441:10:12",
+                "nodeType": "VariableDeclaration",
+                "scope": 3118,
+                "src": "1431:20:12",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                  "typeString": "address[]"
+                },
+                "typeName": {
+                  "baseType": {
+                    "id": 3115,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1431:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 3116,
+                  "nodeType": "ArrayTypeName",
+                  "src": "1431:9:12",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                    "typeString": "address[]"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "Submission",
+            "nameLocation": "1295:10:12",
+            "nodeType": "StructDefinition",
+            "scope": 3232,
+            "src": "1288:171:12",
+            "visibility": "public"
+          },
+          {
+            "documentation": {
+              "id": 3119,
+              "nodeType": "StructuredDocumentation",
+              "src": "1467:855:12",
+              "text": " @dev Aggregate a `severity` from all submissions.\n Rule benefit insurees:\n if 50% (roundup) of total submissions is >= totD2 + totD3 + totD4 then severity is severity which got the most number of submissions between D2,D3 & D4\n Else severity which got most number of submissions between D0 & D1\n Emits a {SeverityAggregated} event.\n Pays out the keeper for its job\n Requirements:\n - the caller must be keeper.\n - the season must be in closed state\n - contract must have enough balance to pay oracle\n - the keeper cannot trigger aggregation twice for this `season` + `region`\n @param season year (e.g. 2021).\n @param region region in bytes32\n @notice call nonReentrant to check against Reentrancy"
+            },
+            "functionSelector": "88784105",
+            "id": 3126,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "aggregate",
+            "nameLocation": "2337:9:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3124,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3121,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "2354:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3126,
+                  "src": "2347:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3120,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2347:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3123,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "2370:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3126,
+                  "src": "2362:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3122,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2362:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2346:31:12"
+            },
+            "returnParameters": {
+              "id": 3125,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2386:0:12"
+            },
+            "scope": 3232,
+            "src": "2328:59:12",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3127,
+              "nodeType": "StructuredDocumentation",
+              "src": "2395:416:12",
+              "text": " @dev Close a `season`.\n Emits a {SeasonClosed} event.\n Pays out the keeper for its job\n Requirements:\n - the caller must be keeper\n - the season must be opened\n - contract must have enough balance to pay keepers\n @param season year (e.g. 2021).\n @notice call nonReentrant to check against Reentrancy"
+            },
+            "functionSelector": "5d3c917e",
+            "id": 3132,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "closeSeason",
+            "nameLocation": "2826:11:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3130,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3129,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "2845:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3132,
+                  "src": "2838:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3128,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2838:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2837:15:12"
+            },
+            "returnParameters": {
+              "id": 3131,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2861:0:12"
+            },
+            "scope": 3232,
+            "src": "2817:45:12",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3133,
+              "nodeType": "StructuredDocumentation",
+              "src": "2870:374:12",
+              "text": " @dev Retrieve  `severity` of a `region` + `season`.\n @param season year (e.g. 2021).\n @param region region code in bytes32\n @return Severity\n @notice caller must check Severity. In fact, final severity is calculated after aggregation. if aggregation not triggered yet then Severity will have the default value"
+            },
+            "functionSelector": "91e10a13",
+            "id": 3143,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getRegionSeverity",
+            "nameLocation": "3259:17:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3138,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3135,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "3284:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3143,
+                  "src": "3277:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3134,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3277:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3137,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "3300:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3143,
+                  "src": "3292:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3136,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3292:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3276:31:12"
+            },
+            "returnParameters": {
+              "id": 3142,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3141,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3143,
+                  "src": "3358:15:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Severity_$1040",
+                    "typeString": "enum Common.Severity"
+                  },
+                  "typeName": {
+                    "id": 3140,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3139,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "3358:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "3358:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3357:17:12"
+            },
+            "scope": 3232,
+            "src": "3250:125:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3144,
+              "nodeType": "StructuredDocumentation",
+              "src": "3383:109:12",
+              "text": " @dev Retrieve number of seasons\n @return number of seasons defined so far"
+            },
+            "functionSelector": "586d993c",
+            "id": 3149,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSeasonsNumber",
+            "nameLocation": "3507:16:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3145,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "3523:2:12"
+            },
+            "returnParameters": {
+              "id": 3148,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3147,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3149,
+                  "src": "3549:7:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3146,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3549:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3548:9:12"
+            },
+            "scope": 3232,
+            "src": "3498:60:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3150,
+              "nodeType": "StructuredDocumentation",
+              "src": "3566:147:12",
+              "text": " @dev Retrieve season at `index`\n @return `season`\n @notice must check not out of bound exception"
+            },
+            "functionSelector": "c46b4b04",
+            "id": 3157,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSeasonAt",
+            "nameLocation": "3728:11:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3153,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3152,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "3748:5:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3157,
+                  "src": "3740:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3151,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3740:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3739:15:12"
+            },
+            "returnParameters": {
+              "id": 3156,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3155,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3157,
+                  "src": "3778:6:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3154,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3778:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3777:8:12"
+            },
+            "scope": 3232,
+            "src": "3719:67:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3158,
+              "nodeType": "StructuredDocumentation",
+              "src": "3794:130:12",
+              "text": " @dev Retrieve a `season` state.\n @param season year (e.g. 2021).\n @return SeasonState ."
+            },
+            "functionSelector": "92af0d4e",
+            "id": 3166,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSeasonState",
+            "nameLocation": "3939:14:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3161,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3160,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "3961:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3166,
+                  "src": "3954:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3159,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3954:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3953:15:12"
+            },
+            "returnParameters": {
+              "id": 3165,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3164,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3166,
+                  "src": "4019:18:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_SeasonState_$1044",
+                    "typeString": "enum Common.SeasonState"
+                  },
+                  "typeName": {
+                    "id": 3163,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3162,
+                      "name": "Common.SeasonState",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1044,
+                      "src": "4019:18:12"
+                    },
+                    "referencedDeclaration": 1044,
+                    "src": "4019:18:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_SeasonState_$1044",
+                      "typeString": "enum Common.SeasonState"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "4018:20:12"
+            },
+            "scope": 3232,
+            "src": "3930:109:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3167,
+              "nodeType": "StructuredDocumentation",
+              "src": "4047:413:12",
+              "text": " @dev Retrieve a `severity` for a given `region` and `season` , provided by `oracle`.\n @param season year (e.g. 2021).\n @param region region code in bytes32\n @param oracle oracle address\n @return Severity .\n @notice If Severity is the default value then it means that the oracle didn't provide any submission for `region` and `season`"
+            },
+            "functionSelector": "25bb9014",
+            "id": 3179,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSubmission",
+            "nameLocation": "4475:13:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3174,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3169,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "4506:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3179,
+                  "src": "4499:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3168,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4499:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3171,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "4531:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3179,
+                  "src": "4523:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3170,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4523:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3173,
+                  "mutability": "mutable",
+                  "name": "oracle",
+                  "nameLocation": "4556:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3179,
+                  "src": "4548:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3172,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4548:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "4488:81:12"
+            },
+            "returnParameters": {
+              "id": 3178,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3177,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3179,
+                  "src": "4593:15:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Severity_$1040",
+                    "typeString": "enum Common.Severity"
+                  },
+                  "typeName": {
+                    "id": 3176,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3175,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "4593:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "4593:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "4592:17:12"
+            },
+            "scope": 3232,
+            "src": "4466:144:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3180,
+              "nodeType": "StructuredDocumentation",
+              "src": "4618:292:12",
+              "text": " @dev Retrieve number of submissions for a given `region` and `season` and `severity`.\n @param season year (e.g. 2021).\n @param region region code in bytes32\n @param severity Severity code\n @return number of submissions."
+            },
+            "functionSelector": "81f407fa",
+            "id": 3192,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSubmissionNumberForSeverity",
+            "nameLocation": "4925:30:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3188,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3182,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "4973:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3192,
+                  "src": "4966:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3181,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4966:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3184,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "4998:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3192,
+                  "src": "4990:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3183,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4990:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3187,
+                  "mutability": "mutable",
+                  "name": "severity",
+                  "nameLocation": "5031:8:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3192,
+                  "src": "5015:24:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Severity_$1040",
+                    "typeString": "enum Common.Severity"
+                  },
+                  "typeName": {
+                    "id": 3186,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3185,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "5015:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "5015:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "4955:91:12"
+            },
+            "returnParameters": {
+              "id": 3191,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3190,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3192,
+                  "src": "5070:7:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3189,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5070:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "5069:9:12"
+            },
+            "scope": 3232,
+            "src": "4916:163:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3193,
+              "nodeType": "StructuredDocumentation",
+              "src": "5087:234:12",
+              "text": " @dev Retrieve total submissions for a given `region` and `season`.\n @param season year (e.g. 2021).\n @param region region code in bytes32\n @return number of submissions"
+            },
+            "functionSelector": "965de0a1",
+            "id": 3202,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSubmissionTotal",
+            "nameLocation": "5336:18:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3198,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3195,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "5362:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3202,
+                  "src": "5355:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3194,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5355:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3197,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "5378:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3202,
+                  "src": "5370:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3196,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5370:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "5354:31:12"
+            },
+            "returnParameters": {
+              "id": 3201,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3200,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3202,
+                  "src": "5436:7:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3199,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5436:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "5435:9:12"
+            },
+            "scope": 3232,
+            "src": "5327:118:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3203,
+              "nodeType": "StructuredDocumentation",
+              "src": "5453:350:12",
+              "text": " @dev Retrieve submitter  for a given `region` and `season` at a given `index`.\n @param season year (e.g. 2021).\n @param region region code in bytes32\n @return address of oracle\n @notice caller must call getSubmissionTotal before in order to ensure no out of bounds array access"
+            },
+            "functionSelector": "1385d05d",
+            "id": 3214,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSubmitterAt",
+            "nameLocation": "5818:14:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3210,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3205,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "5850:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3214,
+                  "src": "5843:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3204,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5843:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3207,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "5875:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3214,
+                  "src": "5867:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3206,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5867:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3209,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "5900:5:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3214,
+                  "src": "5892:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3208,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5892:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "5832:80:12"
+            },
+            "returnParameters": {
+              "id": 3213,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3212,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3214,
+                  "src": "5936:7:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3211,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5936:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "5935:9:12"
+            },
+            "scope": 3232,
+            "src": "5809:136:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3215,
+              "nodeType": "StructuredDocumentation",
+              "src": "5953:424:12",
+              "text": " @dev Open a `season`.\n Emits a {SeasonOpen} event.\n Pays out the keeper for its job\n Requirements:\n - the caller must be keeper.\n - the season must be in default state\n - contract must have enough balance to pay keepers\n @param season year (e.g. 2021).\n @notice call nonReentrant to check against Reentrancy"
+            },
+            "functionSelector": "30d472c9",
+            "id": 3220,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "openSeason",
+            "nameLocation": "6392:10:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3218,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3217,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "6410:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3220,
+                  "src": "6403:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3216,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "6403:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "6402:15:12"
+            },
+            "returnParameters": {
+              "id": 3219,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "6426:0:12"
+            },
+            "scope": 3232,
+            "src": "6383:44:12",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3221,
+              "nodeType": "StructuredDocumentation",
+              "src": "6435:667:12",
+              "text": " @dev Submit a `severity` for a given `season` + `region`.\n Emits a {SeveritySubmitted} event.\n Pays out the oracle for its job\n Requirements:\n - the caller must be oracle.\n - the season must be in open state\n - contract must have enough balance to pay oracle\n - the oracle cannot submit twice for this `season` + `region`\n - severity code must be valid\n @param season year (e.g. 2021).\n @param region region in bytes32\n @param severity must be valid (between 1 and 5)\n @notice call nonReentrant to check against Reentrancy"
+            },
+            "functionSelector": "415b4bf2",
+            "id": 3231,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "submit",
+            "nameLocation": "7117:6:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3229,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3223,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "7141:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3231,
+                  "src": "7134:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3222,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7134:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3225,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "7166:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3231,
+                  "src": "7158:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3224,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7158:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3228,
+                  "mutability": "mutable",
+                  "name": "severity",
+                  "nameLocation": "7199:8:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3231,
+                  "src": "7183:24:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Severity_$1040",
+                    "typeString": "enum Common.Severity"
+                  },
+                  "typeName": {
+                    "id": 3227,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3226,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "7183:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "7183:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "7123:91:12"
+            },
+            "returnParameters": {
+              "id": 3230,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "7223:0:12"
+            },
+            "scope": 3232,
+            "src": "7108:116:12",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 3233,
+        "src": "270:6957:12",
+        "usedErrors": []
+      }
+    ],
+    "src": "33:7196:12"
+  },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/oracle/IOracle.sol",
+    "exportedSymbols": {
+      "Address": [
+        443
+      ],
+      "Common": [
+        1460
+      ],
+      "Context": [
+        465
+      ],
+      "Escrow": [
+        764
+      ],
+      "IERC165": [
+        776
+      ],
+      "IGateKeeper": [
+        994
+      ],
+      "IOracle": [
+        3232
+      ],
+      "Ownable": [
+        103
+      ],
+      "ReentrancyGuard": [
+        146
+      ],
+      "Strings": [
+        668
+      ]
+    },
+    "id": 3233,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 3064,
+        "literals": [
+          "solidity",
+          "0.8",
+          ".9"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "33:22:12"
+      },
+      {
+        "absolutePath": "project:/contracts/core/Common.sol",
+        "file": "../core/Common.sol",
+        "id": 3065,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 3233,
+        "sourceUnit": 1461,
+        "src": "57:28:12",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "IOracle",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 3066,
+          "nodeType": "StructuredDocumentation",
+          "src": "89:179:12",
+          "text": " @title Oracle interface\n @dev Define what's important for a OracleCore contract to implement. In fact, there can be different versions of a OracleCore contract"
+        },
+        "fullyImplemented": false,
+        "id": 3232,
+        "linearizedBaseContracts": [
+          3232
+        ],
+        "name": "IOracle",
+        "nameLocation": "280:7:12",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": {
+              "id": 3067,
+              "nodeType": "StructuredDocumentation",
+              "src": "295:57:12",
+              "text": "@dev Emitted when a `season` is closed by a `keeper`."
+            },
+            "id": 3073,
+            "name": "SeasonClosed",
+            "nameLocation": "364:12:12",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 3072,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3069,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "392:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3073,
+                  "src": "377:21:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3068,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "377:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3071,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "keeper",
+                  "nameLocation": "416:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3073,
+                  "src": "400:22:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3070,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "400:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "376:47:12"
+            },
+            "src": "358:66:12"
+          },
+          {
+            "anonymous": false,
+            "documentation": {
+              "id": 3074,
+              "nodeType": "StructuredDocumentation",
+              "src": "432:57:12",
+              "text": "@dev Emitted when a `season` is opened by a `keeper`."
+            },
+            "id": 3080,
+            "name": "SeasonOpen",
+            "nameLocation": "501:10:12",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 3079,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3076,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "527:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3080,
+                  "src": "512:21:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3075,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "512:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3078,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "keeper",
+                  "nameLocation": "551:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3080,
+                  "src": "535:22:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3077,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "535:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "511:47:12"
+            },
+            "src": "495:64:12"
+          },
+          {
+            "anonymous": false,
+            "documentation": {
+              "id": 3081,
+              "nodeType": "StructuredDocumentation",
+              "src": "567:80:12",
+              "text": "@dev Emitted when a `severity` is aggregated for a given `season` + `region`"
+            },
+            "id": 3092,
+            "name": "SeverityAggregated",
+            "nameLocation": "659:18:12",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 3091,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3083,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "703:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3092,
+                  "src": "688:21:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3082,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "688:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3085,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "728:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3092,
+                  "src": "720:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3084,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "720:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3088,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "severity",
+                  "nameLocation": "761:8:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3092,
+                  "src": "745:24:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Severity_$1040",
+                    "typeString": "enum Common.Severity"
+                  },
+                  "typeName": {
+                    "id": 3087,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3086,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "745:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "745:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3090,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "keeper",
+                  "nameLocation": "796:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3092,
+                  "src": "780:22:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3089,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "780:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "677:132:12"
+            },
+            "src": "653:157:12"
+          },
+          {
+            "anonymous": false,
+            "documentation": {
+              "id": 3093,
+              "nodeType": "StructuredDocumentation",
+              "src": "818:93:12",
+              "text": "@dev Emitted when a `severity` is submmited by a `oracle` for a given `season` + `region`"
+            },
+            "id": 3104,
+            "name": "SeveritySubmitted",
+            "nameLocation": "923:17:12",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 3103,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3095,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "966:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3104,
+                  "src": "951:21:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3094,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "951:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3097,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "991:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3104,
+                  "src": "983:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3096,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "983:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3100,
+                  "indexed": false,
+                  "mutability": "mutable",
+                  "name": "severity",
+                  "nameLocation": "1024:8:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3104,
+                  "src": "1008:24:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Severity_$1040",
+                    "typeString": "enum Common.Severity"
+                  },
+                  "typeName": {
+                    "id": 3099,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3098,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "1008:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "1008:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3102,
+                  "indexed": true,
+                  "mutability": "mutable",
+                  "name": "oracle",
+                  "nameLocation": "1059:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3104,
+                  "src": "1043:22:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3101,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1043:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "940:132:12"
+            },
+            "src": "917:156:12"
+          },
+          {
+            "canonicalName": "IOracle.Submission",
+            "id": 3118,
+            "members": [
+              {
+                "constant": false,
+                "id": 3109,
+                "mutability": "mutable",
+                "name": "oracles",
+                "nameLocation": "1353:7:12",
+                "nodeType": "VariableDeclaration",
+                "scope": 3118,
+                "src": "1317:43:12",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_mapping$_t_address_$_t_enum$_Severity_$1040_$",
+                  "typeString": "mapping(address => enum Common.Severity)"
+                },
+                "typeName": {
+                  "id": 3108,
+                  "keyType": {
+                    "id": 3105,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1325:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "nodeType": "Mapping",
+                  "src": "1317:35:12",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_mapping$_t_address_$_t_enum$_Severity_$1040_$",
+                    "typeString": "mapping(address => enum Common.Severity)"
+                  },
+                  "valueType": {
+                    "id": 3107,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3106,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "1336:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "1336:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 3114,
+                "mutability": "mutable",
+                "name": "numberAnswers",
+                "nameLocation": "1407:13:12",
+                "nodeType": "VariableDeclaration",
+                "scope": 3118,
+                "src": "1371:49:12",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_mapping$_t_enum$_Severity_$1040_$_t_uint256_$",
+                  "typeString": "mapping(enum Common.Severity => uint256)"
+                },
+                "typeName": {
+                  "id": 3113,
+                  "keyType": {
+                    "id": 3111,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3110,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "1379:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "1379:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  },
+                  "nodeType": "Mapping",
+                  "src": "1371:35:12",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_mapping$_t_enum$_Severity_$1040_$_t_uint256_$",
+                    "typeString": "mapping(enum Common.Severity => uint256)"
+                  },
+                  "valueType": {
+                    "id": 3112,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1398:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 3117,
+                "mutability": "mutable",
+                "name": "submitters",
+                "nameLocation": "1441:10:12",
+                "nodeType": "VariableDeclaration",
+                "scope": 3118,
+                "src": "1431:20:12",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                  "typeString": "address[]"
+                },
+                "typeName": {
+                  "baseType": {
+                    "id": 3115,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1431:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 3116,
+                  "nodeType": "ArrayTypeName",
+                  "src": "1431:9:12",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                    "typeString": "address[]"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "Submission",
+            "nameLocation": "1295:10:12",
+            "nodeType": "StructDefinition",
+            "scope": 3232,
+            "src": "1288:171:12",
+            "visibility": "public"
+          },
+          {
+            "documentation": {
+              "id": 3119,
+              "nodeType": "StructuredDocumentation",
+              "src": "1467:855:12",
+              "text": " @dev Aggregate a `severity` from all submissions.\n Rule benefit insurees:\n if 50% (roundup) of total submissions is >= totD2 + totD3 + totD4 then severity is severity which got the most number of submissions between D2,D3 & D4\n Else severity which got most number of submissions between D0 & D1\n Emits a {SeverityAggregated} event.\n Pays out the keeper for its job\n Requirements:\n - the caller must be keeper.\n - the season must be in closed state\n - contract must have enough balance to pay oracle\n - the keeper cannot trigger aggregation twice for this `season` + `region`\n @param season year (e.g. 2021).\n @param region region in bytes32\n @notice call nonReentrant to check against Reentrancy"
+            },
+            "functionSelector": "88784105",
+            "id": 3126,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "aggregate",
+            "nameLocation": "2337:9:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3124,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3121,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "2354:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3126,
+                  "src": "2347:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3120,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2347:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3123,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "2370:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3126,
+                  "src": "2362:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3122,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2362:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2346:31:12"
+            },
+            "returnParameters": {
+              "id": 3125,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2386:0:12"
+            },
+            "scope": 3232,
+            "src": "2328:59:12",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3127,
+              "nodeType": "StructuredDocumentation",
+              "src": "2395:416:12",
+              "text": " @dev Close a `season`.\n Emits a {SeasonClosed} event.\n Pays out the keeper for its job\n Requirements:\n - the caller must be keeper\n - the season must be opened\n - contract must have enough balance to pay keepers\n @param season year (e.g. 2021).\n @notice call nonReentrant to check against Reentrancy"
+            },
+            "functionSelector": "5d3c917e",
+            "id": 3132,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "closeSeason",
+            "nameLocation": "2826:11:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3130,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3129,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "2845:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3132,
+                  "src": "2838:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3128,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "2838:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "2837:15:12"
+            },
+            "returnParameters": {
+              "id": 3131,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2861:0:12"
+            },
+            "scope": 3232,
+            "src": "2817:45:12",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3133,
+              "nodeType": "StructuredDocumentation",
+              "src": "2870:374:12",
+              "text": " @dev Retrieve  `severity` of a `region` + `season`.\n @param season year (e.g. 2021).\n @param region region code in bytes32\n @return Severity\n @notice caller must check Severity. In fact, final severity is calculated after aggregation. if aggregation not triggered yet then Severity will have the default value"
+            },
+            "functionSelector": "91e10a13",
+            "id": 3143,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getRegionSeverity",
+            "nameLocation": "3259:17:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3138,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3135,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "3284:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3143,
+                  "src": "3277:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3134,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3277:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3137,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "3300:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3143,
+                  "src": "3292:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3136,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3292:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3276:31:12"
+            },
+            "returnParameters": {
+              "id": 3142,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3141,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3143,
+                  "src": "3358:15:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Severity_$1040",
+                    "typeString": "enum Common.Severity"
+                  },
+                  "typeName": {
+                    "id": 3140,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3139,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "3358:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "3358:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3357:17:12"
+            },
+            "scope": 3232,
+            "src": "3250:125:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3144,
+              "nodeType": "StructuredDocumentation",
+              "src": "3383:109:12",
+              "text": " @dev Retrieve number of seasons\n @return number of seasons defined so far"
+            },
+            "functionSelector": "586d993c",
+            "id": 3149,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSeasonsNumber",
+            "nameLocation": "3507:16:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3145,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "3523:2:12"
+            },
+            "returnParameters": {
+              "id": 3148,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3147,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3149,
+                  "src": "3549:7:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3146,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3549:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3548:9:12"
+            },
+            "scope": 3232,
+            "src": "3498:60:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3150,
+              "nodeType": "StructuredDocumentation",
+              "src": "3566:147:12",
+              "text": " @dev Retrieve season at `index`\n @return `season`\n @notice must check not out of bound exception"
+            },
+            "functionSelector": "c46b4b04",
+            "id": 3157,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSeasonAt",
+            "nameLocation": "3728:11:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3153,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3152,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "3748:5:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3157,
+                  "src": "3740:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3151,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3740:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3739:15:12"
+            },
+            "returnParameters": {
+              "id": 3156,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3155,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3157,
+                  "src": "3778:6:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3154,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3778:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3777:8:12"
+            },
+            "scope": 3232,
+            "src": "3719:67:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3158,
+              "nodeType": "StructuredDocumentation",
+              "src": "3794:130:12",
+              "text": " @dev Retrieve a `season` state.\n @param season year (e.g. 2021).\n @return SeasonState ."
+            },
+            "functionSelector": "92af0d4e",
+            "id": 3166,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSeasonState",
+            "nameLocation": "3939:14:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3161,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3160,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "3961:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3166,
+                  "src": "3954:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3159,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "3954:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "3953:15:12"
+            },
+            "returnParameters": {
+              "id": 3165,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3164,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3166,
+                  "src": "4019:18:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_SeasonState_$1044",
+                    "typeString": "enum Common.SeasonState"
+                  },
+                  "typeName": {
+                    "id": 3163,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3162,
+                      "name": "Common.SeasonState",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1044,
+                      "src": "4019:18:12"
+                    },
+                    "referencedDeclaration": 1044,
+                    "src": "4019:18:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_SeasonState_$1044",
+                      "typeString": "enum Common.SeasonState"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "4018:20:12"
+            },
+            "scope": 3232,
+            "src": "3930:109:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3167,
+              "nodeType": "StructuredDocumentation",
+              "src": "4047:413:12",
+              "text": " @dev Retrieve a `severity` for a given `region` and `season` , provided by `oracle`.\n @param season year (e.g. 2021).\n @param region region code in bytes32\n @param oracle oracle address\n @return Severity .\n @notice If Severity is the default value then it means that the oracle didn't provide any submission for `region` and `season`"
+            },
+            "functionSelector": "25bb9014",
+            "id": 3179,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSubmission",
+            "nameLocation": "4475:13:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3174,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3169,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "4506:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3179,
+                  "src": "4499:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3168,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4499:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3171,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "4531:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3179,
+                  "src": "4523:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3170,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4523:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3173,
+                  "mutability": "mutable",
+                  "name": "oracle",
+                  "nameLocation": "4556:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3179,
+                  "src": "4548:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3172,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4548:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "4488:81:12"
+            },
+            "returnParameters": {
+              "id": 3178,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3177,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3179,
+                  "src": "4593:15:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Severity_$1040",
+                    "typeString": "enum Common.Severity"
+                  },
+                  "typeName": {
+                    "id": 3176,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3175,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "4593:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "4593:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "4592:17:12"
+            },
+            "scope": 3232,
+            "src": "4466:144:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3180,
+              "nodeType": "StructuredDocumentation",
+              "src": "4618:292:12",
+              "text": " @dev Retrieve number of submissions for a given `region` and `season` and `severity`.\n @param season year (e.g. 2021).\n @param region region code in bytes32\n @param severity Severity code\n @return number of submissions."
+            },
+            "functionSelector": "81f407fa",
+            "id": 3192,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSubmissionNumberForSeverity",
+            "nameLocation": "4925:30:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3188,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3182,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "4973:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3192,
+                  "src": "4966:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3181,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4966:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3184,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "4998:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3192,
+                  "src": "4990:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3183,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "4990:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3187,
+                  "mutability": "mutable",
+                  "name": "severity",
+                  "nameLocation": "5031:8:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3192,
+                  "src": "5015:24:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Severity_$1040",
+                    "typeString": "enum Common.Severity"
+                  },
+                  "typeName": {
+                    "id": 3186,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3185,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "5015:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "5015:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "4955:91:12"
+            },
+            "returnParameters": {
+              "id": 3191,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3190,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3192,
+                  "src": "5070:7:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3189,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5070:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "5069:9:12"
+            },
+            "scope": 3232,
+            "src": "4916:163:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3193,
+              "nodeType": "StructuredDocumentation",
+              "src": "5087:234:12",
+              "text": " @dev Retrieve total submissions for a given `region` and `season`.\n @param season year (e.g. 2021).\n @param region region code in bytes32\n @return number of submissions"
+            },
+            "functionSelector": "965de0a1",
+            "id": 3202,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSubmissionTotal",
+            "nameLocation": "5336:18:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3198,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3195,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "5362:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3202,
+                  "src": "5355:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3194,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5355:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3197,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "5378:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3202,
+                  "src": "5370:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3196,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5370:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "5354:31:12"
+            },
+            "returnParameters": {
+              "id": 3201,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3200,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3202,
+                  "src": "5436:7:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3199,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5436:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "5435:9:12"
+            },
+            "scope": 3232,
+            "src": "5327:118:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3203,
+              "nodeType": "StructuredDocumentation",
+              "src": "5453:350:12",
+              "text": " @dev Retrieve submitter  for a given `region` and `season` at a given `index`.\n @param season year (e.g. 2021).\n @param region region code in bytes32\n @return address of oracle\n @notice caller must call getSubmissionTotal before in order to ensure no out of bounds array access"
+            },
+            "functionSelector": "1385d05d",
+            "id": 3214,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getSubmitterAt",
+            "nameLocation": "5818:14:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3210,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3205,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "5850:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3214,
+                  "src": "5843:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3204,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5843:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3207,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "5875:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3214,
+                  "src": "5867:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3206,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5867:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3209,
+                  "mutability": "mutable",
+                  "name": "index",
+                  "nameLocation": "5900:5:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3214,
+                  "src": "5892:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 3208,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5892:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "5832:80:12"
+            },
+            "returnParameters": {
+              "id": 3213,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3212,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3214,
+                  "src": "5936:7:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 3211,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "5936:7:12",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "5935:9:12"
+            },
+            "scope": 3232,
+            "src": "5809:136:12",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3215,
+              "nodeType": "StructuredDocumentation",
+              "src": "5953:424:12",
+              "text": " @dev Open a `season`.\n Emits a {SeasonOpen} event.\n Pays out the keeper for its job\n Requirements:\n - the caller must be keeper.\n - the season must be in default state\n - contract must have enough balance to pay keepers\n @param season year (e.g. 2021).\n @notice call nonReentrant to check against Reentrancy"
+            },
+            "functionSelector": "30d472c9",
+            "id": 3220,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "openSeason",
+            "nameLocation": "6392:10:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3218,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3217,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "6410:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3220,
+                  "src": "6403:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3216,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "6403:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "6402:15:12"
+            },
+            "returnParameters": {
+              "id": 3219,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "6426:0:12"
+            },
+            "scope": 3232,
+            "src": "6383:44:12",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "documentation": {
+              "id": 3221,
+              "nodeType": "StructuredDocumentation",
+              "src": "6435:667:12",
+              "text": " @dev Submit a `severity` for a given `season` + `region`.\n Emits a {SeveritySubmitted} event.\n Pays out the oracle for its job\n Requirements:\n - the caller must be oracle.\n - the season must be in open state\n - contract must have enough balance to pay oracle\n - the oracle cannot submit twice for this `season` + `region`\n - severity code must be valid\n @param season year (e.g. 2021).\n @param region region in bytes32\n @param severity must be valid (between 1 and 5)\n @notice call nonReentrant to check against Reentrancy"
+            },
+            "functionSelector": "415b4bf2",
+            "id": 3231,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "submit",
+            "nameLocation": "7117:6:12",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 3229,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 3223,
+                  "mutability": "mutable",
+                  "name": "season",
+                  "nameLocation": "7141:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3231,
+                  "src": "7134:13:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint16",
+                    "typeString": "uint16"
+                  },
+                  "typeName": {
+                    "id": 3222,
+                    "name": "uint16",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7134:6:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint16",
+                      "typeString": "uint16"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3225,
+                  "mutability": "mutable",
+                  "name": "region",
+                  "nameLocation": "7166:6:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3231,
+                  "src": "7158:14:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 3224,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "7158:7:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 3228,
+                  "mutability": "mutable",
+                  "name": "severity",
+                  "nameLocation": "7199:8:12",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 3231,
+                  "src": "7183:24:12",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_enum$_Severity_$1040",
+                    "typeString": "enum Common.Severity"
+                  },
+                  "typeName": {
+                    "id": 3227,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 3226,
+                      "name": "Common.Severity",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 1040,
+                      "src": "7183:15:12"
+                    },
+                    "referencedDeclaration": 1040,
+                    "src": "7183:15:12",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_enum$_Severity_$1040",
+                      "typeString": "enum Common.Severity"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "7123:91:12"
+            },
+            "returnParameters": {
+              "id": 3230,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "7223:0:12"
+            },
+            "scope": 3232,
+            "src": "7108:116:12",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 3233,
+        "src": "270:6957:12",
+        "usedErrors": []
+      }
+    ],
+    "src": "33:7196:12"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2021-10-24T21:56:38.443Z",
+  "devdoc": {
+    "details": "Define what's important for a OracleCore contract to implement. In fact, there can be different versions of a OracleCore contract",
+    "events": {
+      "SeasonClosed(uint16,address)": {
+        "details": "Emitted when a `season` is closed by a `keeper`."
+      },
+      "SeasonOpen(uint16,address)": {
+        "details": "Emitted when a `season` is opened by a `keeper`."
+      },
+      "SeverityAggregated(uint16,bytes32,uint8,address)": {
+        "details": "Emitted when a `severity` is aggregated for a given `season` + `region`"
+      },
+      "SeveritySubmitted(uint16,bytes32,uint8,address)": {
+        "details": "Emitted when a `severity` is submmited by a `oracle` for a given `season` + `region`"
+      }
+    },
+    "kind": "dev",
+    "methods": {
+      "aggregate(uint16,bytes32)": {
+        "details": "Aggregate a `severity` from all submissions. Rule benefit insurees: if 50% (roundup) of total submissions is >= totD2 + totD3 + totD4 then severity is severity which got the most number of submissions between D2,D3 & D4 Else severity which got most number of submissions between D0 & D1 Emits a {SeverityAggregated} event. Pays out the keeper for its job Requirements: - the caller must be keeper. - the season must be in closed state - contract must have enough balance to pay oracle - the keeper cannot trigger aggregation twice for this `season` + `region`",
+        "params": {
+          "region": "region in bytes32",
+          "season": "year (e.g. 2021)."
+        }
+      },
+      "closeSeason(uint16)": {
+        "details": "Close a `season`. Emits a {SeasonClosed} event. Pays out the keeper for its job Requirements: - the caller must be keeper - the season must be opened - contract must have enough balance to pay keepers",
+        "params": {
+          "season": "year (e.g. 2021)."
+        }
+      },
+      "getRegionSeverity(uint16,bytes32)": {
+        "details": "Retrieve  `severity` of a `region` + `season`.",
+        "params": {
+          "region": "region code in bytes32",
+          "season": "year (e.g. 2021)."
+        },
+        "returns": {
+          "_0": "Severity"
+        }
+      },
+      "getSeasonAt(uint256)": {
+        "details": "Retrieve season at `index`",
+        "returns": {
+          "_0": "`season`"
+        }
+      },
+      "getSeasonState(uint16)": {
+        "details": "Retrieve a `season` state.",
+        "params": {
+          "season": "year (e.g. 2021)."
+        },
+        "returns": {
+          "_0": "SeasonState ."
+        }
+      },
+      "getSeasonsNumber()": {
+        "details": "Retrieve number of seasons",
+        "returns": {
+          "_0": "number of seasons defined so far"
+        }
+      },
+      "getSubmission(uint16,bytes32,address)": {
+        "details": "Retrieve a `severity` for a given `region` and `season` , provided by `oracle`.",
+        "params": {
+          "oracle": "oracle address",
+          "region": "region code in bytes32",
+          "season": "year (e.g. 2021)."
+        },
+        "returns": {
+          "_0": "Severity ."
+        }
+      },
+      "getSubmissionNumberForSeverity(uint16,bytes32,uint8)": {
+        "details": "Retrieve number of submissions for a given `region` and `season` and `severity`.",
+        "params": {
+          "region": "region code in bytes32",
+          "season": "year (e.g. 2021).",
+          "severity": "Severity code"
+        },
+        "returns": {
+          "_0": "number of submissions."
+        }
+      },
+      "getSubmissionTotal(uint16,bytes32)": {
+        "details": "Retrieve total submissions for a given `region` and `season`.",
+        "params": {
+          "region": "region code in bytes32",
+          "season": "year (e.g. 2021)."
+        },
+        "returns": {
+          "_0": "number of submissions"
+        }
+      },
+      "getSubmitterAt(uint16,bytes32,uint256)": {
+        "details": "Retrieve submitter  for a given `region` and `season` at a given `index`.",
+        "params": {
+          "region": "region code in bytes32",
+          "season": "year (e.g. 2021)."
+        },
+        "returns": {
+          "_0": "address of oracle"
+        }
+      },
+      "openSeason(uint16)": {
+        "details": "Open a `season`. Emits a {SeasonOpen} event. Pays out the keeper for its job Requirements: - the caller must be keeper. - the season must be in default state - contract must have enough balance to pay keepers",
+        "params": {
+          "season": "year (e.g. 2021)."
+        }
+      },
+      "submit(uint16,bytes32,uint8)": {
+        "details": "Submit a `severity` for a given `season` + `region`. Emits a {SeveritySubmitted} event. Pays out the oracle for its job Requirements: - the caller must be oracle. - the season must be in open state - contract must have enough balance to pay oracle - the oracle cannot submit twice for this `season` + `region` - severity code must be valid",
+        "params": {
+          "region": "region in bytes32",
+          "season": "year (e.g. 2021).",
+          "severity": "must be valid (between 1 and 5)"
+        }
+      }
+    },
+    "title": "Oracle interface",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "aggregate(uint16,bytes32)": {
+        "notice": "call nonReentrant to check against Reentrancy"
+      },
+      "closeSeason(uint16)": {
+        "notice": "call nonReentrant to check against Reentrancy"
+      },
+      "getRegionSeverity(uint16,bytes32)": {
+        "notice": "caller must check Severity. In fact, final severity is calculated after aggregation. if aggregation not triggered yet then Severity will have the default value"
+      },
+      "getSeasonAt(uint256)": {
+        "notice": "must check not out of bound exception"
+      },
+      "getSubmission(uint16,bytes32,address)": {
+        "notice": "If Severity is the default value then it means that the oracle didn't provide any submission for `region` and `season`"
+      },
+      "getSubmitterAt(uint16,bytes32,uint256)": {
+        "notice": "caller must call getSubmissionTotal before in order to ensure no out of bounds array access"
+      },
+      "openSeason(uint16)": {
+        "notice": "call nonReentrant to check against Reentrancy"
+      },
+      "submit(uint16,bytes32,uint8)": {
+        "notice": "call nonReentrant to check against Reentrancy"
+      }
+    },
+    "version": 1
+  }
+}
