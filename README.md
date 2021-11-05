@@ -4,7 +4,7 @@
 
 Crop insurance is an insurance purchased by farmers to protect against the loss of their crops due to natural disasters (drought, flood, hail..) [Ref](https://en.wikipedia.org/wiki/Crop_insurance).
 
-In this project, we are going to build a simplified DAPP where the insurance policy is materialized in a smart contract.  For the sake of simplicity , we are going to take many hypotesis
+In this project, we are going to build a simplified DAPP where the insurance policy is materialized in a smart contract. For the sake of simplicity , we are going to take many hypotesis
 
 ## Hypothesis
 
@@ -31,18 +31,18 @@ In this project, we are going to build a simplified DAPP where the insurance pol
 - KYC of farmers is out of scope
 - Governments will participate 50 % of the premium. In fact, Governments are incentivized to transfer risk of natural disasters to private sector (insurance company)
 - Compensation is calculated as follow:
-  - D0 doesn't give any compensation 
+  - D0 doesn't give any compensation
   - D1 gives 0.5 times the premium
   - D2 gives 1 times the premium
   - D3 gives 2 times the premium
   - D4 gives 2.5 times the premium
 - Compensation calculation is triggered by keepers offchain. Keepers are paid 0.01 ETH each time a compensation is calculated
-- Insurance company has to stake enough ETH for every agricultural cycle in order to ensure that there will be always enough balance to compensate farmers in case there are drought. If there are not enough ETH staked in the contract then onboarding of new farmers are refused 
+- Insurance company has to stake enough ETH for every agricultural cycle in order to ensure that there will be always enough balance to compensate farmers in case there are drought. If there are not enough ETH staked in the contract then onboarding of new farmers are refused
 - Smart contract locks staked ETH and insurance company can takes back its ETH only if there is enough liquidity to compensate all farmers
 - Farmers are able to interact with the DAPP and protect their identity (private key). In reality , identity protection seems very unlikely as it might be very technical for the farmer so we can foresee several modes of payment in the DAPP (e.g.: ETH or Fiat through wire transfer): In case payment of premium is in Fiat then the insurance in case of disaster will be released via wire transfer. For simplicity sake, I will focus on ETH payment and maybe dig into the latter case if I've got enough time
 
-
 ## Actors & roles
+
 - Farmers: register an insurance contract (season , region , farmID) , providing all the needed data (farm data) and pays 50% of the premium which is calculated by the smart contract
 - Government employees (from agriculture department): Approves an insurance contract registration and pays the 50% remaining premium
 - Insurance: final approval of insurance contract
@@ -50,13 +50,91 @@ In this project, we are going to build a simplified DAPP where the insurance pol
 - Keepers: their role is to trigger some functions under certain conditions (e.g.: declare a season as open, close it , trigger aggregation of oracles answers, trigger calculation of compensation..)
 
 ## Objectives
+
 Insurance policies still rely on government and insurance company collaboration , however crop insurance DAPPs can have the following advantages:
+
 - Insurance policy is defined within the smart contract. Hence there are no exceptions
-- Insurance company cannot default as ETH are staked within the smart contract. Hence, once a farmer 
-- Full transparency. Both  a government employee and an insurance company admin validate information provided by the farmer during his/her onboarding and approval transaction is perform within the blockchain 
+- Insurance company cannot default as ETH are staked within the smart contract. Hence, once a farmer
+- Full transparency. Both a government employee and an insurance company admin validate information provided by the farmer during his/her onboarding and approval transaction is perform within the blockchain
 
 # Documentation
 
 ## [Diagrams & Design patterns](./design_pattern_decisions.md)
 
 ## [Avoid common attacks](./avoiding_common_attacks.md)
+
+# Run the application
+
+## Prerequisites
+
+- Metamask. Recommended to use a test profile (check the following [Link](https://genobank.io/create-metamask-identity)) in order to not "pollute" your main metamask account
+- Nvm (node package manager) : 0.38.0 can be installed in [here](https://github.com/nvm-sh/nvm)
+- Node: v12.22.5. Use the folloing command to switch to the right node version `nvm use lts/erbium`
+- Npm: v8.0.0
+- Truffle: v5.4.11
+- Ganache-cli: v6.12.2 or Ganache desktop. make sure it runs on port `8545`. Also make sure to have more than 10 accounts. You can start ganache-cli with the following command: `ganache-cli -a 50 -e 10000`
+
+## Project structure
+
+This repository contains:
+
+- Smart Contract code in Solidity (using Truffle) in "contracts" folder
+- Unit tests (using mocha and truffle) in "test" folder
+- Truffle migration scripts in "migrations" folder
+- Truffle scripts in "scripts" folder. There are 2 scripts:
+  - "roles.js": used to setup access controles for different actors
+  - "fund.js": used to credit contracts and accounts with ETH
+- Single Paged Application (SPA) react-redux based in "client" folder
+  \*"truffle-config.js": configuration of truffle. In case you want to deploy the DAPP in a public testnet, please make sure to have a ".env" file where you will setup the mnemonic (which is the same as the one used in your Metamask) and Infura key
+
+## Install
+
+To install, download or clone the repo, then:
+
+- `npm install`
+- `truffle compile` to make sure everything compiles
+- `truffle migrate` . If you would like to deploy on a public testnet then execute the command `truffle migrate --network <network-name>` where "network-name" can be found under "networks" in "truffle-config.js"
+- Once your contracts deployed. Run the following scripts:
+  - `truffle exec scripts/roles.js` (add the option `--network <network-name>` if you are working on a public testnet)
+  - `truffle exec scripts/fund.js` (add the option `--network <network-name>` if you are working on a public testnet)
+
+## Test the contracts
+
+You can run the tests by executing the following commannd in the root directory of the project `truffle test`
+
+You can verify that all the tests run succesfully:
+
+![Tests Results](./img/test-results.JPG)
+
+Remark: there is also a gas reporter which provides some insights regarding the gas usage of the different functions
+
+![Gas usage](./img/gas-usage.JPG)
+
+## Serve the frontend locally
+
+In order to test the react-redux frontend locally. Please follow these steps:
+
+- `cd client`
+- `npm start`. It will serve automatically the frontend to `http://localhost:3000`
+
+![Local frontend](./img/local-frontend.JPG)
+
+- make sure that your metamask is connected to the right network (localhost:8085 for local ganache or select the right network)
+
+![Metamask local](./img/metamask-local.JPG)
+
+# Dapp hosted on Fleek 
+
+the react-redux Single Page Application is also deployed on [Fleek](https://fleek.co/hosting/) which hosts the frontend on IPFS. It is accessible [here](https://wandering-art-7196.on.fleek.co/)
+
+:warning: **Only Rinkeby is supported for now** . In case you would like to test it , please open an issue in the repo with the list of your accounts and I'll grant you the roles.
+
+Once you open the link , you will find the history of interactions with the contracts
+
+![Dapp rinkeby](./img/dapp-rinkeby.JPG)
+
+Also one can verify rinkeby etherscan for the history of transactions:
+
+* [oracle core contract](https://rinkeby.etherscan.io/address/0xB662AE59DFC89263F0d4cF9df476653a3A6AdeF1)
+* [main insurance cotract](https://rinkeby.etherscan.io/address/0x7817bEE55EbC2c223a550bc7477cDA83a67A460A)
+* [gate keeper for access controls](https://rinkeby.etherscan.io/address/0x2d1c1b0d2bc62cc98977389dba2a767a40b1b04f)
