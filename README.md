@@ -19,14 +19,14 @@ In this project, we are going to build a simplified DAPP where the insurance pol
 - We will use the following [Classification](https://droughtmonitor.unl.edu/About/AbouttheData/DroughtClassification.aspx). Insurance is released only if the severity is D1(Moderate Drought) , D2( Severe drought) , D3(Extreme drought) or D4(Exceptional drought). Drought severity for a specific region and a specific agricultural cycle is regularly provided by Oracles. When a season is open, oracles are elligible to submit a severity for each region. an Oracle cannot submit anymore if a season is closed
 - Every oracle is paid 0.5 ETH for its work
 - Once a season is closed, By region Severity is aggregated as follow:
-  - If number of submissions which are D1 or D0 < 50% of all submissions --> Severity is the one which got the maximum number of submissions (D1 or D0). In case there is an equality then Severity = D1
+  - If number of submissions which are D1 or D0 > 50% of all submissions --> Severity is the one which got the maximum number of submissions (D1 or D0). In case there is an equality then Severity = D1
   - Else, Severity is the one which got the maximum number of submissions (D4 or D3 or D2). In case there is an equality, the worst Severity wins (e.g.: if nD4 = nD3 then Severity = D4)
   - Examples:
     - [D3,D4,D2,D2,D3,D4,D1,D1,D1,D1] ==> 6/10 have D2,D3,D4 ==> equality between nD4,nD2, nD3 so answer aggregate should be D4
     - [D0,D1,D1,D0,D1,D3,D2,D2,D3,D4] ==> 5/10 have D2,D3,D4 ==> equality between nD3, nD2 so aggregate should be D3
     - [D0,D0,D1,D0,D1,D1,D2,D2,D3,D4] ==> 6/10 have D0,D1 ==> equality between nD1, nD0 so aggregate should be D1
 - Aggregation of severity can only be calculated once the season is closed. Aggregation of severity for a specific season,region is triggered by keepers
-- Keepers are pad 0.1 ETH for their work
+- Keepers are paid 0.1 ETH for opening/closing seasons and for triggering the aggregation of severities.
 - As yield data is not available, insurance company is not able to vet and underwrite wheat accurately. The insurance company asks a premium price of 0.15 ETH/HA (1 hectare = 2,47105 Acres). How the premium was calculated is out of scope of this project
 - KYC of farmers is out of scope
 - Governments will participate 50 % of the premium. In fact, Governments are incentivized to transfer risk of natural disasters to private sector (insurance company)
