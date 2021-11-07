@@ -54,7 +54,7 @@ In this project, we are going to build a simplified DAPP where the insurance pol
 Insurance policies still rely on government and insurance company collaboration , however crop insurance DAPPs can have the following advantages:
 
 - Insurance policy is defined within the smart contract. Hence there are no exceptions
-- Insurance company cannot default as ETH are staked within the smart contract. Hence, once a farmer
+- Insurance company cannot default as ETH are staked within the smart contract
 - Full transparency. Both a government employee and an insurance company admin validate information provided by the farmer during his/her onboarding and approval transaction is perform within the blockchain
 
 # Documentation
