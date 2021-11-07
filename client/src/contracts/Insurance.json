@@ -58402,10 +58402,16 @@
       "links": {},
       "address": "0x7817bEE55EbC2c223a550bc7477cDA83a67A460A",
       "transactionHash": "0x417345833c6e7d04141598c8ee233def9d1604a5461af944552fc1e88223323f"
+    },
+    "1636325007933": {
+      "events": {},
+      "links": {},
+      "address": "0x7817bEE55EbC2c223a550bc7477cDA83a67A460A",
+      "transactionHash": "0x417345833c6e7d04141598c8ee233def9d1604a5461af944552fc1e88223323f"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-11-01T21:03:42.467Z",
+  "updatedAt": "2021-11-07T22:44:20.983Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Implement main contract for Insurance. contract between insurance and farmers is materialized in here",

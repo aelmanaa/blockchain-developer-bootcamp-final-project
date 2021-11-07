@@ -30886,10 +30886,16 @@
       "links": {},
       "address": "0xB662AE59DFC89263F0d4cF9df476653a3A6AdeF1",
       "transactionHash": "0x074940b6644f288cac121233025ac7152dc9c1eb43d06f29fe2d6e8845df4619"
+    },
+    "1636325007933": {
+      "events": {},
+      "links": {},
+      "address": "0xB662AE59DFC89263F0d4cF9df476653a3A6AdeF1",
+      "transactionHash": "0x074940b6644f288cac121233025ac7152dc9c1eb43d06f29fe2d6e8845df4619"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-11-01T21:03:42.437Z",
+  "updatedAt": "2021-11-07T22:44:20.936Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Implement functionalities of Oracle. Other functionalities (e.g.: open/close seaosn) are implemented by keepers",

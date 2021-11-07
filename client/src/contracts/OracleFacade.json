@@ -12940,10 +12940,16 @@
       "links": {},
       "address": "0x18a95A05Eb846413547be76ec2FF259844910886",
       "transactionHash": "0xf110fbfacbe75e1523afc340a46d73cfff23888d164bc58b4b0c776aa6d2ad5e"
+    },
+    "1636325007933": {
+      "events": {},
+      "links": {},
+      "address": "0x18a95A05Eb846413547be76ec2FF259844910886",
+      "transactionHash": "0xf110fbfacbe75e1523afc340a46d73cfff23888d164bc58b4b0c776aa6d2ad5e"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-11-01T21:03:42.449Z",
+  "updatedAt": "2021-11-07T22:44:20.959Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Define what's important for a OracleCore contract to implement. In fact, there can be different versions of a OracleCore contract",

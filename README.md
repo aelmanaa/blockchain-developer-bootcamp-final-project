@@ -63,6 +63,16 @@ Insurance policies still rely on government and insurance company collaboration 
 
 ## [Avoid common attacks](./avoiding_common_attacks.md)
 
+# ScreenCasts
+
+## Project Idea [link](https://www.loom.com/share/82f4935f03da4797a9b94788abcb60c2)
+
+## Diagrams [link](https://www.loom.com/share/aef0d278999748668b7fa4a810520dc2)
+
+## Project structure [link](https://www.loom.com/share/b20f64707d5a4c81b86f95359aa0fa61)
+
+## Demo [link](https://www.loom.com/share/3b3ed23b3bb64c28bc621164cab19a3b)
+
 # Run the application
 
 ## Prerequisites

@@ -12913,10 +12913,16 @@
       "links": {},
       "address": "0x2D1C1B0D2BC62Cc98977389dba2a767a40b1B04f",
       "transactionHash": "0x217608dddfb36a4d4104ff5e71029e6abee7c48cd4f996500490cb80efe496e9"
+    },
+    "1636325007933": {
+      "events": {},
+      "links": {},
+      "address": "0x2D1C1B0D2BC62Cc98977389dba2a767a40b1B04f",
+      "transactionHash": "0x217608dddfb36a4d4104ff5e71029e6abee7c48cd4f996500490cb80efe496e9"
     }
   },
   "schemaVersion": "3.4.3",
-  "updatedAt": "2021-11-01T21:03:42.427Z",
+  "updatedAt": "2021-11-07T22:44:20.915Z",
   "networkType": "ethereum",
   "devdoc": {
     "details": "Contract module that implements Openzeppelin access control contract {AccessControlEnumerable}. It also implement {IGateKeeper} interface to provide generic functionalities ERC165 `supportsInterface` method is implemented in order to allow the callers to verify that GateKeeper implements {IGateKeeper} interface Roles are referred to by their `bytes32` identifier. The roles are unique. It is expected from callers to hash their roles using keccak256 before calling functions of the contract.",
