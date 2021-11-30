@@ -1,20 +1,20 @@
-const path = require("path");
-const HDWalletProvider = require("@truffle/hdwallet-provider");
+const path = require('path');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 
-require("dotenv").config();
+require('dotenv').config();
 
-const infuraKey = process.env.INFURA_API_KEY || "";
-const mnemonic = process.env.mnemonic || "";
+const infuraKey = process.env.INFURA_API_KEY || '';
+const mnemonic = process.env.mnemonic || '';
 
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
   // to customize your Truffle configuration!
-  contracts_build_directory: path.join(__dirname, "client/src/contracts"),
+  contracts_build_directory: path.join(__dirname, 'client/src/contracts'),
   networks: {
     development: {
-      host: "localhost",
+      host: 'localhost',
       port: 8545,
-      network_id: "*",
+      network_id: '*',
     },
     rinkeby: {
       provider: () =>
@@ -30,11 +30,11 @@ module.exports = {
     },
   },
   mocha: {
-    reporter: "eth-gas-reporter",
+    reporter: 'eth-gas-reporter',
   },
   compilers: {
     solc: {
-      version: "^0.8.9",
+      version: '0.8.9',
       settings: {
         // See the solidity docs for advice about optimization and evmVersion
         optimizer: {
