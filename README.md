@@ -125,6 +125,7 @@ Remark: there is also a gas reporter which provides some insights regarding the 
 In order to test the react-redux frontend locally. Please follow these steps:
 
 - `cd client`
+- `npm install`
 - `npm start`. It will serve automatically the frontend to `http://localhost:3000`
 
 ![Local frontend](./img/local-frontend.JPG)
